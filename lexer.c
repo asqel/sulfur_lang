@@ -5,6 +5,7 @@
 #include "libs/token_class.c"
 #include "libs/utilities.c"
 
+
 Token*lexe(char*text){
     Token*toks;
     int n_tok=0;
@@ -57,78 +58,82 @@ Token*lexe(char*text){
             toks[n_tok-1].type=floap;
             p=e;
             continue;
-
-
+        }
+        if(p+1<len){//ops 2 char
+            char s[3]={text[p],text[p+1],'\0'};
+            int x=op_to_enum(s);
+            if(x!=-1){
+                n_tok++;
+                toks=realloc(toks,sizeof(Token)*n_tok);
+                toks[n_tok-1].value.t=malloc(sizeof(short int));
+                *toks[n_tok-1].value.t=x;
+                toks[n_tok-1].type=op;
+                p++;
+                continue; 
+            }
+        }
+        char s[2]={text[p],'\0'};
+        if(op_to_enum(s)!=-1){//ops single char
+            n_tok++;
+            toks=realloc(toks,sizeof(Token)*n_tok);
+            toks[n_tok-1].value.t=malloc(sizeof(short int));
+            *toks[n_tok-1].value.t=op_to_enum(s);
+            toks[n_tok-1].type=op;
+            p++;
+            continue;  
+        }
+        char s2[2]={text[p],'\0'};
+        if(sy_to_enum(s2)!=-1){//syntax
+            n_tok++;
+            toks=realloc(toks,sizeof(Token)*n_tok);
+            toks[n_tok-1].value.t=malloc(sizeof(short int));
+            *toks[n_tok-1].value.t=sy_to_enum(s2);
+            toks[n_tok-1].type=syntax;
+            p++;
+            continue;  
+        }
+        if(text[p]=='\''){
+            p++;
+            int n=0;
+            char*s=malloc(sizeof(char));
+            while(p<len&&text[p]!='\''){
+                n++;
+                s=realloc(s,sizeof(char)*n);
+                s[n-1]=text[p];
+                p++;
+            }
+            s=realloc(s,sizeof(char)*(n+1));
+            s[n]='\0';
+            n_tok++;
+            toks=realloc(toks,sizeof(Token)*n_tok);
+            toks[n_tok-1].type=str;
+            toks[n_tok-1].value.s=s;
+            p++;
+            continue;
+        }
+        if(text[p]=='"'){
+            p++;
+            int n=0;
+            char*s=malloc(sizeof(char));
+            while(p<len&&text[p]!='"'){
+                n++;
+                s=realloc(s,sizeof(char)*n);
+                s[n-1]=text[p];
+                p++;
+            }
+            s=realloc(s,sizeof(char)*(n+1));
+            s[n]='\0';
+            n_tok++;
+            toks=realloc(toks,sizeof(Token)*n_tok);
+            toks[n_tok-1].type=str;
+            toks[n_tok-1].value.s=s;
+            p++;
+            continue;
         }
         
-        if(p+1<len){
-            char s[3]={text[p],text[p+1],'\0'};
-            int n=-1;
-            for(int i=0;i<ops_len;i++){
-                if(strcmp(s,OPS[i])){
-                    n=i;
-                    break;
-                }
-            }
-            char k[2]={text[p],'\0'};
-            if(n==-1){
-                for(int i=0;i<ops_len;i++){
-                    if(strcmp(k,OPS[i])){
-                        n=i;
-                        break;
-                    }
-                }
-                if(n!=-1){
-                    n_tok++;
-                    toks=realloc(toks,sizeof(Token)*n_tok);
-                    toks[n_tok-1].type=op;
-                    toks[n_tok-1].value.t=malloc(sizeof(short int));
-                    *toks[n_tok-1].value.t=n;
-                    p++;
-                    continue;
-                }
-            }
-            n_tok++;
-            toks=realloc(toks,sizeof(Token)*n_tok);
-            toks[n_tok-1].type=op;
-            toks[n_tok-1].value.t=malloc(sizeof(short int));
-            *toks[n_tok-1].value.t=n;
-            p+=2;
-            continue;
-
-        }
-        char k[2]={text[p],'\0'};
-        int n=-1;
-        for(int i=0;i<ops_len;i++){
-            if(k[0]==OPS[i][0]&&k[1]==OPS[i][1]){
-                n=i;
-                break;
-            }
-        }
-        if(n!=-1){
-            n_tok++;
-            toks=realloc(toks,sizeof(Token)*n_tok);
-            toks[n_tok-1].type=op;
-            toks[n_tok-1].value.t=malloc(sizeof(short int));
-            *toks[n_tok-1].value.t=n;
-            p++;
-            continue;
-        }
-        n=-1;
-        for(int i=0;i<syntax_len;i++){
-            if(SYNTAX[i][0]==text[p]){
-                n=i;
-            }
-        }
-        if(n!=-1){
-            n_tok++;
-            toks=realloc(toks,sizeof(Token)*n_tok);
-            toks[n_tok-1].type=syntax;
-            toks[n_tok-1].value.t=malloc(sizeof(short int));
-            *toks[n_tok-1].value.t=n;
-            p++;
-            continue;
-        }
+        
+        
+        
     }
     for(int i=0;i<n_tok-1;i++){
         toks[i]=toks[i+1];
@@ -136,11 +141,17 @@ Token*lexe(char*text){
     toks[n_tok-1]=end_token;
     return toks;
 }
-
+ 
 
 int main(int arc,char** argv){
-    Token*x=lexe("3.1415926535897932 1b 7-(=+!=");
-    token_print(x,"\n");
-    free(x);   
+    char text[]="3.1415926535897932+'saluten fait la uicic'*-/^%\\|&! = == += -= != <= >= < >#{}[]()@:;.?,";
+    Token*x=lexe(text);
+    tokens_print(x," ");
+    int l=token_len(x);
+    for(int i=0;i<l;i++){
+        free_tok_val(x[i]);
+    }
+    free(x);
     return 0;
 }
+

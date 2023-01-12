@@ -30,15 +30,12 @@ enum Token_t{
 };
 enum Syntaxs{
     hashtag,// # 
-    d_quote,// "
-    s_quote,// '
     r_brack_L,// {
     r_brack_R,// }
     brack_L,// [
     brack_R,// ]
     par_L,// (
     par_R,// )
-    backtick,// `
     at,// @
     colon,// :
     semicolon,// ;
@@ -86,10 +83,10 @@ Token end_token={end,{.i=&(long long int){1}}};
 
 char DIGITS[]="1234567890";
 
-char OPS[][3]={"+","*","-","/","^","%","//","|","&","!","=","==","+=","-=","!=","<=",">=","<",">"};
+char OPS[][3]={"+","*","-","/","^","%","\\","|","&","!","=","==","+=","-=","!=","<=",">=","<",">"};
 int ops_len=20;
 
-char SYNTAX[][2]={"#","\"","'","{","}","[","]","(",")","`","@",":",";",".","?",","};
+char SYNTAX[][2]={"#","{","}","[","]","(",")","@",":",";",".","?",","};
 int syntax_len=16;
 
 //return the length of array of Token
@@ -111,35 +108,96 @@ char*get_op(short int x){
 char*get_sy(short int x){
     return SYNTAX[x];
 }
-void token_print(Token*toks,char*end){
-    int l=token_len(toks);
-    for (int i = 0; i < l; i++){
-        switch (toks[i].type){
+
+int kw_to_enum(char*v){
+    for(int i=0;i<keyword_len;i++){
+        if(strcmp(v,KEYWORDS[i])){
+            return i;
+        }
+    }
+    return -1;
+
+}
+int op_to_enum(char*v){
+    for(int i=0;i<ops_len;i++){
+        if(!strcmp(v,OPS[i])){
+            return i;
+        }
+    }
+    return -1;
+
+}
+int sy_to_enum(char*v){
+    for(int i=0;i<syntax_len;i++){
+        if(!strcmp(v,SYNTAX[i])){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void token_print(Token tok,char*e){
+    switch (tok.type){
         case floap:
-            printf("Tf:[%Lf]%s",*(toks[i].value.f),end);
+            printf("Tf:[%Lf]%s",*(tok.value.f),e);
             break;
         case ount:
-            printf("Ti:[%d]%s",*(toks[i].value.i),end);
+            printf("Ti:[%d]%s",*(tok.value.i),e);
             break;
         case str:
-            printf("Ts:[%s]%s",toks[i].value.s,end);
+            printf("Ts:[%s]%s",tok.value.s,e);
             break;
         case boolean:
-            printf("Tb:[%d]%s",*(toks[i].value.b),end);
+            printf("Tb:[%d]%s",*(tok.value.b),e);
             break;
         case keyword:
-            printf("Kw:[%s]%s",get_kw(*(toks[i].value.t)),end);
+            printf("Kw:[%s]%s",get_kw(*(tok.value.t)),e);
             break;
         case syntax:
-            printf("Sy:[%s]%s",get_sy(*(toks[i].value.t)),end);
+            printf("Sy:[%s]%s",get_sy(*(tok.value.t)),e);
             break;
         case op:
-            printf("Op:[%s]%s",get_op(*(toks[i].value.t)),end);//faut faire le get_op et get_sy
+            printf("Op:[%s]%s",get_op(*(tok.value.t)),e);//faut faire le get_op et get_sy
             break;
         default:
             break;
     }
-    
+}
 
+//print each Token of a list with at end of print the string to print
+//toks:array of Token ending with end Token
+//e: char to add at the end of each print 
+void tokens_print(Token*toks,char*e){
+    int l=token_len(toks);
+    for (int i = 0; i < l; i++){
+        token_print(toks[i],e);
+    }
+}
+
+//free the value of given token
+int free_tok_val(Token x){
+    switch (x.type){
+        case op:
+            free(x.value.t);return 0;
+        case nil:
+            free(x.value.i);return 0;
+        case ount:
+            free(x.value.i);return 0;
+        case str:
+            free(x.value.s);return 0;
+        case floap:
+            free(x.value.f);return 0;
+        case end:
+            free(x.value.i);return 0;
+        case boolean:
+            free(x.value.b);return 0;
+        case comp:
+            free(x.value.c);return 0;
+        case keyword:
+            free(x.value.t);return 0;
+        case syntax:
+            free(x.value.t);return 0;
+        default:
+            return 1;
     }
 }
