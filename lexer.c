@@ -28,6 +28,16 @@ Token*lexe(char*text){
             p+=2;
             continue;
         }
+        if(text[p]=='$' && p+1<len&& (text[p]=='i'||text[p]=='I')){
+            n_tok++;
+            toks=realloc(toks,sizeof(Token)*n_tok);
+            toks[n_tok-1].type=comp;
+            toks[n_tok-1].value.c=malloc(sizeof(long double)*n_tok);
+            toks[n_tok-1].value.c[0]=0.0;
+            toks[n_tok-1].value.c[0]=1.0;
+
+
+        }
         if(str_contains_char(DIGITS,text[p])){
             int e=p;
             while(e<len&&(str_contains_char(DIGITS,text[e])||text[e]=='.')){
@@ -130,6 +140,34 @@ Token*lexe(char*text){
             p++;
             continue;
         }
+        int st=p;
+        int e=p;
+        for(int i=p;i<len&&id_acceptable(text[i]);i++){
+            e=i;
+        }
+        char*m=malloc(sizeof(char)*(e-st+2));
+        for(int i=st;i<=e;i++){
+            m[i-st]=text[i];
+        }
+        m[e-st+1]='\0';
+        int n=kw_to_enum(m);
+        if(n!=-1){
+            n_tok++;
+            toks=realloc(toks,sizeof(Token)*n_tok);
+            toks[n_tok-1].type=keyword;
+            toks[n_tok-1].value.t=malloc(sizeof(short int));
+            *toks[n_tok-1].value.t=kw_to_enum(m);
+            p=e+1;
+            continue;
+        }
+        n_tok++;
+        toks=realloc(toks,sizeof(Token)*n_tok);
+        toks[n_tok-1].type=identifier;
+        toks[n_tok-1].value.s=m;
+        p=e+1;
+        continue;
+
+
         
         
         
@@ -144,7 +182,8 @@ Token*lexe(char*text){
  
 
 int main(int arc,char** argv){
-    char text[]="3.1415926535897932+'saluten fait la uicic'*-/^%\\|&! = == += -= != <= >= < >#{}[]()@:;.?,";
+
+    char text[]="for+1a1";
     Token*x=lexe(text);
     tokens_print(x," ");
     int l=token_len(x);
@@ -154,4 +193,7 @@ int main(int arc,char** argv){
     free(x);
     return 0;
 }
+
+
+
 

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 typedef union __value{
     long long int*i;//int len=1
     long double *f;//float len=1
@@ -16,6 +17,7 @@ typedef struct Token{
     __value value;
 }Token;
 
+//Token type
 enum Token_t{
     nil,
     ount,
@@ -23,11 +25,14 @@ enum Token_t{
     floap,
     end,
     boolean,
-    comp,
+    comp,//complex nnumber value : {double float , double float}
     op,//+ * - / ^(pow) %(mod) \(floor div) |(or) &(and) !(not) = == += -= != <= >= < >
     keyword,//if while for else elif class return def
-    syntax//#"'{}[]()`@:;.?,
+    syntax,//#"'{}[]()`@:;.?,
+    identifier
 };
+
+//Token value for syntax
 enum Syntaxs{
     hashtag,// # 
     r_brack_L,// {
@@ -43,6 +48,8 @@ enum Syntaxs{
     q_mark,// ?
     comma// ,
 };
+
+//Token value for Operators
 enum Operators {
   OP_PLUS,// +
   OP_MULTIPLY,// *
@@ -64,6 +71,8 @@ enum Operators {
   OP_LESS,// <
   OP_GREATER// >
 };
+
+//Token value for keywords
 enum keyword{
     if_t,
     while_t,
@@ -75,6 +84,7 @@ enum keyword{
     def_t//function 
 
 };
+
 char KEYWORDS[][7]={"if","while","else","elif","for","class","return","def"};
 int keyword_len=8;
 
@@ -111,7 +121,7 @@ char*get_sy(short int x){
 
 int kw_to_enum(char*v){
     for(int i=0;i<keyword_len;i++){
-        if(strcmp(v,KEYWORDS[i])){
+        if(!strcmp(v,KEYWORDS[i])){
             return i;
         }
     }
@@ -159,6 +169,8 @@ void token_print(Token tok,char*e){
         case op:
             printf("Op:[%s]%s",get_op(*(tok.value.t)),e);//faut faire le get_op et get_sy
             break;
+        case identifier:
+            printf("Id:[%s]%s",tok.value.s,e);
         default:
             break;
     }
@@ -197,7 +209,25 @@ int free_tok_val(Token x){
             free(x.value.t);return 0;
         case syntax:
             free(x.value.t);return 0;
+        case identifier:
+            free(x.value.s);return 0;
         default:
             return 1;
     }
+}
+
+int id_acceptable(char v){
+    char*s=malloc(sizeof(char)*2);
+    s[0]=v;
+    s[1]='\0';
+    if(op_to_enum(s)!=-1){
+        free(s);
+        return 0;
+    }
+    if(sy_to_enum(s)!=-1){
+        free(s);
+        return 0;
+    }
+    free(s);
+    return 1;
 }

@@ -57,37 +57,37 @@ char*dirname(char*v){
     int n=-1;
     int l=strlen(v);
     for(int i=0;i<l;i++){
-        if(v[i]=='\\'){
+        if(v[i]=='/'){
             n=i;
         }
     }
     if(n==-1){
         return NULL;
     }
-    char*s=malloc(sizeof(char)*(n+1));
-    for(int i=0;i<n;i++){
-        s[i]=v[i];
-    }
-    s[n+1]='\0';
-    printf("tamere° %s tamere ",s);
+    char old=v[n];
+    v[n]='\0';
+    char*s=malloc(sizeof(char)*strlen(v));
+    strcpy(s,v);
+    v[n]=old;
+    
     return s;
 }
 //return new str containing s1+s2
 char*str_cat_new(char*s1,char*s2){
     int l1=strlen(s1);
     int l2=strlen(s2);
-    char*s=malloc(sizeof(char)*(l1+l2));
+    char*s=malloc(sizeof(char)*(l1+l2+1));
     for(int i=0;i<l1;i++){
         s[i]=s1[i];
     }
     for(int i=0;i<l2;i++){
-        s[i+l1-1]=s2[i];
+        s[i+l1]=s2[i];
     }
+    s[l1+l2]='\0';
     return s;
 }
 
 char*read_file(char*path){
-    printf(path);
     FILE*f=fopen(path,"r");
     char*text=malloc(sizeof(char));
     int n=1;
@@ -99,13 +99,19 @@ char*read_file(char*path){
         c=fgetc(f);
         text[n-1]=c;
     }
+    text=realloc(text,sizeof(char)*(n+1));
+    text[n]='\0';
     return text;
 }
 
 //return the max power of 10 that can fit into a number
-//for number 
+//for number greater or equal than 1 
 //ex:
 //    1000->3 ; 76787766->7 bc 10^7<76787766<10^8
-int get_power10(float x){
-    int n=0;
+int get_power10(long double x){
+    return (int)log10(x);
+}
+
+int get_nbr_of_digits(long long int x){
+    return 1+(int)log10(x);
 }
