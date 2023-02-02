@@ -1,103 +1,26 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include "token_class.h"
 
-
-typedef union __value{
-    long long int*i;//int len=1
-    long double *f;//float len=1
-    short int * b;//boolean len=1
-    long double*c;//complex len=2 [real,imaginary]
-    short int*t;//token
-    char *s;//string
-}__value;
-
-//token list end with an end token
-typedef struct Token{
-    int type;
-    __value value;
-}Token;
-
-//Token type
-enum Token_t{
-    nil,
-    ount,
-    str,
-    floap,
-    end,
-    boolean,
-    comp,//complex nnumber value : {double float , double float}
-    op,//+ * - / ^(pow) %(mod) \(floor div) |(or) &(and) !(not) = == += -= != <= >= < >
-    keyword,//if while for else elif class return def
-    syntax,//#"'{}[]()`@:;.?,
-    identifier
-};
-
-//Token value for syntax
-enum Syntaxs{
-    hashtag,// # 
-    r_brack_L,// {
-    r_brack_R,// }
-    brack_L,// [
-    brack_R,// ]
-    par_L,// (
-    par_R,// )
-    at,// @
-    colon,// :
-    semicolon,// ;
-    dot,// .
-    q_mark,// ?
-    comma// ,
-};
-
-//Token value for Operators
-enum Operators {
-  OP_PLUS,// +
-  OP_MULTIPLY,// *
-  OP_MINUS,// -
-  OP_DIVIDE,// /
-  OP_EXPONENT,// ^
-  OP_MODULUS,// %
-  OP_FLOOR_DIVIDE,/* \  */
-  OP_OR,// |
-  OP_AND,// &
-  OP_NOT,// !
-  OP_ASSIGN,// =
-  OP_EQUAL,// ==
-  OP_PLUS_ASSIGN,// +=
-  OP_MINUS_ASSIGN,// -=
-  OP_NOT_EQUAL,// !=
-  OP_LESS_EQUAL,// <=
-  OP_GREATER_EQUAL,// >=
-  OP_LESS,// <
-  OP_GREATER// >
-};
-
-//Token value for keywords
-enum keyword{
-    if_t,
-    while_t,
-    else_t,
-    elif_t,
-    for_t,
-    class_t,
-    return_t,
-    def_t//function 
-
-};
-
-char KEYWORDS[][7]={"if","while","else","elif","for","class","return","def"};
+char KEYWORDS[8][7]={"if","while","else","elif","for","class","return","def"};
 int keyword_len=8;
 
-Token nil_token={nil,{.i=&(long long int){0}}};
-Token end_token={end,{.i=&(long long int){1}}};
+Token nil_token={-1,nil,{.i=&(long long int){0}}};
+Token end_token={-1,end,{.i=&(long long int){1}}};
 
-char DIGITS[]="1234567890";
 
-char OPS[][3]={"+","*","-","/","^","%","\\","|","&","!","=","==","+=","-=","!=","<=",">=","<",">"};
+char DIGITS[10]="1234567890";
+
+char OPS[20][3]={"+","*","-","/","^","%","\\","|","&","!","=","==","+=","-=","!=","<=",">=","<",">"};
 int ops_len=20;
 
-char SYNTAX[][2]={"#","{","}","[","]","(",")","@",":",";",".","?",","};
-int syntax_len=16;
+char SYNTAX[13][2]={"#","{","}","[","]","(",")","@",":",";",".","?",","};
+int syntax_len=13;
+
+
+
+
 
 //return the length of array of Token
 int token_len(Token*toks){
@@ -152,7 +75,7 @@ void token_print(Token tok,char*e){
             printf("Tf:[%Lf]%s",*(tok.value.f),e);
             break;
         case ount:
-            printf("Ti:[%d]%s",*(tok.value.i),e);
+            printf("Ti:[%lld]%s",*(tok.value.i),e);
             break;
         case str:
             printf("Ts:[%s]%s",tok.value.s,e);
@@ -190,30 +113,31 @@ void tokens_print(Token*toks,char*e){
 int free_tok_val(Token x){
     switch (x.type){
         case op:
-            free(x.value.t);return 0;
+            free(x.value.t);break;
         case nil:
-            free(x.value.i);return 0;
+            free(x.value.i);break;
         case ount:
-            free(x.value.i);return 0;
+            free(x.value.i);break;
         case str:
-            free(x.value.s);return 0;
+            free(x.value.s);break;
         case floap:
-            free(x.value.f);return 0;
+            free(x.value.f);break;
         case end:
-            free(x.value.i);return 0;
+            free(x.value.i);break;
         case boolean:
-            free(x.value.b);return 0;
+            free(x.value.b);break;
         case comp:
-            free(x.value.c);return 0;
+            free(x.value.c);break;
         case keyword:
-            free(x.value.t);return 0;
+            free(x.value.t);break;
         case syntax:
-            free(x.value.t);return 0;
+            free(x.value.t);break;
         case identifier:
-            free(x.value.s);return 0;
+            free(x.value.s);break;
         default:
             return 1;
     }
+    return 0;
 }
 
 int id_acceptable(char v){
@@ -230,4 +154,77 @@ int id_acceptable(char v){
     }
     free(s);
     return 1;
+}
+
+//count number of token in token list ended with endtoken
+int Token_count(Token*tok,int type,__value value){
+    int len=token_len(tok);
+    int x=0;
+    for(int i=0;i<len;i++){
+        if(tok[i].type==type){
+            switch (tok[i].type){
+            case op:
+                if(tok[i].value.t==value.t){
+                    x++;
+                }
+                break;
+            case nil:
+                if(tok[i].value.i==value.i){
+                    x++;
+                }
+                break;
+            case ount:
+                if(tok[i].value.i==value.i){
+                    x++;
+                }
+                break;
+            case str:
+                if(tok[i].value.s==value.s){
+                    x++;
+                }
+                break;
+            case floap:
+                if(tok[i].value.f==value.f){
+                    x++;
+                }
+                break;
+            case end:
+                if(tok[i].value.i==value.i){
+                    x++;
+                }
+                break;
+            case boolean:
+                if(tok[i].value.b==value.b){
+                    x++;
+                }
+                break;
+            case comp:
+                if(tok[i].value.c==value.c){
+                    x++;
+                }
+                break;
+            case keyword:
+                if(tok[i].value.t==value.t){
+                    x++;
+                }
+                break;
+            case syntax:
+                if(tok[i].value.t==value.t){
+                    x++;
+                }
+                break;
+            case identifier:
+                if(tok[i].value.s==value.s){
+                    x++;
+                }
+                break;
+            default:
+                x=x;
+            }
+
+        }
+
+    }
+    return x;
+
 }

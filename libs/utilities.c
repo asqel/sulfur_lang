@@ -1,3 +1,10 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "utilities.h"
+
 //check if a char is in a string
 //*x pointer to the string  |  v char to search
 int str_contains_char(char *x,char v){
@@ -37,7 +44,7 @@ int str_ar_contains_char(char*list[],char v,int list_len){
 int str_count(char*x,char v){
     int n=0;
     for(int i=0;i<strlen(x);i++){
-        if(x[i]==v){
+        if(*(x+i)==v){
             n++;
         }
     }
@@ -99,8 +106,7 @@ char*read_file(char*path){
         c=fgetc(f);
         text[n-1]=c;
     }
-    text=realloc(text,sizeof(char)*(n+1));
-    text[n]='\0';
+    text[n-1]='\0';
     return text;
 }
 
@@ -115,3 +121,6 @@ int get_power10(long double x){
 int get_nbr_of_digits(long long int x){
     return 1+(int)log10(x);
 }
+
+//faire des fonnction int to str qui renvoie un nouveau char* en utilisant nb_of_digits
+//faire pareil pour les float en ajouter un parametre precision si p=0 alors le traiter comme un int si alors *10^1 et le traiter comme  un int et cherccher ou faut metre la virgule

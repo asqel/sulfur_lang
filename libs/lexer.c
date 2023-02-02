@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "libs/token_class.c"
-#include "libs/utilities.c"
-
+#include "token_class.h"
+#include "utilities.h"
+#include "lexer.h"
 
 Token*lexe(char*text){
+    int line=1;
     Token*toks;
     int n_tok=0;
     int len=strlen(text);
@@ -15,7 +16,12 @@ Token*lexe(char*text){
     toks=malloc(sizeof(Token));
     toks[n_tok-1]=nil_token;
     while(p<len){
-        if(text[p]=='\n'||text[p]=='\t'||text[p]==' '){
+        if(text[p]=='\n'){
+            line++;
+            p++;
+            continue;
+        }
+        if(text[p]=='\t'||text[p]==' '){
             p++;
             continue;
         }
@@ -23,6 +29,7 @@ Token*lexe(char*text){
             n_tok++;
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].type=boolean;
+            toks[n_tok-1].line=line;
             toks[n_tok-1].value.b=malloc(sizeof(short int));
             *toks[n_tok-1].value.b=text[p]=='0'?0:1;
             p+=2;
@@ -32,6 +39,7 @@ Token*lexe(char*text){
             n_tok++;
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].type=comp;
+            toks[n_tok-1].line=line;
             toks[n_tok-1].value.c=malloc(sizeof(long double)*n_tok);
             toks[n_tok-1].value.c[0]=0.0;
             toks[n_tok-1].value.c[0]=1.0;
@@ -51,6 +59,7 @@ Token*lexe(char*text){
             if(n==0){
                 n_tok++;
                 toks=realloc(toks,sizeof(Token)*n_tok);
+                toks[n_tok-1].line=line;
                 toks[n_tok-1].value.f=malloc(sizeof(long long int));
                 *toks[n_tok-1].value.i=atoll(s);
                 toks[n_tok-1].type=ount;
@@ -66,6 +75,7 @@ Token*lexe(char*text){
             toks[n_tok-1].value.f=malloc(sizeof(long double));
             *toks[n_tok-1].value.f=strtold(s,NULL);
             toks[n_tok-1].type=floap;
+            toks[n_tok-1].line=line;
             p=e;
             continue;
         }
@@ -78,6 +88,7 @@ Token*lexe(char*text){
                 toks[n_tok-1].value.t=malloc(sizeof(short int));
                 *toks[n_tok-1].value.t=x;
                 toks[n_tok-1].type=op;
+                toks[n_tok-1].line=line;
                 p++;
                 continue; 
             }
@@ -89,6 +100,7 @@ Token*lexe(char*text){
             toks[n_tok-1].value.t=malloc(sizeof(short int));
             *toks[n_tok-1].value.t=op_to_enum(s);
             toks[n_tok-1].type=op;
+            toks[n_tok-1].line=line;
             p++;
             continue;  
         }
@@ -99,6 +111,7 @@ Token*lexe(char*text){
             toks[n_tok-1].value.t=malloc(sizeof(short int));
             *toks[n_tok-1].value.t=sy_to_enum(s2);
             toks[n_tok-1].type=syntax;
+            toks[n_tok-1].line=line;
             p++;
             continue;  
         }
@@ -118,6 +131,7 @@ Token*lexe(char*text){
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].type=str;
             toks[n_tok-1].value.s=s;
+            toks[n_tok-1].line=line;
             p++;
             continue;
         }
@@ -137,6 +151,7 @@ Token*lexe(char*text){
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].type=str;
             toks[n_tok-1].value.s=s;
+            toks[n_tok-1].line=line;
             p++;
             continue;
         }
@@ -155,6 +170,7 @@ Token*lexe(char*text){
             n_tok++;
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].type=keyword;
+            toks[n_tok-1].line=line;
             toks[n_tok-1].value.t=malloc(sizeof(short int));
             *toks[n_tok-1].value.t=kw_to_enum(m);
             p=e+1;
@@ -164,6 +180,7 @@ Token*lexe(char*text){
         toks=realloc(toks,sizeof(Token)*n_tok);
         toks[n_tok-1].type=identifier;
         toks[n_tok-1].value.s=m;
+        toks[n_tok-1].line=line;
         p=e+1;
         continue;
 
@@ -180,20 +197,6 @@ Token*lexe(char*text){
     return toks;
 }
  
-
-int main(int arc,char** argv){
-
-    char text[]="for+1a1";
-    Token*x=lexe(text);
-    tokens_print(x," ");
-    int l=token_len(x);
-    for(int i=0;i<l;i++){
-        free_tok_val(x[i]);
-    }
-    free(x);
-    return 0;
-}
-
 
 
 

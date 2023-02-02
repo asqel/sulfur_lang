@@ -1,1 +1,30 @@
-3.1415926535897932+
+import("math","mt");
+3.1415926535897932+"sal
+ut"a+b-7/90*65;
+
+
+
+ount a=mt.sqrt(3.1415926535897932)/2;
+
+
+def fact(comp x):comp:{
+    if(x.im==0){
+        if(x.re>=0 and isount(x.re)){
+            ount k=0;
+            for(i from 0 to x.re+1){
+                k*=i;
+            }
+            return k;
+        }
+        elif(x.re<0 and isount(x.re)){
+            return mt.inf;
+        }
+        else{
+            return mt.gamma(x.re+1);
+        }
+    }
+    else{
+        return mt.gamma_comp(x+1);
+    }
+
+}
