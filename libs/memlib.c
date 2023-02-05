@@ -1,5 +1,7 @@
 #include "memlib.h"
 #include <string.h>
+#include <stdlib.h>
+
 Object end_Obj ={Obj_end_t,{.b=&(short int){-1}}};
 Object nil_Obj ={Obj_nil_t,{.b=&(short int){-1}}};
 
@@ -62,12 +64,35 @@ void Obj_free_val(Object obj){
             break;
         case Obj_boolean_t:
             free(obj.val.b);
+            break;
         case Obj_nil_t:
             free(obj.val.i);
+            break;
         case Obj_end_t:
             free(obj.val.i);
+            break;
         case Obj_list_t:
-            free(obj.val.o);     
+            free(obj.val.o);   
+            break;
+        case Obj_funcid_t:
+            free(obj.val.funcid);
+            break;
+        case Obj_typeid_t:
+            free(obj.val.typeid);
+            break;
+        case Obj_class_t:
+            for(int i=0;i<obj.val.cl->key_len;i++){
+                free(obj.val.cl->keys[i]);
+            }  
+            free(obj.val.cl->keys);
+            free(obj.val.cl->class_name);
+            for(int i=0;i<obj.val.cl->key_len;i++){
+                Obj_free_val(obj.val.cl->values[i]);
+            }
+            free(obj.val.cl->values);
+            free(obj.val.cl);
+            break;
+
         default:
             break;
     }

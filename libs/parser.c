@@ -8,13 +8,13 @@
 //take a math expression and see if it ok
 //return nothing 
 //print error and exit(1)
-
-
-
 void check_syntax(Ast*x){
 
-}
 
+}
+Ast*make_list_funccal_varcal(Ast*x){
+
+}
 
 //start included
 //end not included
@@ -45,7 +45,7 @@ Ast*make_ast(Token*tok,int start,int end){
 int find_semicol(Token*tok,int p){
     int len=token_len(tok);
     for(int i=0;i+p<len;i++){
-        if(tok[i+p].type==syntax&&tok[i+p].value.t==semicolon){
+        if(tok[i+p].type==syntax&&*tok[i+p].value.t==semicolon){
             return i+p;
         }
     }
@@ -64,13 +64,15 @@ Instruction*parse(Token*tok){
             if(p+2<len){
                 if(tok[p+1].type==identifier) {
                     int n=find_semicol(tok,p);
-                    if(tok[p+2].type==op&&tok[p+2].value.t==OP_ASSIGN&&n!=-1){
+                    if(tok[p+2].type==op&&*tok[p+2].value.t==OP_ASSIGN&&n!=-1){
                         n_inst++;
                         inst=realloc(inst,sizeof(Instruction)*n_inst);
                         inst[n_inst-1].type=inst_varset_t;
+
                         inst[n_inst-1].value.vs=malloc(sizeof(varset));
                         inst[n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
                         strcpy(inst[n_inst-1].value.vs->name,tok[p].value.s);//set name
+           
                         inst[n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p+1].value.s))+1);
                         strcpy(inst[n_inst-1].value.vs->type,tok[p+1].value.s);//set type
                         Ast*v=make_ast(tok,p+3,n);
@@ -83,7 +85,7 @@ Instruction*parse(Token*tok){
                             token_print(tok[p+2],"\n");
                             exit(1);
                         }
-                        if(tok[p+2].type!=op||tok[p+2].value.t!=OP_ASSIGN){
+                        if(tok[p+2].type!=op||*tok[p+2].value.t!=OP_ASSIGN){
                             printf("ERROR : missing assignement '=' on line %d after token",tok[p+2].line);
                             token_print(tok[p+2],"\n");
                             exit(1);

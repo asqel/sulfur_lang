@@ -16,12 +16,26 @@ extern Instruction**FUNCDEFS;
 extern char**FUNCDEFS_NAME;
 extern long long int FUNCDEFS_len;
 
+typedef struct ref_counter{
+    void*pointer;
+    long long int count;
+}ref_counter;
+
+typedef struct CLASSDEF{
+    char*id;
+    char**types;
+    char**names;
+}CLASSDEF;
+
 void init_memory();
 
 void init_stack();
 
 void init_funcdefs();
 
+void init_classdefs();
+
+void init_garbage_collect();
 
 int execute(Instruction*code,char*file_name);
 

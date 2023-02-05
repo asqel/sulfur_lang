@@ -12,13 +12,15 @@
 int main(int argc,char **argv){
     back_slash_to_path(argv[0]);
     char *d=dirname(argv[0]);
-    char *filepath=str_cat_new(d,"/main.wh");
+    char *filepath=str_cat_new(d,"/main.su");
     char *text=read_file(filepath);
+
 
     Token*l=lexe(text);
     tokens_print(l,"\n");
     int len=token_len(l);
     Instruction*code=parse(l);
+    tokens_print(l,"\n");
     for(int i=0;i<len;i++){
         free_tok_val(l[i]);
     }
@@ -38,6 +40,7 @@ int main(int argc,char **argv){
     MEMORY[MEMORY_len-1].type=Obj_string_t;
     MEMORY[MEMORY_len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
     strcpy(MEMORY[0].val.s,filepath);
+    
 
     execute(code,filepath);
 

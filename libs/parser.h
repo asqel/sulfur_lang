@@ -75,6 +75,10 @@ enum instruction_type{
     inst_new_varset_t,
 };
 
+void check_syntax(Ast*x);
+
+Ast*make_list_funccal_varcal(Ast*x);
+
 Ast*make_ast(Token*tok,int start,int end);
 
 Instruction*parse(Token*tok);

@@ -4,6 +4,12 @@
 
 struct Object;
 
+typedef struct class{
+    int key_len;
+    char**keys;
+    struct Object*values;
+    char*class_name;
+}class;
 
 typedef union Obj_val{
     struct Object*o;
@@ -12,6 +18,9 @@ typedef union Obj_val{
     long double*f;//floap
     long double*c;//complex {re,im}
     short int*b;//boolean 
+    class*cl;//class
+    char*funcid;//contain a function identifier
+    char*typeid;//contain a type
 
 }Obj_val;
 
@@ -29,7 +38,10 @@ enum Obj_Type{
     Obj_boolean_t,
     Obj_nil_t,
     Obj_list_t,// list starts  with Object that has value of len of the list
-    Obj_end_t// can be used to make list withput putting the len at index 0
+    Obj_end_t,// can be used to make list withput putting the len at index 0
+    Obj_funcid_t,
+    Obj_typeid_t,
+    Obj_class_t
 };
 
 

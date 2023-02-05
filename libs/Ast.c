@@ -10,3 +10,4 @@ int Ast_has_r(Ast x){
 int Ast_has_l(Ast x){
     return x.left!=NULL;
 }
+
