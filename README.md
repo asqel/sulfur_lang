@@ -1,2 +1,2 @@
-# whylang
+# sulfur
 a programming language in c
