@@ -2,12 +2,11 @@
 #include <stdio.h>
 #include "libs/lexer.h"
 #include "libs/memlib.h"
+#include "libs/parser.h"
+#include "libs/interpreter.h"
 
 
-Object*MEMORY;//array of Object ended with end_obj
-char**MEMORY_key;//array of string ended with "-2.3" string
-Object**STACK;//end with an array that start with 2 end_obj
-char***STACK_KEY;//end with an array that start with a string "-1.2"
+
 
 
 int main(int argc,char **argv){
@@ -19,24 +18,28 @@ int main(int argc,char **argv){
     Token*l=lexe(text);
     tokens_print(l,"\n");
     int len=token_len(l);
+    Instruction*code=parse(l);
     for(int i=0;i<len;i++){
         free_tok_val(l[i]);
     }
     free(l);
 
-    Object*MEMORY=malloc(sizeof(Object));//end with end_obj
-    char **MEMORY_key=malloc(sizeof(char *));//end with "-2.3" string
+    init_memory();
+    init_stack();    
+    init_funcdefs();
+    
 
-    Object**STACK=malloc(sizeof(Object*));//end with an array that start with 2 end_obj
-    char ***STACK_KEY=malloc(sizeof(char **));//end with an array of string that start with "-1.2"string
+    //set a var __path__ to current .wh file path executed
+    MEMORY_len++;
+    MEMORY=realloc(MEMORY,sizeof(Object)*(MEMORY_len));
+    MEMORY_key[MEMORY_len-1]=malloc(sizeof(char)*(strlen("__path__")+1));
+    strcpy(MEMORY_key[MEMORY_len-1],"__path__");
 
-    MEMORY_key[0]="__path__";//pour ajouter une variable path qui contient le chemin du fichier executé
-    MEMORY[0].type=Obj_string_t;//ici C:/../main.wh
-    MEMORY[0].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
+    MEMORY[MEMORY_len-1].type=Obj_string_t;
+    MEMORY[MEMORY_len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
     strcpy(MEMORY[0].val.s,filepath);
 
-    //len of a list in the memory *(obj.val.o[0].i)
-    //len of a list of memory  end with something written above 
+    execute(code,filepath);
 
     return 0;
 }

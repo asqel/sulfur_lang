@@ -5,26 +5,26 @@
 #include "token_class.h"
 
 
+struct Ast;
 
 typedef struct funccall{
-
+    char*name;
+    struct Ast*args;
+    int nbr_arg;
 }funccall;
 
 typedef struct varcall{
-
+    char*name;
 }varcall;
-
-typedef union Ast_value{
-    Object*obj;
-    funccall*fun;
-    varcall*var;
-    Token*tok;
-
-}Ast_value;
 
 typedef struct Ast{
     int type;
-    Ast_value root;
+    union{
+        Object*obj;
+        funccall*fun;
+        varcall*var;
+        Token*tok;
+    }root;
     struct Ast*left;
     struct Ast*right;
 }Ast;

@@ -7,7 +7,7 @@ ut"a+b-7/90*65;
 ount a=mt.sqrt(3.1415926535897932)/2;
 
 
-def fact(comp x):comp:{
+def fact(comp x):comp|ount|float:{
     if(x.im==0){
         if(x.re>=0 and isount(x.re)){
             ount k=0;
