@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "memlib.h"
+#include "utilities.h"
 
 char* read_prompt() {
     int capacity = 16;
@@ -16,7 +17,6 @@ char* read_prompt() {
         }
     }
     result[length++]='\0';
-    //faut dealloc genth-capacity
     return realloc(result, length * sizeof(char));
 }
 
@@ -31,8 +31,11 @@ int print_prompt(Object*obj){
         return 0;
     }
     if(obj->type==Obj_class_t){
-        printf("instance at :%x",obj);
-        return 0;
+        if(!str_ar_contains_str(obj->val.cl->keys,"__string__",obj->val.cl->key_len)){
+            printf("instance at :%x",obj);
+            return 0;
+        }
+        
     }
     if(obj->type==Obj_complex_t){
         printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
@@ -49,7 +52,7 @@ int print_prompt(Object*obj){
         }
     }
     if(obj->type==Obj_funcid_t){
-        printf("function :%s",obj->val.funcid);
+        printf("function at :%x",obj->val.funcid);
         return 0;
     }
     if(obj->type==Obj_nil_t){

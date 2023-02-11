@@ -15,7 +15,7 @@ typedef struct funccall{
 
 
 typedef struct tempexpr{
-    Ast*val;
+    struct Ast*val;
 }tempexpr;
 
 typedef struct Ast{

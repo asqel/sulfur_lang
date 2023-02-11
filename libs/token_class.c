@@ -3,8 +3,8 @@
 #include <string.h>
 #include "token_class.h"
 
-char KEYWORDS[8][7]={"if","while","else","elif","for","class","return","def","from","to"};
-int keyword_len=8;
+char KEYWORDS[10][7]={"if","while","else","elif","for","class","return","def","from","to"};
+int keyword_len=10;
 
 Token nil_token={-1,nil,{.i=&(long long int){0}}};
 Token end_token={-1,end,{.i=&(long long int){1}}};
@@ -25,10 +25,14 @@ int syntax_len=13;
 //return the length of array of Token
 int token_len(Token*toks){
     int x=0;
-    for(int i=0;toks[i].type!=end;i++){
+    int i=0;
+    while(1){
+        if(toks[i].type==end){
+            return x;
+        }
         x++;
+        i++;
     }
-    return x;
 }
 
 char*get_kw(short int x){
@@ -72,7 +76,11 @@ int sy_to_enum(char*v){
 void token_print(Token tok,char*e){
     switch (tok.type){
         case floap:
-            printf("Tf:[%Lf]%s",*(tok.value.f),e);
+            printf("Tf:[");
+            printf("%lld",(long long int)*tok.value.f);
+            printf(".%lld",(long long int)(*tok.value.f*100000000)-100000000*(long long int)*tok.value.f);
+            printf("]");
+            printf(e);
             break;
         case ount:
             printf("Ti:[%lld]%s",*(tok.value.i),e);
@@ -90,7 +98,7 @@ void token_print(Token tok,char*e){
             printf("Sy:[%s]%s",get_sy(*(tok.value.t)),e);
             break;
         case op:
-            printf("Op:[%s]%s",get_op(*(tok.value.t)),e);//faut faire le get_op et get_sy
+            printf("Op:[%s]%s",get_op(*(tok.value.t)),e);
             break;
         case identifier:
             printf("Id:[%s]%s",tok.value.s,e);
@@ -105,6 +113,7 @@ void token_print(Token tok,char*e){
 void tokens_print(Token*toks,char*e){
     int l=token_len(toks);
     for (int i = 0; i < l; i++){
+        printf("%d\n",i);
         token_print(toks[i],e);
     }
 }
@@ -141,18 +150,17 @@ int free_tok_val(Token x){
 }
 
 int id_acceptable(char v){
-    char*s=malloc(sizeof(char)*2);
-    s[0]=v;
-    s[1]='\0';
+    char s[2]={v,'\0'};
     if(op_to_enum(s)!=-1){
-        free(s);
         return 0;
     }
     if(sy_to_enum(s)!=-1){
-        free(s);
         return 0;
     }
-    free(s);
+    if(v==' '||v=='\t'||v=='\n'){
+        return 0;
+    }
+    
     return 1;
 }
 

@@ -43,9 +43,10 @@ int Obj_len(Object*obj){
 }
 
 void Obj_free_val(Object obj){
+    int len;
     switch (obj.type){
         case Obj_Obj_t:
-            int len=Obj_len(obj.val.o);
+            len=Obj_len(obj.val.o);
             for(int i=0;i<len;i++){
                 Obj_free_val(obj.val.o[i]);
             }

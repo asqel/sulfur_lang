@@ -19,7 +19,7 @@ typedef union Obj_val{
     long double*c;//complex {re,im}
     short int*b;//boolean 
     class*cl;//class
-    char*funcid;//contain a function identifier
+    int *funcid;//contain a function identifier but its int* so it has to be casted as Instruction*
     char*typeid;//contain a type
 
 }Obj_val;
@@ -39,7 +39,7 @@ enum Obj_Type{
     Obj_nil_t,//value is stored in .b not .i like in tokens
     Obj_list_t,// list starts  with Object that has value of len of the list
     Obj_end_t,// can be used to make list withput putting the len at index 0
-    Obj_funcid_t,
+    Obj_funcid_t,//contains addres of function not name
     Obj_typeid_t,
     Obj_class_t
 };

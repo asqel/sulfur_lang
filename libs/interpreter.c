@@ -12,7 +12,7 @@ long long int MEMORY_len;
 long long int STACK_len;
 long long int*sub_STACK_len;//
 
-Instruction**FUNCDEFS;
+Funcdef*FUNCDEFS;
 char**FUNCDEFS_NAME;
 long long int FUNCDEFS_len;
 

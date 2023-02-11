@@ -73,7 +73,24 @@ Token*lexe(char*text){
             n_tok++;
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].value.f=malloc(sizeof(long double));
-            *toks[n_tok-1].value.f=strtold(s,NULL);
+            long double v=0;
+            int len=strlen(s);
+            int dotidx=0;
+            for(int i=0;i<len;i++){
+                if(s[i]=='.'){
+                    dotidx=i;
+                    break;
+                }
+            }
+            for(int i=dotidx-1;i>=0;i--){
+                char c[2]={s[i],'\0'};
+                v+=pow(10,dotidx-i-1)*atoi(c);
+            }
+            for(int i=dotidx+1;i<len;i++){
+                char c[2]={s[i],'\0'};
+                v+=pow(10,dotidx-i)*atoi(c);
+            }
+            *toks[n_tok-1].value.f=v;
             toks[n_tok-1].type=floap;
             toks[n_tok-1].line=line;
             p=e;

@@ -89,7 +89,7 @@ enum keyword{
     to_t
 };
 
-extern char KEYWORDS[8][7];
+extern char KEYWORDS[10][7];
 extern int keyword_len;
 
 extern Token nil_token;
