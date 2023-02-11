@@ -19,12 +19,12 @@ int main(int argc,char **argv){
     Token*l=lexe(text);
     tokens_print(l,"\n");
     int len=token_len(l);
-    Instruction*code=parse(l);
-    tokens_print(l,"\n");
+    Instruction*code=parse(l,-1,-1,NULL);
     for(int i=0;i<len;i++){
         free_tok_val(l[i]);
     }
     free(l);
+
 
     init_memory();
     init_stack();    

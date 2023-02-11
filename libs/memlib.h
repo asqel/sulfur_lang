@@ -36,7 +36,7 @@ enum Obj_Type{
     Obj_floap_t,
     Obj_complex_t,
     Obj_boolean_t,
-    Obj_nil_t,
+    Obj_nil_t,//value is stored in .b not .i like in tokens
     Obj_list_t,// list starts  with Object that has value of len of the list
     Obj_end_t,// can be used to make list withput putting the len at index 0
     Obj_funcid_t,

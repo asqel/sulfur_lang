@@ -84,8 +84,9 @@ enum keyword{
     for_t,
     class_t,
     return_t,
-    def_t//function 
-
+    def_t,//function 
+    from_t,
+    to_t
 };
 
 extern char KEYWORDS[8][7];

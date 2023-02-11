@@ -13,26 +13,48 @@ typedef struct funccall{
     int nbr_arg;
 }funccall;
 
-typedef struct varcall{
-    char*name;
-}varcall;
+
+typedef struct tempexpr{
+    Ast*val;
+}tempexpr;
 
 typedef struct Ast{
     int type;
     union{
         Object*obj;
         funccall*fun;
-        varcall*var;
         Token*tok;
+        char*varcall;
     }root;
     struct Ast*left;
     struct Ast*right;
 }Ast;
 
 enum Ast_types{
+    Ast_end_t,
+    Ast_object_t,
     Ast_token_t,
-    Ast_varcall_t,
+    Ast_varcall_t,//stored 
     Ast_funccall_t,
+    Ast_tempexpr_t,//.obj that start with an object int that contains the length
+    Ast_add_t,
+    Ast_sub_t,
+    Ast_mul_t,
+    Ast_div_t,
+    Ast_fldiv_t,
+    Ast_mod_t,
+    Ast_pow_t,
+    Ast_or_t,
+    Ast_and_t,
+    Ast_not_t,
+    Ast_eq_t,
+    Ast_noteq_t,
+    Ast_geq_t,
+    Ast_leq_t,
+    Ast_le_t,
+    Ast_ge_t,
+    Ast_dot_t
+
 };
 
 //check if an Ast has a right side 
@@ -40,4 +62,6 @@ enum Ast_types{
 //if it has not a right side it will have a null pointer
 int Ast_has_r(Ast x);
 
+
+int Ast_len(Ast*x);
 #endif

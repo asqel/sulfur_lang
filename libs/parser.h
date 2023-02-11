@@ -28,16 +28,18 @@ typedef struct funcdef{
 
 typedef struct  Elif{
     Ast*condition;
-    struct Instruction*ifftrue;
+    Instruction*endif_p;
 }Elif;
 
 typedef struct If{
     Ast*condition;
-    Elif*ef;
-    int elif_len;
-    struct Instruction*iftrue;
-    struct Instruction*iffalse;
+    Instruction*endif_p;
 }If;
+
+typedef struct Endif{
+    Instruction*endifelse;
+}Endif;
+
 
 typedef struct For{
     char*var_name;
@@ -66,13 +68,27 @@ typedef struct Instruction{
         For*fo;
         While*wh;
         Return*re;
+        Ast*expr;
+        struct Instruction*endif;
+        struct Instruction*endifelse;
+        Elif*el;
     }value;
 }Instruction;
+
+typedef struct Fundef{
+    Instruction*code;
+}Funcdef;
 
 
 enum instruction_type{
     inst_varset_t,
     inst_new_varset_t,
+    inst_endif,
+    inst_endifelse,
+    inst_if_t,
+    inst_elif_t,
+    inst_else_t,
+    inst_expr_t
 };
 
 void check_syntax(Ast*x);
@@ -81,6 +97,6 @@ Ast*make_list_funccal_varcal(Ast*x);
 
 Ast*make_ast(Token*tok,int start,int end);
 
-Instruction*parse(Token*tok);
+Instruction*parse(Token*tok,int start,int end,Instruction*inst);
 
 #endif

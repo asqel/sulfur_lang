@@ -12,12 +12,13 @@ extern long long int MEMORY_len;
 extern long long int STACK_len;
 extern long long int*sub_STACK_len;//list of int its len is stack_len
 
-extern Instruction**FUNCDEFS;
+extern Funcdef*FUNCDEFS;
 extern char**FUNCDEFS_NAME;
 extern long long int FUNCDEFS_len;
 
 typedef struct ref_counter{
-    void*pointer;
+    Object*pointer;
+    int type;
     long long int count;
 }ref_counter;
 

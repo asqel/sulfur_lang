@@ -42,7 +42,7 @@ void init_stack(){
 }
 
 void init_funcdefs(){
-    FUNCDEFS=malloc(sizeof(Instruction*));
+    FUNCDEFS=malloc(sizeof(Funcdef));
     FUNCDEFS_NAME=malloc(sizeof(char*));
     FUNCDEFS_len=0;
 }
