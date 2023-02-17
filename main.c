@@ -10,6 +10,7 @@
 
 
 int main(int argc,char **argv){
+    printf("%d",argc);
     back_slash_to_path(argv[0]);
     char *d=dirname(argv[0]);
     char *filepath=str_cat_new(d,"/main.su");
@@ -17,12 +18,13 @@ int main(int argc,char **argv){
 
 
     Token*l=lexe(text);
-    tokens_print(l,"\n");
     int len=token_len(l);
-    int*instruction_len=0;
+    int*instruction_len=malloc(sizeof(int));
+    *instruction_len=0;
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
     printf("salut2");
-    for(int i=0;i<len;i++){
+    for(int i=0;i<=len;i++){
+        token_print(l[i],"<\n");
         free_tok_val(l[i]);
     }
     free(l);

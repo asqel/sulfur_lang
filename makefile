@@ -1,5 +1,5 @@
 all:
-	gcc main.c libs/*.c -o main
+	gcc main.c libs/*.c -o main 
 	./main
 
 SHARED_OBJS = $(patsubst %.c,%.so,$(wildcard dir/libs/*.c))

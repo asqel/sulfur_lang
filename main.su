@@ -1,24 +1,9 @@
 ount a=3;
+ount b=4;
 
-
-def fact(comp x):comp|ount|float:{
     if(x.im==0){
-        if(x.re>=0 and isount(x.re)){
-            ount k=0;
-            for(i from 0 to x.re+1){
-                k*=i;
-            }
-            return k;
-        }
-        elif(x.re<0 and isount(x.re)){
-            return mt.inf;
-        }
-        else{
-            return mt.gamma(x.re+1);
-        }
+        print("a");
     }
     else{
-        return mt.gamma_comp(x+1);
+        print("a");
     }
-
-}

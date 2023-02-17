@@ -60,7 +60,8 @@ Token*lexe(char*text){
                 n_tok++;
                 toks=realloc(toks,sizeof(Token)*n_tok);
                 toks[n_tok-1].line=line;
-                toks[n_tok-1].value.f=malloc(sizeof(long long int));
+                toks[n_tok-1].value.i=malloc(sizeof(long long int));
+                printf("--%x--",toks[n_tok-1].value.i);
                 *toks[n_tok-1].value.i=atoll(s);
                 toks[n_tok-1].type=ount;
                 p=e;

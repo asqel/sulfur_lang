@@ -45,6 +45,15 @@ Ast*make_list_funccal_varcal_unary(Ast*x){
 //end not included
 //there no check if end and start are out of range
 Ast*make_ast(Token*tok,int start,int end){
+    Ast*x=malloc(sizeof(Ast));
+    x->left=NULL;
+    x->right=NULL;
+    x->type=Ast_object_t;
+    x->root.obj=malloc(sizeof(Object));
+    x->root.obj->type=Obj_ount_t;
+    x->root.obj->val.i=malloc(sizeof(long long int));
+    *x->root.obj->val.i=42;
+    return x;
     Ast*e=malloc(sizeof(Ast)*(end-start+1));
     for(int i=start;i<end;i++){
         e[i-start].left=NULL;
@@ -79,7 +88,7 @@ Ast*make_ast(Token*tok,int start,int end){
             e[i-start].type=Ast_object_t;
             e[i-start].root.obj->type=Obj_boolean_t;
             e[i-start].root.obj->val.b=malloc(sizeof(short int));
-            *e[i-start].root.obj->val.b=tok[i].value.b;
+            *e[i-start].root.obj->val.b=*tok[i].value.b;
             break;
         case comp:
             e[i-start].type=Ast_object_t;
@@ -94,7 +103,7 @@ Ast*make_ast(Token*tok,int start,int end){
             e[i-start].root.tok->line=tok[i].line;
             e[i-start].root.tok->type=tok[i].type;
             e[i-start].root.tok->value.t=malloc(sizeof(short int));
-            *e[i-start].root.tok->value.t=tok[i].value.t;
+            *e[i-start].root.tok->value.t=*tok[i].value.t;
 
         case keyword:
             e[i-start].type=Ast_token_t;
@@ -102,14 +111,14 @@ Ast*make_ast(Token*tok,int start,int end){
             e[i-start].root.tok->line=tok[i].line;
             e[i-start].root.tok->type=tok[i].type;
             e[i-start].root.tok->value.t=malloc(sizeof(short int));
-            *e[i-start].root.tok->value.t=tok[i].value.t;
+            *e[i-start].root.tok->value.t=*tok[i].value.t;
         case syntax:
             e[i-start].type=Ast_token_t;
             e[i-start].root.tok=malloc(sizeof(Token));
             e[i-start].root.tok->line=tok[i].line;
             e[i-start].root.tok->type=tok[i].type;
             e[i-start].root.tok->value.t=malloc(sizeof(short int));
-            *e[i-start].root.tok->value.t=tok[i].value.t;
+            *e[i-start].root.tok->value.t=*tok[i].value.t;
         case identifier:
         e[i-start].type=Ast_varcall_t;
         e[i-start].root.varcall=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
@@ -178,14 +187,66 @@ int cond_parse(int start,int end,int len,int p){
     if(start==-1&&end==-1){
         return p<len;
     }
-    if(start==-1){
+    if(start!=-1){
         return p<end;
     }
     
 }
 
 
-//to parse everything pass tokens ,-1,-1,NULL
+int count_elseelif(Token*tok,int p){
+    int n=0;
+    int len=token_len(tok);
+    while(p<len&&tok[p].type==keyword&&*tok[p].value.t==elif_t){
+        if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
+            int opening_par=p+1;
+            int closing_par=search_rpar(tok,opening_par);
+            if(closing_par==-1){
+                printf("ERROR missing closing ')' on line %d after elif",tok[opening_par].line);
+            }
+            p=closing_par+1;
+            if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
+                int opening_rbrack=p;
+                int closing_rback=search_rrbrack(tok,p);
+                if(closing_rback==-1){
+                    printf("ERROR missing closing '}' on line %d after elif",tok[p+1].line);
+                    exit(-1);
+                }
+                p=closing_rback+1;
+                n++;
+            }
+            else{
+                printf("ERROR missing opening '{' on line %d after else",tok[p-1].line);
+                exit(-1);
+            }
+        }
+        else{
+            printf("ERROR missing opening '(' on line %d after elif",tok[p].line);
+            exit(-1);
+        }
+    }
+    if(p<len&&tok[p].type==keyword&&*tok[p].value.t==else_t){
+        if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==r_brack_L){
+            int opening_rbrack=p+1;
+            int closing_rback=search_rrbrack(tok,opening_rbrack);
+            if(closing_rback==-1){
+                printf("ERROR missing closing '}' on line %d after else",tok[p+1].line);
+                exit(-1);
+            }
+            p=closing_rback+1;
+            n++;
+        }
+        else{
+            printf("ERROR missing opening '{' on line %d after else",tok[p].line);
+            exit(-1);
+        }
+    }
+
+
+    return n;
+}
+
+//to parse everything pass your tokens ,-1,-1,NULL,a pointer that will ccount tthe length of instructions
 Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
 
     int len=token_len(tok);
@@ -197,7 +258,6 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         Instruction*inst=malloc(sizeof(Instruction));
     }
     while(cond_parse(start,end,len,p)){
-        printf("%d",p);
         //les else et les elif sont gerer par la partie if make du parser
         if(tok[p].type==keyword&&(*tok[p].value.t==elif_t||*tok[p].value.t==else_t)){
             printf("ERROR expected if instruction above on line %d",tok[p].line);
@@ -205,152 +265,128 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         //if maker
         if(tok[p].type==keyword&&*tok[p].value.t==if_t){
             if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
-                int n=search_rpar(tok,p+1);
-                if(n==-1){
+                int opening_par=p+1;
+                int closing_par=search_rpar(tok,p+1);
+                if (closing_par==-1){
                     printf("ERROR missing closing ')' on line %d after if",tok[p+1].line);
                     exit(-1);
                 }
-                if(n==p+2){
-                    printf("ERROR empty condition on line %d after if",tok[p+1].line);
-                    exit(-1);
-                }
-                Ast*x=make_ast(tok,p+2,n);
-                p=n+1;
+                p=closing_par+1;
                 if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
-                    int n2=search_rrbrack(tok,p);
-                    if(n2==-1){
-                        printf("ERROR missing '}' on line %d after if",tok[n].line);
+                    int opening_rbrack=p;
+                    int closing_rback=search_rrbrack(tok,p);
+                    if(closing_rback==-1){
+                        printf("ERROR missing closing '}' on line %d after if",tok[p+1].line);
                         exit(-1);
                     }
-
                     (*n_inst)++;
                     inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_if_t;
-                    inst[*n_inst-1].value.i=malloc(sizeof(If)); 
-                    inst[*n_inst-1].value.i->condition=x;
-                    int if_p=*n_inst-1;
-
-                    inst=parse(tok,p+1,n2,inst,n_inst);
+                    inst[*n_inst-1].value.i=malloc(sizeof(If));
+                    inst[*n_inst-1].value.i->condition=make_ast(tok,opening_par+1,closing_par);
+                    int if_index=*n_inst-1;
                     
+                    inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
+
                     (*n_inst)++;
                     inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_endif;
+                    inst[if_index].value.i->endif_p=*n_inst-1;
 
-                    inst[if_p].value.i->endif_p=*n_inst-1;
+                    int*endifelse_ps=malloc(sizeof(int)*(1+count_elseelif(tok,closing_rback+1)));//list des endif ou on doit leur rajouter le pointer vers un endifelse
+                    int endif_n=1;
+                    endifelse_ps[0]=*n_inst-1;
+                    p=closing_rback+1;
 
-                    p=n2+1;
-                    if(p<len){
-                        int*endif_p=malloc(sizeof(int));
-                        int n_endif_p=1;
-                        endif_p[0]=*n_inst-1;
-                        if(tok[p].type==keyword&&(*tok[p].value.t==elif_t)){
-                            while(p<len&&tok[p].type==keyword&&(*tok[p].value.t==elif_t)){
-                                if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
-                                    n=search_rpar(tok,p+1);
-                                    if(n==-1){
-                                        printf("ERROR missing closing ')' on line %d after elif",tok[p+1].line);
-                                        exit(-1);
-                                    }
-                                    if(p+2==n){
-                                        printf("ERROR empty condition on line %d after elif",tok[p+2].line);
-                                        exit(-1);
-                                    }
-                                    x=make_ast(tok,p+2,n);
-                                    p=n+1;
-                                    if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
-                                        n2=search_rrbrack(tok,p);
-                                        if(n2==-1){
-                                            printf("ERROR missing closing '}' on line %d after elif",tok[p].line);
-                                            exit(-1);
-                                        }
-                                        (*n_inst)++;
-                                        inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                                        inst[*n_inst-1].type=inst_elif_t;
-                                        inst[*n_inst-1].value.el=malloc(sizeof(Elif));
-                                        inst[*n_inst-1].value.el->condition=x;
-                                        int elif_p=*n_inst-1;
-
-                                        inst=parse(tok,p+1,n2,inst,n_inst);
-
-                                        inst[*n_inst-1].type=inst_endif;
-                                        n_endif_p++;
-                                        endif_p=realloc(endif_p,sizeof(n_endif_p));
-                                        endif_p[n_endif_p-1]=*n_inst-1;
-
-                                        inst[elif_p].value.el->endif_p=*n_inst-1;
-                                        p=n2;
-
-
-                                    }
-                                    else{
-                                        printf("ERROR mmissing '{' on line %d after elif",tok[n].line);
-                                    }
-                                    
-                                }
-                                else{
-                                    printf("ERROR missing '(' on line %d after elif",tok[p].line);
+                    while(p<len&&tok[p].type==keyword&&*tok[p].value.t==elif_t){
+                        if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
+                            opening_par=p+1;
+                            closing_par=search_rpar(tok,opening_par);
+                            if(closing_par==-1){
+                                printf("ERROR missing closing ')' on line %d after elif",tok[opening_par].line);
+                            }
+                            p=closing_par+1;
+                            if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
+                                int opening_rbrack=p;
+                                int closing_rback=search_rrbrack(tok,p);
+                                if(closing_rback==-1){
+                                    printf("ERROR missing closing '}' on line %d after elif",tok[p+1].line);
                                     exit(-1);
                                 }
+                                (*n_inst)++;
+                                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                                inst[*n_inst-1].type=inst_elif_t;
+                                inst[*n_inst-1].value.el=malloc(sizeof(Elif));
+                                inst[*n_inst-1].value.el->condition=make_ast(tok,opening_par+1,closing_par);
+                                int elif_index=*n_inst-1;
+                                
+                                inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
+            
+                                (*n_inst)++;
+                                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                                inst[*n_inst-1].type=inst_endif;
+                                inst[elif_index].value.i->endif_p=*n_inst-1;
+                                p=closing_rback+1;
+
+                                endif_n++;
+                                endifelse_ps[endif_n-1]=*n_inst-1;//ffaut faire ca en bas aussi avec le else oublie pas hein !
+                            }
+                            else{
+                                printf("ERROR missing opening '{' on line %d after else",tok[p-1].line);
+                                exit(-1);
                             }
                         }
-                        if(p<len&&tok[p].type==keyword&&(*tok[p].value.t==else_t)){
-                            int elsecount=0;
-                            while(p<len&&tok[p].type==keyword&&(*tok[p].value.t==inst_else_t)){
-                                if(elsecount>1){
-                                    printf("ERROR only 1 expected but got 2 else on line %d",tok[p].line);
-                                    exit(-1);
-                                }
-                                if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==r_brack_L){
-                                    n=search_rrbrack(tok,p+1);
-                                    if(n==-1){
-                                        printf("ERROR missing closing '}' on line %d after else",tok[p+1].line);
-                                        exit(-1);
-                                    }
-                                    (*n_inst)++;
-                                    inst=realloc(inst,sizeof(Instruction));
-                                    inst[*n_inst-1].type=inst_else_t;
-                                    int else_p=*n_inst-1;
-
-                                    inst=parse(tok,p+2,n,inst,n_inst);
-
-                                    (*n_inst)++;
-                                    inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                                    inst[*n_inst-1].type=inst_endif;
-                                    n_endif_p++;
-                                    endif_p=realloc(endif_p,sizeof(int)*n_endif_p);
-                                    endif_p[n_endif_p]=*n_inst-1;
-
-                                    inst[else_p].value.i->endif_p=*n_inst-1;
-                                    p=n2;
-
-                                }
-                                else{
-                                    printf("ERROR missing '{' on line %d after else",tok[p].line);
-                                }
-                                
-                                
-                            }
+                        else{
+                            printf("ERROR missing opening '(' on line %d after elif",tok[p].line);
+                            exit(-1);
                         }
-                        (*n_inst)++;
-                        inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                        inst[*n_inst-1].type=inst_endifelse;
-                        for(int i=0;i<n_endif_p;i++){
-                            inst[endif_p[i]].value.endifelse=*n_inst-1;
-                        }
-                        free(endif_p);
-                        continue;
                     }
+                    if(p<len&&tok[p].type==keyword&&*tok[p].value.t==else_t){
+                        if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==r_brack_L){
+                            opening_rbrack=p+1;
+                            closing_rback=search_rrbrack(tok,opening_rbrack);
+                            if(closing_rback==-1){
+                                printf("ERROR missing closing '}' on line %d after else",tok[p+1].line);
+                                exit(-1);
+                            }
+
+                            (*n_inst)++;
+                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                            inst[*n_inst-1].type=inst_else_t;
+
+                            int else_index=*n_inst-1;
+                            inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
+                            (*n_inst)++;
+                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                            inst[*n_inst-1].type=inst_endif;
+                            inst[else_index].value.endif=*n_inst-1;
+                            
+                            p=closing_rback+1;
+
+
+                            endif_n++;
+                            endifelse_ps[endif_n-1]=*n_inst-1;
+                        }
+                        else{
+                            printf("ERROR missing opening '{' on line %d after else",tok[p].line);
+                            exit(-1);
+                        }
+                    }
+                    (*n_inst)++;
+                    inst=realloc(inst,sizeof(inst)*(*n_inst));
+                    inst[*n_inst-1].type=inst_endifelse;
+
+                    for(int i=0;i<endif_n;i++){
+                        inst[endifelse_ps[i]].value.endifelse=*n_inst-1;
+                    }
+                    free(endifelse_ps);
                     continue;
-                    
                 }
-                else{
-                    printf("ERROR missing '{' on line %d after if",tok[p].line);
-                    exit(-1);
-                }
+                
 
             }
             else{
-                printf("ERROR missing '(' on line %d after if",tok[p].line);
+                printf("ERROR on if missing opening '(' line %d",tok[p].line);
                 exit(-1);
             }
         }
@@ -383,12 +419,10 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     else{
                         if (n==-1){
                             printf("ERROR : missing semicollon ';' on line %d after Token ",tok[p+2].line);
-                            token_print(tok[p+2],"\n");
                             exit(1);
                         }
                         if(tok[p+2].type!=op||*tok[p+2].value.t!=OP_ASSIGN){
                             printf("ERROR : missing assignement '=' on line %d after token",tok[p+2].line);
-                            token_print(tok[p+2],"\n");
                             exit(1);
                         }
                     }
@@ -447,8 +481,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                             printf("ERROR missing 'to' in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
                             exit(-1);
                         }
-                        if(n+1<len&&tok[n+1].type==syntax&&tok[n+1].type==r_brack_L){
-                            int k=search_rpar(tok,n+1);
+                        if(n+1<len&&tok[n+1].type==syntax&&*tok[n+1].value.t==r_brack_L){
+                            int k=search_rrbrack(tok,n+1);
                             if(k==-1){
                                 printf("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[n+1].line);
                                 exit(-1);
@@ -472,11 +506,12 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
 
                             inst=parse(tok,n+2,k,inst,n_inst);
 
-                            n_inst++;
+                            (*n_inst)++;
                             inst=realloc(inst,sizeof(inst)*(*n_inst));
                             inst[*n_inst-1].type=inst_endfor_t;
                             inst[for_idx].value.fo->endfor=*n_inst-1;
                             p=k+1;
+                            continue;
                         }
                         else{
                             printf("ERROR missing '{' after for-statement on line %d after for",tok[n].line);

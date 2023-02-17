@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "memlib.h"
 
+
 extern Object*MEMORY;//array of Object ended with end_obj its len is memory_len
 extern char**MEMORY_key;//array of string ended with "-2.3" string
 extern Object**STACK;//end with an array that start with 2 end_obj its len is stack_len
