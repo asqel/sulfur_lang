@@ -126,8 +126,6 @@ int free_tok_val(Token x){
         case nil:
             free(x.value.i);break;
         case ount:
-        printf("ùù%dùù",*x.value.i);
-        printf("ùù%xùù",x.value.i);
             free(x.value.i);break;
         case str:
             free(x.value.s);break;

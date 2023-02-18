@@ -16,15 +16,14 @@ int main(int argc,char **argv){
     char *filepath=str_cat_new(d,"/main.su");
     char *text=read_file(filepath);
 
-
     Token*l=lexe(text);
     int len=token_len(l);
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
     printf("salut2");
+    free(l[3].value.i);
     for(int i=0;i<=len;i++){
-        token_print(l[i],"<\n");
         free_tok_val(l[i]);
     }
     free(l);
@@ -47,7 +46,7 @@ int main(int argc,char **argv){
     strcpy(MEMORY[0].val.s,filepath);
     
 
-    execute(code,filepath);
+    execute(code,filepath,*instruction_len);
 
     return 0;
 }

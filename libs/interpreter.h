@@ -17,6 +17,12 @@ extern Funcdef*FUNCDEFS;
 extern char**FUNCDEFS_NAME;
 extern long long int FUNCDEFS_len;
 
+enum ref_types{
+    ref_obj_t,
+    ref_list_t
+};
+
+//type :Object or list
 typedef struct ref_counter{
     Object*pointer;
     int type;
@@ -39,7 +45,7 @@ void init_classdefs();
 
 void init_garbage_collect();
 
-int execute(Instruction*code,char*file_name);
+int execute(Instruction*code,char*file_name,int len);
 
 
 #endif
