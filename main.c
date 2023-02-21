@@ -10,7 +10,6 @@
 
 
 int main(int argc,char **argv){
-    printf("%d",argc);
     back_slash_to_path(argv[0]);
     char *d=dirname(argv[0]);
     char *filepath=str_cat_new(d,"/main.su");
@@ -21,13 +20,12 @@ int main(int argc,char **argv){
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
-    printf("salut2");
-    free(l[3].value.i);
-    for(int i=0;i<=len;i++){
-        free_tok_val(l[i]);
-    }
-    free(l);
-    printf("salut3");
+    //for(int i=0;i<=len;i++){
+    //    token_print(l[i],"");
+    //    printf("%d\n",i);
+    //    free_tok_val(l[i]);
+    //}
+    //free(l);
 
 
     init_memory();

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "token_class.h"
+#include "../include/token_class.h"
 
 char KEYWORDS[10][7]={"if","while","else","elif","for","class","return","def","from","to"};
 int keyword_len=10;

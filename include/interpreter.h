@@ -17,11 +17,6 @@ extern Funcdef*FUNCDEFS;
 extern char**FUNCDEFS_NAME;
 extern long long int FUNCDEFS_len;
 
-enum ref_types{
-    ref_obj_t,
-    ref_list_t
-};
-
 //type :Object or list
 typedef struct ref_counter{
     Object*pointer;
@@ -34,6 +29,20 @@ typedef struct CLASSDEF{
     char**types;
     char**names;
 }CLASSDEF;
+
+
+extern CLASSDEF*CLASSDEFS;
+extern long long int CLASSDEF_len;
+
+extern ref_counter*REF_COUNTS;
+extern long long int REF_COUNT_len;
+
+enum ref_types{
+    ref_obj_t,
+    ref_list_t
+};
+
+
 
 void init_memory();
 

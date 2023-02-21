@@ -1,5 +1,9 @@
 from random import randint
 from time import time
+import importlib as imp
+
+
+
 
 def new_list():
     return [randint(0,100)for i in range(100)]

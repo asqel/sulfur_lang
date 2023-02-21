@@ -35,4 +35,7 @@ int get_power10(long double x);
 
 int get_nbr_of_digits(long long int x);
 
+long long int*str_to_llint_p(char*s);
+
+long long int str_to_llint(char*s);
 #endif

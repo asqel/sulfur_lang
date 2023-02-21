@@ -1,4 +1,4 @@
-#include "memlib.h"
+#include "../include/memlib.h"
 #include <string.h>
 #include <stdlib.h>
 

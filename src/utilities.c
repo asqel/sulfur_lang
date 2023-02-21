@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "utilities.h"
+#include "../include/utilities.h"
 
 //check if a char is in a string
 //*x pointer to the string  |  v char to search
@@ -124,3 +124,26 @@ int get_nbr_of_digits(long long int x){
 
 //faire des fonnction int to str qui renvoie un nouveau char* en utilisant nb_of_digits
 //faire pareil pour les float en ajouter un parametre precision si p=0 alors le traiter comme un int si alors *10^1 et le traiter comme  un int et cherccher ou faut metre la virgule
+
+long long int*str_to_llint_p(char*s){
+    long long int*x=malloc(sizeof(long long int));
+    *x=0;
+    int len=strlen(s);
+    long long int pow_10=1;
+    for(int i=0;i<len;i++){
+        (*x)+=pow_10*(long long int)(s[i]-'0');
+        pow_10*=10;
+    }
+    return x;
+}
+
+long long int str_to_llint(char*s){
+    long long int x=0;
+    int len=strlen(s);
+    long long int pow_10=1;
+    for(int i=0;i<len;i++){
+        x+=pow_10*(long long int)(s[i]-'0');
+        pow_10*=10;
+    }
+    return x;
+}

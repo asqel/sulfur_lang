@@ -1,4 +1,4 @@
-#include "interpreter.h"
+#include "../include/interpreter.h"
 
 
 
@@ -103,6 +103,7 @@ int add_ref(Object*o){
 
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
+    printf("\nsalutn o n est dans le interper\n");
     while(p<len){
         if(code[p].type==inst_varset_t){
             MEMORY_len++;

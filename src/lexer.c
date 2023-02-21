@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "token_class.h"
-#include "utilities.h"
-#include "lexer.h"
+#include "../include/token_class.h"
+#include "../include/utilities.h"
+#include "../include/lexer.h"
 
 Token*lexe(char*text){
     int line=1;
@@ -51,18 +51,20 @@ Token*lexe(char*text){
             while(e<len&&(str_contains_char(DIGITS,text[e])||text[e]=='.')){
                 e++;
             }
-            char*s=malloc(sizeof(char)*(e-p));
-            for(int i=p;i<e;i++){
-                s[i-p]=text[i];
+            e--;
+            char*s=malloc(sizeof(char)*(e-p+1));
+            for(int i=0;i<e;i++){
+                s[i]=text[p+i];
             }
+            s[e-p+1]='\0';
+            e++;
+
             int n=str_count(s,'.');
             if(n==0){
                 n_tok++;
                 toks=realloc(toks,sizeof(Token)*n_tok);
                 toks[n_tok-1].line=line;
-                toks[n_tok-1].value.i=malloc(sizeof(long long int));
-                printf("--%x--",toks[n_tok-1].value.i);
-                *toks[n_tok-1].value.i=atoll(s);
+                toks[n_tok-1].value.i=str_to_llint_p(s);
                 toks[n_tok-1].type=ount;
                 p=e;
                 continue;
@@ -178,11 +180,13 @@ Token*lexe(char*text){
         for(int i=p;i<len&&id_acceptable(text[i]);i++){
             e=i;
         }
+        int len=e-st+2;
         char*m=malloc(sizeof(char)*(e-st+2));
-        for(int i=st;i<=e;i++){
-            m[i-st]=text[i];
+        for(int i=0;i<len-1;i++){
+            m[i]=text[st+i];
         }
-        m[e-st+1]='\0';
+        m[len-1]='\0';
+        printf("---%s---",m);
         int n=kw_to_enum(m);
         if(n!=-1){
             n_tok++;
@@ -197,7 +201,9 @@ Token*lexe(char*text){
         n_tok++;
         toks=realloc(toks,sizeof(Token)*n_tok);
         toks[n_tok-1].type=identifier;
-        toks[n_tok-1].value.s=m;
+        toks[n_tok-1].value.s=malloc(sizeof(char)*len);
+        strcpy(toks[n_tok-1].value.s,m);
+        free(m);
         toks[n_tok-1].line=line;
         p=e+1;
         continue;

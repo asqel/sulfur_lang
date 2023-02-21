@@ -23,6 +23,7 @@ typedef struct funcdef{
     char*type;
     char*arg_types;
     char*arg_names;
+    char*is_builtin;
     struct Instruction*code;
 }funcdef;
 

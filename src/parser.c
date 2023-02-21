@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.h"
-#include "token_class.h"
-#include "Ast.h"
+#include "../include/parser.h"
+#include "../include/token_class.h"
+#include "../include/Ast.h"
 
 
 //take a math expression and see if it ok
