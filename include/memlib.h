@@ -49,4 +49,7 @@ extern Object end_Obj;
 extern Object nil_Obj;
 
 
+void Objs_print(Object*obj,int len);
+void Obj_print(Object obj);
+
 #endif

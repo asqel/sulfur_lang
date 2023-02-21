@@ -36,9 +36,14 @@ void init_memory(){
 
 void init_stack(){
     STACK=malloc(sizeof(Object*));
+    printf("oh");
     STACK_KEY=malloc(sizeof(char**));
+    printf("oh2");
     STACK_len=0;
-   *sub_STACK_len=0;
+    printf("oh3");
+    sub_STACK_len=malloc(sizeof(int));
+    *sub_STACK_len=0;
+    printf("salut3.1415926535897932");
 }
 
 void init_funcdefs(){
@@ -104,15 +109,20 @@ int add_ref(Object*o){
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
     printf("\nsalutn o n est dans le interper\n");
+    printf("%d",len);
+    printf(" @%d",code[0].type);
     while(p<len){
         if(code[p].type==inst_varset_t){
             MEMORY_len++;
             MEMORY=realloc(MEMORY,sizeof(Object)*MEMORY_len);
             MEMORY_key=realloc(MEMORY_key,sizeof(char*)*MEMORY_len);
-            Object*o=eval_Ast(code[p].value.vs->val);
-            add_ref(o);
+            Object*o=eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
+            //add_ref(o);
+            p++;
 
         }
     }
+    printf("@@@");
+    Objs_print(MEMORY,MEMORY_len);
     return 0;
 }

@@ -99,10 +99,28 @@ void Obj_free_val(Object obj){
     }
 }
 
-void Objs_print(Object*obj){
+void Objs_print(Object*obj,int len){
+    for(int i=0;i<len;i++){
+        Obj_print(obj[i]);
+    }
 
 }
 
 void Obj_print(Object obj){
-
+    switch (obj.type){
+        case Obj_boolean_t:
+            printf("Obj_b:[%s]",*obj.val.b!=0?"1b":"0b");
+            break;
+        case Obj_complex_t:
+            printf("Obj_c:[%Lf+%Lfi]",obj.val.c[0],obj.val.c[1]);
+            break;
+        case Obj_floap_t:
+            printf("Obj_f:[%Lf]",*obj.val.f);
+            break;
+        case Obj_ount_t:
+            printf("Obj_i:[%lld]",*obj.val.i);
+    
+        default:
+            break;
+    }
 }

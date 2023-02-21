@@ -413,7 +413,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
 
                         Ast*v=make_ast(tok,p+3,n);
                         inst[*n_inst-1].value.vs->val=v;//set val
-                        p=n;
+                        p=n+1;
+                        continue;
 
                     }
                     else{
@@ -452,7 +453,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
 
                 Ast*v=make_ast(tok,p+3,n);
                 inst[*n_inst-1].value.vs->val=v;//set val
-                p=n;
+                p=n+1;
+                continue;
             }
         }
         //for 
@@ -525,6 +527,33 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     exit(-1);
                 }
             }
+        }
+        if(tok[p].type==keyword && tok[p].value.t==return_t){
+            int n=find_semicol(tok,p);
+            if(n==-1){
+                printf("ERROR missing ';' on line %d after return",tok[p].line);
+                exit(1);
+            }
+            if(n==p+1){
+                //if its "return;" then it is considered to be "return nil;"
+                (*n_inst)++;
+                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                inst[*n_inst-1].type=inst_return_t;
+                inst[*n_inst-1].value.ret=malloc(sizeof(Ast));
+                inst[*n_inst-1].value.ret->left=NULL;
+                inst[*n_inst-1].value.ret->right=NULL;
+
+                inst[*n_inst-1].value.ret->type=Ast_object_t;
+
+                inst[*n_inst-1].value.ret->root.obj=malloc(sizeof(Object));
+                inst[*n_inst-1].value.ret->root.obj->type=Obj_nil_t;
+                p=n+1;
+                continue;
+            }
+            else{
+                Ast*x=make_ast(tok,p+1,n);
+            }
+
         }
 
 

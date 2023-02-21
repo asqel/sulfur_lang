@@ -186,7 +186,6 @@ Token*lexe(char*text){
             m[i]=text[st+i];
         }
         m[len-1]='\0';
-        printf("---%s---",m);
         int n=kw_to_enum(m);
         if(n!=-1){
             n_tok++;
