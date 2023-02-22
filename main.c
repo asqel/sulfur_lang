@@ -27,11 +27,8 @@ int main(int argc,char **argv){
     //    free_tok_val(l[i]);
     //}
     //free(l);
-    printf("salut3");
     init_memory();
-    printf("salut4");
     init_stack();    
-    printf("salut3.1415926535897932");
     init_funcdefs();
     
 

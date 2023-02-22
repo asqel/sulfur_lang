@@ -4,18 +4,16 @@
 #include "memlib.h"
 
 
-extern Object*MEMORY;//array of Object ended with end_obj its len is memory_len
-extern char**MEMORY_key;//array of string ended with "-2.3" string
-extern Object**STACK;//end with an array that start with 2 end_obj its len is stack_len
-extern char***STACK_KEY;//end with an array that start with a string "-1.2"
+extern Object*MEMORY;
+extern char**MEMORY_key;
+extern Object**STACK;
+extern char***STACK_KEY;
 
 extern long long int MEMORY_len;
 extern long long int STACK_len;
 extern long long int*sub_STACK_len;//list of int its len is stack_len
 
-extern Funcdef*FUNCDEFS;
-extern char**FUNCDEFS_NAME;
-extern long long int FUNCDEFS_len;
+
 
 //type :Object or list
 typedef struct ref_counter{
@@ -42,7 +40,7 @@ enum ref_types{
     ref_list_t
 };
 
-
+void check_libs();
 
 void init_memory();
 

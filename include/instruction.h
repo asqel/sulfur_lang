@@ -16,15 +16,33 @@ typedef struct varset{
 
 }varset;
 
-
-typedef struct funcdef{
-    char*name;
-    char*type;
-    char*arg_types;
-    char*arg_names;
-    char*is_builtin;
+/*every blt function should be definied like this
+{
+    name;
+    return types;
+    number of return types;
+    types of args; (NULL if number of args is -1)
+    NULL;
+    number of args; (-1 if not specified)
+    1;
+    the pointer to the builtin function;
+    NULL;
+}
+the builtin function written in c has to to take 2 argument: an array of Object and the length of this array
+if the function number of args=0 a NULL pointer is passed
+return type must be Object
+*/
+typedef struct Funcdef{
+    char*name;//name of function
+    char**ret_type;// list of types that can be returned by the function
+    int nbr_ret_type;//len of ret_type
+    char**arg_types;
+    char**arg_names;
+    int nbr_of_args;
+    char is_builtin;
+    Object (*func_p)(Object*,int);//pointer to the builtin function
     struct Instruction*code;
-}funcdef;
+}Funcdef;
 
 typedef struct  Elif{
     Ast*condition;
@@ -55,7 +73,7 @@ typedef struct Instruction{
     short int type;
     union {
         varset*vs;
-        funcdef*fc;
+        Funcdef*fc;
         If*i;
         For*fo;
         While*wh;
@@ -66,11 +84,6 @@ typedef struct Instruction{
         Elif*el;
     }value;
 }Instruction;
-
-typedef struct Fundef{
-    Instruction*code;
-}Funcdef;
-
 
 enum instruction_type{
     inst_varset_t,
@@ -87,5 +100,30 @@ enum instruction_type{
     inst_while_t,
     inst_return_t
 };
+
+//to acces an element
+//just name.element
+//if name==" " just element
+typedef struct Lib{
+    char*name;
+
+    Funcdef*funcs;
+    int nbr_funcs;
+
+    Object*vars;
+    char**vars_name;
+    int nbr_vars;
+}Lib;
+
+
+
+extern Funcdef*FUNCDEFS;
+extern long long int FUNCDEFS_len;
+
+extern Lib*LIBS;
+extern long long int LIBS_len;
+
+void init_libs() __attribute__((constructor));;
+
 
 #endif

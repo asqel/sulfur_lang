@@ -528,7 +528,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 }
             }
         }
-        if(tok[p].type==keyword && tok[p].value.t==return_t){
+        if(tok[p].type==keyword && *tok[p].value.t==return_t){
             int n=find_semicol(tok,p);
             if(n==-1){
                 printf("ERROR missing ';' on line %d after return",tok[p].line);
@@ -552,6 +552,12 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             }
             else{
                 Ast*x=make_ast(tok,p+1,n);
+                (*n_inst)++;
+                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                inst[*n_inst-1].type=inst_return_t;
+                inst[*n_inst-1].value.ret=x;
+                p=n+1;
+                continue;
             }
 
         }

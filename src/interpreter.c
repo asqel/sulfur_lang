@@ -1,5 +1,8 @@
 #include "../include/interpreter.h"
+#include "../include/instruction.h"
 
+//builtin libs
+#include "../sulfur_libs/blt_libs/inout.h"
 
 
 
@@ -13,7 +16,6 @@ long long int STACK_len;
 long long int*sub_STACK_len;//
 
 Funcdef*FUNCDEFS;
-char**FUNCDEFS_NAME;
 long long int FUNCDEFS_len;
 
 CLASSDEF*CLASSDEFS;
@@ -24,7 +26,18 @@ long long int REF_COUNT_len;
 
 
 
+void check_libs(){
+    for(int i=0;i<LIBS_len;i++){
+        if(LIBS[i].name[0]==" "[0]){
+            FUNCDEFS_len+=LIBS[i].nbr_funcs;
+            FUNCDEFS=realloc(FUNCDEFS,sizeof(Funcdef)*FUNCDEFS_len);
+            for(int k=0;k<LIBS[i].nbr_funcs;k++){
+                FUNCDEFS[FUNCDEFS_len-LIBS[i].nbr_funcs+k]=LIBS[i].funcs[k];
 
+            }
+        }
+    }
+}
 
 
 void init_memory(){
@@ -36,19 +49,14 @@ void init_memory(){
 
 void init_stack(){
     STACK=malloc(sizeof(Object*));
-    printf("oh");
     STACK_KEY=malloc(sizeof(char**));
-    printf("oh2");
     STACK_len=0;
-    printf("oh3");
     sub_STACK_len=malloc(sizeof(int));
     *sub_STACK_len=0;
-    printf("salut3.1415926535897932");
 }
 
 void init_funcdefs(){
     FUNCDEFS=malloc(sizeof(Funcdef));
-    FUNCDEFS_NAME=malloc(sizeof(char*));
     FUNCDEFS_len=0;
 }
 
@@ -56,6 +64,8 @@ void init_classdefs(){
     CLASSDEF_len=0;
     CLASSDEFS=malloc(sizeof(CLASSDEF));
 }
+
+
 
 void init_garbage_collect(){
     REF_COUNT_len=0;
@@ -108,21 +118,25 @@ int add_ref(Object*o){
 
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
-    printf("\nsalutn o n est dans le interper\n");
-    printf("%d",len);
-    printf(" @%d",code[0].type);
+    check_libs();
     while(p<len){
         if(code[p].type==inst_varset_t){
             MEMORY_len++;
             MEMORY=realloc(MEMORY,sizeof(Object)*MEMORY_len);
             MEMORY_key=realloc(MEMORY_key,sizeof(char*)*MEMORY_len);
-            Object*o=eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
+            Object*o=code[p].value.vs->val->root.obj;//eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
             //add_ref(o);
+            MEMORY[MEMORY_len-1]=*o;
             p++;
+            continue;
 
         }
+        if(code[p].type==inst_return_t){
+            println_prompt(&MEMORY[0]);
+            println_prompt(&MEMORY[1]);
+            p++;
+            continue;
+        }
     }
-    printf("@@@");
-    Objs_print(MEMORY,MEMORY_len);
     return 0;
 }
