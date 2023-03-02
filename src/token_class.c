@@ -3,8 +3,8 @@
 #include <string.h>
 #include "../include/token_class.h"
 
-char KEYWORDS[10][7]={"if","while","else","elif","for","class","return","def","from","to"};
-int keyword_len=10;
+char KEYWORDS[12][7]={"if","while","else","elif","for","class","return","def","from","to","swap","goto"};
+int keyword_len=12;
 
 Token nil_token={-1,nil,{.i=&(long long int){0}}};
 Token end_token={-1,end,{.i=&(long long int){1}}};
@@ -88,7 +88,7 @@ void token_print(Token tok,char*e){
         case str:
             printf("Ts:[%s]%s",tok.value.s,e);
             break;
-        case boolean:
+        case boolean_t:
             printf("Tb:[%d]%s",*(tok.value.b),e);
             break;
         case keyword:
@@ -133,7 +133,7 @@ int free_tok_val(Token x){
             free(x.value.f);break;
         case end:
             free(x.value.i);break;
-        case boolean:
+        case boolean_t:
             free(x.value.b);break;
         case comp:
             free(x.value.c);break;
@@ -201,7 +201,7 @@ int Token_count(Token*tok,int type,__value value){
                     x++;
                 }
                 break;
-            case boolean:
+            case boolean_t:
                 if(tok[i].value.b==value.b){
                     x++;
                 }

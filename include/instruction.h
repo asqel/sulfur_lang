@@ -67,6 +67,10 @@ typedef struct While{
     struct Instruction*endwhile;
 }While;
 
+typedef struct Swap{
+    char**ids;
+    int len;
+}Swap;
 
 
 typedef struct Instruction{
@@ -77,11 +81,14 @@ typedef struct Instruction{
         If*i;
         For*fo;
         While*wh;
+        struct Instruction*endwhile;
+        struct Instruction*endfor;
         Ast*ret;
         Ast*expr;
         struct Instruction*endif;
         struct Instruction*endifelse;
         Elif*el;
+        Swap*sw;
     }value;
 }Instruction;
 
@@ -98,7 +105,8 @@ enum instruction_type{
     inst_endwhile_t,
     inst_for_t,
     inst_while_t,
-    inst_return_t
+    inst_return_t,
+    inst_swap_t
 };
 
 //to acces an element

@@ -25,11 +25,17 @@ typedef struct Ast{
         funccall*fun;
         Token*tok;
         char*varcall;
+        short int op;
+        short int sy;
+        short int kw;
     }root;
     struct Ast*left;
     struct Ast*right;
 }Ast;
 
+//unary - are store like an ast with root  - , left NULL , and right the value
+//same for unary +
+//same for unary !
 enum Ast_types{
     Ast_end_t,
     Ast_object_t,
@@ -53,7 +59,10 @@ enum Ast_types{
     Ast_leq_t,
     Ast_le_t,
     Ast_ge_t,
-    Ast_dot_t
+    Ast_dot_t,
+    Ast_op_t,
+    Ast_syntax_t,
+    Ast_keyword_t
 
 };
 

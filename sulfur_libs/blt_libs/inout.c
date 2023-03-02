@@ -24,56 +24,57 @@ Object read_prompt(Object*o) {
  
 
 Object print_prompt(Object*obj,int n_arg){
+
     if(obj->type==Obj_string_t){
         printf("%s",obj->val.s);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_boolean_t){
         printf(*obj->val.b==0?"0b":"1b");
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_class_t){
         if(!str_ar_contains_str(obj->val.cl->keys,"__string__",obj->val.cl->key_len)){
             printf("instance at :%x",obj);
-            return (Object){.type=Obj_ount_t,.val.i=0};
+            return nil_Obj;
         }
         
     }
     if(obj->type==Obj_complex_t){
         printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_floap_t){
         printf("%Lf",*obj->val.f);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_list_t){
-        for(int i=0;i<obj->val.o[0].val.i;i++){
-            print_prompt(&obj->val.o[i+1]);
-            return (Object){.type=Obj_ount_t,.val.i=0};
+        for(int i=0;i<*(obj->val.o[0].val.i);i++){
+            print_prompt(&obj->val.o[i+1],1);
+            return nil_Obj;
         }
     }
     if(obj->type==Obj_funcid_t){
         printf("function at :%x",obj->val.funcid);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_nil_t){
         printf("nil");
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_Obj_t){
-        print_prompt(obj->val.o);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        //print_prompt(obj->val.o,);
+        return nil_Obj;
     }
     if(obj->type==Obj_ount_t){
         printf("%d",*obj->val.i);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
     if(obj->type==Obj_typeid_t){
         printf("%s",obj->val.typeid);
-        return (Object){.type=Obj_ount_t,.val.i=0};
+        return nil_Obj;
     }
-    return (Object){.type=Obj_ount_t,.val.i=1};
+    return nil_Obj;
 
 }
 
@@ -88,7 +89,7 @@ void init_inout(void){
     LIBS=realloc(LIBS,sizeof(Lib)*LIBS_len);
     LIBS[LIBS_len-1].name=" ";
     LIBS[LIBS_len-1].nbr_funcs=2;
-    LIBS[LIBS_len-1].funcs=malloc(sizeof(Funcdef)*LIBS[LIBS_len-1].nbr_funcs)
+    LIBS[LIBS_len-1].funcs=malloc(sizeof(Funcdef)*LIBS[LIBS_len-1].nbr_funcs);
     
 
     LIBS[LIBS_len-1].funcs[0].arg_names=NULL;

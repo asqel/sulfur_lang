@@ -27,7 +27,7 @@ enum Token_t{
     str,
     floap,
     end,
-    boolean,
+    boolean_t,
     comp,//complex nnumber value : {double float , double float}
     op,//+ * - / ^(pow) %(mod) \(floor div) |(or) &(and) !(not) = == += -= != <= >= < >
     keyword,//if while for else elif class return def
@@ -86,10 +86,12 @@ enum keyword{
     return_t,
     def_t,//function 
     from_t,
-    to_t
+    to_t,
+    swap_t,
+    goto_t
 };
 
-extern char KEYWORDS[10][7];
+extern char KEYWORDS[12][7];
 extern int keyword_len;
 
 extern Token nil_token;

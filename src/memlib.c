@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 Object end_Obj ={Obj_end_t,{.b=&(short int){-1}}};
-Object nil_Obj ={Obj_nil_t,{.b=&(short int){-1}}};
+Object nil_Obj ={Obj_nil_t,{.b=&(short int){0}}};
 
 //return 1 if they are the same
 //else 0
@@ -121,6 +121,32 @@ void Obj_print(Object obj){
             printf("Obj_i:[%lld]",*obj.val.i);
     
         default:
+            break;
+    }
+}
+
+void*get_obj_pointer(Object*o){
+    switch(o->type){
+        case Obj_boolean_t:
+            return o->val.b;
+            break;
+        case Obj_complex_t:
+            return o->val.c;
+            break;
+        case Obj_floap_t:
+            return o->val.f;
+            break;
+        case Obj_funcid_t:
+            return o->val.funcid;
+            break;
+        case Obj_ount_t:
+            return o->val.i;
+            break;
+        case Obj_string_t:
+            return o->val.s;
+            break;
+        case Obj_typeid_t:
+            return o->val.typeid;
             break;
     }
 }

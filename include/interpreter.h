@@ -15,9 +15,8 @@ extern long long int*sub_STACK_len;//list of int its len is stack_len
 
 
 
-//type :Object or list
 typedef struct ref_counter{
-    Object*pointer;
+    Obj_val*pointer;
     int type;
     long long int count;
 }ref_counter;
@@ -35,11 +34,6 @@ extern long long int CLASSDEF_len;
 extern ref_counter*REF_COUNTS;
 extern long long int REF_COUNT_len;
 
-enum ref_types{
-    ref_obj_t,
-    ref_list_t
-};
-
 void check_libs();
 
 void init_memory();
@@ -51,6 +45,11 @@ void init_funcdefs();
 void init_classdefs();
 
 void init_garbage_collect();
+
+Object eval_Ast(Ast*x);
+
+int add_ref(Object*o);
+
 
 int execute(Instruction*code,char*file_name,int len);
 

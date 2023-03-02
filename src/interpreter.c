@@ -74,7 +74,7 @@ void init_garbage_collect(){
 
 
 
-Object*eval_Ast(Ast*x){
+Object eval_Ast(Ast*x){
     if(x->left==NULL && x->right==NULL){
         if(x->type==Ast_funccall_t){
             printf("ERROR not implemented yet(funccall)");
@@ -85,7 +85,7 @@ Object*eval_Ast(Ast*x){
             exit(-1);
         }
         if(x->type == Ast_object_t){
-            return x->root.obj;
+            return *(x->root.obj);
         }
         else{
             printf("ERROR in Ast");
@@ -96,11 +96,12 @@ Object*eval_Ast(Ast*x){
 
 //return 1 if the object already exists
 //return 0 if it doesnt exists
-//each object of a list has to be add_ref-ed one by one 
+//each object of a list will be add_red-ed automaticly even the first element wich is the size of the list
+//class are not supported yet
 int add_ref(Object*o){
     int find=-1;
     for(int i=0;i<REF_COUNT_len;i++){
-        if(REF_COUNTS[i].pointer==o){
+        if(REF_COUNTS[i].pointer==get_obj_pointer(o)){
             find=i;
         }
     }
@@ -108,11 +109,26 @@ int add_ref(Object*o){
         REF_COUNTS[find].count++;
         return 1;
     }
+    if(o->type=Obj_class_t){
+        return 0;
+    }
+    if(o->type=Obj_list_t){
+        REF_COUNT_len++;
+        REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+        REF_COUNTS[REF_COUNT_len-1].count=1;
+        REF_COUNTS[REF_COUNT_len-1].type=Obj_list_t;
+        REF_COUNTS[REF_COUNT_len-1].pointer->li=o->val.li;
+        int len=o->val.li->len;
+        for(int i=0;i<len;i++){
+            add_ref(&(o->val.li->elements[i]));
+        }
+        return 0;
+    }
     REF_COUNT_len++;
     REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
     REF_COUNTS[REF_COUNT_len-1].count=1;
-    REF_COUNTS[REF_COUNT_len-1].pointer=o;
-    REF_COUNTS[REF_COUNT_len-1].type= (o->type == Obj_list_t ? ref_list_t : ref_obj_t);
+    REF_COUNTS[REF_COUNT_len-1].type=o->type;
+    //REF_COUNTS[REF_COUNT_len-1].pointer=get_obj_pointer(o); faut faire switch case pointer.type
     return 0;
 }
 
@@ -124,16 +140,14 @@ int execute(Instruction*code,char*file_name,int len){
             MEMORY_len++;
             MEMORY=realloc(MEMORY,sizeof(Object)*MEMORY_len);
             MEMORY_key=realloc(MEMORY_key,sizeof(char*)*MEMORY_len);
-            Object*o=code[p].value.vs->val->root.obj;//eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
-            //add_ref(o);
-            MEMORY[MEMORY_len-1]=*o;
+            Object o=eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
+            add_ref(&o);
+            MEMORY[MEMORY_len-1]=o;
             p++;
             continue;
 
         }
         if(code[p].type==inst_return_t){
-            println_prompt(&MEMORY[0]);
-            println_prompt(&MEMORY[1]);
             p++;
             continue;
         }

@@ -11,6 +11,13 @@ typedef struct class{
     char*class_name;
 }class;
 
+typedef struct list{
+    int len;
+    struct Object*elements;
+}list;
+
+
+
 typedef union Obj_val{
     struct Object*o;
     char*s;//string {char,...}
@@ -21,6 +28,7 @@ typedef union Obj_val{
     class*cl;//class
     int *funcid;//contain a function identifier but its int* so it has to be casted as Instruction*
     char*typeid;//contain a type
+    list*li;
 
 }Obj_val;
 
@@ -47,6 +55,8 @@ enum Obj_Type{
 
 extern Object end_Obj;
 extern Object nil_Obj;
+
+void*get_obj_pointer(Object*o);
 
 
 void Objs_print(Object*obj,int len);

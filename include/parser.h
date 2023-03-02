@@ -12,8 +12,6 @@
 
 void check_syntax(Ast*x);
 
-Ast*make_list_funccal_varcal(Ast*x);
-
 Ast*make_ast(Token*tok,int start,int end);
 
 int cond_parse(int start,int end,int len,int p);

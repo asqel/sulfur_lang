@@ -8,7 +8,6 @@
 
 
 
-
 int main(int argc,char **argv){
     back_slash_to_path(argv[0]);
     char *d=dirname(argv[0]);
@@ -41,8 +40,7 @@ int main(int argc,char **argv){
     MEMORY[MEMORY_len-1].type=Obj_string_t;
     MEMORY[MEMORY_len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
     strcpy(MEMORY[0].val.s,filepath);
-    
-    printf("salut");
+
     execute(code,filepath,*instruction_len);
 
     return 0;

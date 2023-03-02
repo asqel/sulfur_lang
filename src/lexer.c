@@ -28,7 +28,7 @@ Token*lexe(char*text){
         if((text[p]=='1'||text[p]=='0')&&p+1<len&&(text[p+1]=='b'||text[p+1]=='B')){
             n_tok++;
             toks=realloc(toks,sizeof(Token)*n_tok);
-            toks[n_tok-1].type=boolean;
+            toks[n_tok-1].type=boolean_t;
             toks[n_tok-1].line=line;
             toks[n_tok-1].value.b=malloc(sizeof(short int));
             *toks[n_tok-1].value.b=text[p]=='0'?0:1;
