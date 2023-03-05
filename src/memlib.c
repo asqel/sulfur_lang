@@ -1,6 +1,7 @@
 #include "../include/memlib.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 Object end_Obj ={Obj_end_t,{.b=&(short int){-1}}};
 Object nil_Obj ={Obj_nil_t,{.b=&(short int){0}}};

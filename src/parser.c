@@ -15,6 +15,20 @@ void check_syntax(Ast*x){
 
 }
 
+int contains_unary(Ast*e,int len){
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t && e[i].root.op==OP_NOT){
+            return 1;
+        }
+        if(e[i].type==Ast_op_t && ( e[i].root.op==OP_PLUS || e[i].root.op==OP_MINUS)){
+            if(i-1>=0&&e[i-1].type==Ast_op_t){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 Ast*tok_to_Ast(Token*tok,int start,int end){
     int len=end-start;
     Ast*e=malloc(sizeof(Ast)*(len));
@@ -81,6 +95,7 @@ Ast*tok_to_Ast(Token*tok,int start,int end){
 //start included
 //end not included
 //there no check if end and start are out of range
+//when finished the operator is stored in the ast.type as Ast_(op)_t ex: Ast_add_t
 Ast*make_ast(Ast*e,int len){
     //e contains only tokens turn into ast from start to end(not included) 
     check_syntax(e);
@@ -88,20 +103,20 @@ Ast*make_ast(Ast*e,int len){
     //make expr '(...)'
     int p=0;
     while(p<len){
-        if(e[p].type==Ast_syntax_t&&e[p].root.sy=par_L){
+        if(e[p].type==Ast_syntax_t&&e[p].root.sy==par_L){
             int opening_par=p;
             int closing_par=-1;
 
             int i=opening_par+1;
             int count=0;
             while(i<len){
-                if(e[i].type==Ast_syntax_t&&e[p].root.sy=par_L){
+                if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_L){
                     count++;
                 }
-                else if(e[i].type==Ast_syntax_t&&e[p].root.sy=par_R&& count>0){
+                else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count>0){
                     count--;
                 }
-                else if(e[i].type==Ast_syntax_t&&e[p].root.sy=par_R&& count==0){
+                else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count==0){
                     closing_par=i;
                     break;
                 }
@@ -109,22 +124,22 @@ Ast*make_ast(Ast*e,int len){
             }
 
             if(closing_par==-1){
-                printf("ERROR missing closing '(' on line %d in expression",tok[p].line);
+                printf("ERROR missing closing '(' in expression");
                 exit(1);
             }
             Ast*expr=malloc(sizeof(Ast)*closing_par-opening_par-1);
             for(int i=opening_par+1;i<closing_par;i++){
                 expr[i-(opening_par+1)]=e[i];
             }
-            Ast*expr=make_ast(expr,closing_par-opening_par-1);
+            expr=make_ast(expr,closing_par-opening_par-1);
             e[opening_par]=*expr;
             int k=0;
             for(int i=closing_par+1;i<len;i++){
-                e[opening_par+1+k]=e[i]
+                e[opening_par+1+k]=e[i];
                 k++;
             }
             len=len-closing_par-opening_par+1-1;
-            e=realloc(e,len);
+            e=realloc(e,sizeof(Ast)*len);
 
 
         }
@@ -134,38 +149,47 @@ Ast*make_ast(Ast*e,int len){
     p=0;
     while (p<len){
         if(e[p].type==Ast_op_t&&e[p].root.op==OP_PLUS){
-            if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_PLUS){
+            if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_PLUS){//++
                 for(int i=p+1;i<len;i++){
                     e[i-1]=e[i];
                 }
                 len--;
-                e=realloc(e,len);
+                e=realloc(e,sizeof(Ast)*len);
             }
-            else if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_MINUS){
+            else if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_MINUS){//+-
                 for(int i=p+1;i<len;i++){
                     e[i-1]=e[i];
                 }
                 len--;
-                e=realloc(e,len);
+                e=realloc(e,sizeof(Ast)*len);
             }
         }
 
         else if(e[p].type==Ast_op_t&&e[p].root.op==OP_MINUS){
-            if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_MINUS){
+            if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_MINUS){//--
                 e[p+1].root.op=OP_PLUS;
                 for(int i=p+1;i<len;i++){
                     e[i-1]=e[i];
                 }
                 len--;
-                e=realloc(e,len);
+                e=realloc(e,sizeof(Ast)*len);
             }
-            else if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_PLUS){
+            else if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_PLUS){//-+
                 e[p+1].root.op=OP_PLUS;
                 for(int i=p+1;i<len;i++){
                     e[i-1]=e[i];
                 }
                 len--;
-                e=realloc(e,len);
+                e=realloc(e,sizeof(Ast)*len);
+            }
+        }
+        else if(e[p].type==Ast_op_t&&e[p].root.op==OP_NOT){
+            if(p+1<len&&e[p+1].type==Ast_op_t&&e[p+1].root.op==OP_NOT){
+                for(int i=p+2;i<len;i++){
+                    e[i-2]=e[p];
+                }
+                len-=2;
+                e=realloc(e,sizeof(Ast)*len);
             }
         }
 
@@ -174,11 +198,25 @@ Ast*make_ast(Ast*e,int len){
      
     //make unary + - !
     p=0;
-    while(p<len&& is_there_unary(e,len)){
-        if(e[p].type==Ast_op_t&&e[p].root.op==OP_PLUS){
-            if(p-1<=0&&e[p].type==Ast_op_t&&){
-
+    while(p<len&& contains_unary(e,len)){
+        if(e[p].type==Ast_op_t && e[p].root.op==OP_NOT){// !
+            if(e[p].type==Ast_op_t||e[p].type==Ast_keyword_t||e[p].type==Ast_syntax_t){
+                printf("ERROR missing operand after '!' in expression");
+                exit(1);
             }
+            e[p].type=Ast_not_t;
+            e[p].right=malloc(sizeof(Ast));
+            *e[p].right=e[p+1];
+            for(int i=p+2;i<len;i++){
+                e[i-1]=e[i];
+            }
+            len--;
+            e=realloc(e,sizeof(Ast)*len);
+            p++;
+        }
+        else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS){
+            if()
+
         }
     }
 
@@ -618,7 +656,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         }
         //swap
         if(tok[p].type==keyword && *tok[p].value.t==swap_t){
-            int n=find_semicol;
+            int n=find_semicol(tok,p);
             if(n==-1){
                 printf("ERROR missing ';' after swap on line %d",tok[p].line);
             }

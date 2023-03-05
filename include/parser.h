@@ -12,7 +12,10 @@
 
 void check_syntax(Ast*x);
 
-Ast*make_ast(Token*tok,int start,int end);
+Ast*tok_to_Ast(Token*tok,int start,int end);
+
+Ast*make_ast(Ast*e,int len);
+
 
 int cond_parse(int start,int end,int len,int p);
 
