@@ -126,28 +126,28 @@ void Obj_print(Object obj){
     }
 }
 
-void*get_obj_pointer(Object*o){
-    switch(o->type){
+void*get_obj_pointer(Object o){
+    switch(o.type){
         case Obj_boolean_t:
-            return o->val.b;
+            return o.val.b;
             break;
         case Obj_complex_t:
-            return o->val.c;
+            return o.val.c;
             break;
         case Obj_floap_t:
-            return o->val.f;
+            return o.val.f;
             break;
         case Obj_funcid_t:
-            return o->val.funcid;
+            return o.val.funcid;
             break;
         case Obj_ount_t:
-            return o->val.i;
+            return o.val.i;
             break;
         case Obj_string_t:
-            return o->val.s;
+            return o.val.s;
             break;
         case Obj_typeid_t:
-            return o->val.typeid;
+            return o.val.typeid;
             break;
     }
 }

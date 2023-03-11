@@ -56,7 +56,7 @@ enum Obj_Type{
 extern Object end_Obj;
 extern Object nil_Obj;
 
-void*get_obj_pointer(Object*o);
+void*get_obj_pointer(Object o);
 
 
 void Objs_print(Object*obj,int len);

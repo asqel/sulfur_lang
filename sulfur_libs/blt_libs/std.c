@@ -1,9 +1,10 @@
+#include "std.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../../include/memlib.h"
 #include "../../include/utilities.h"
-#include "../../include/instruction.h"
 
 Object read_prompt(Object*o) {
     int capacity = 16;
@@ -84,46 +85,32 @@ Object println_prompt(Object*obj,int n_arg){
     return n;
 }
 
-void init_inout(void){
-    LIBS_len++;
-    LIBS=realloc(LIBS,sizeof(Lib)*LIBS_len);
-    LIBS[LIBS_len-1].name=" ";
-    LIBS[LIBS_len-1].nbr_funcs=2;
-    LIBS[LIBS_len-1].funcs=malloc(sizeof(Funcdef)*LIBS[LIBS_len-1].nbr_funcs);
-    
 
-    LIBS[LIBS_len-1].funcs[0].arg_names=NULL;
-    LIBS[LIBS_len-1].funcs[0].arg_types=malloc(sizeof(char*));
-    LIBS[LIBS_len-1].funcs[0].arg_types[0]=malloc(sizeof(char)*(1+strlen("any")));
-    strcpy(LIBS[LIBS_len-1].funcs[0].arg_types[0],"any");
-
-    LIBS[LIBS_len-1].funcs[1].code=NULL;
-    LIBS[LIBS_len-1].funcs[1].func_p=&print_prompt;
-    LIBS[LIBS_len-1].funcs[1].is_builtin=1;
-    LIBS[LIBS_len-1].funcs[1].name="print";
-    LIBS[LIBS_len-1].funcs[1].nbr_of_args=1;
-    LIBS[LIBS_len-1].funcs[1].nbr_ret_type=1;
-
-    LIBS[LIBS_len-1].funcs[1].ret_type=malloc(sizeof(char*));
-    LIBS[LIBS_len-1].funcs[1].ret_type[0]=malloc(sizeof(char)*(1+strlen("void")));
-    strcpy(LIBS[LIBS_len-1].funcs[1].ret_type[0],"void");
-
-    
-    LIBS[LIBS_len-1].funcs[0].arg_names=NULL;
-    LIBS[LIBS_len-1].funcs[0].arg_types=malloc(sizeof(char*));
-    LIBS[LIBS_len-1].funcs[0].arg_types[0]=malloc(sizeof(char)*(1+strlen("any")));
-    strcpy(LIBS[LIBS_len-1].funcs[0].arg_types[0],"any");
-
-    LIBS[LIBS_len-1].funcs[1].code=NULL;
-    LIBS[LIBS_len-1].funcs[1].func_p=&println_prompt;
-    LIBS[LIBS_len-1].funcs[1].is_builtin=1;
-    LIBS[LIBS_len-1].funcs[1].name="println";
-    LIBS[LIBS_len-1].funcs[1].nbr_of_args=1;
-    LIBS[LIBS_len-1].funcs[1].nbr_ret_type=1;
-
-    LIBS[LIBS_len-1].funcs[1].ret_type=malloc(sizeof(char*));
-    LIBS[LIBS_len-1].funcs[1].ret_type[0]=malloc(sizeof(char)*(1+strlen("void")));
-    strcpy(LIBS[LIBS_len-1].funcs[1].ret_type[0],"void");
+Object std_bool(Object*obj,int n_arg){
+    if(n_arg!=1){
+        printf("ERROR %s only 1 argument needed in bool call",n_arg>1?"too many arguments":"too few arguments");
+        exit(1);
+    }
+    Object res;
+    res.type=Obj_boolean_t;
+    res.val.b=malloc(sizeof(short int));
+    *res.val.b=1;
+    if(obj->type==Obj_ount_t){
+        if(obj->val.i==0){
+            *res.val.b=0;
+        }
+        return res;
+    }
+    if(obj->type==Obj_string_t){
+        if(obj->val.s[0]==0){
+            *res.val.b=0;
+        }
+        return res;
+    }
+    if(obj->type==Obj_boolean_t){
+        *res.val.b=*obj->val.b;
+        return res;
+    }
 }
 
 

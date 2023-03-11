@@ -15,57 +15,50 @@ void check_syntax(Ast*x){
 
 }
 
-int contains_unary(Ast*e,int len){
-    for(int i=0;i<len;i++){
-        if(e[i].type==Ast_op_t && e[i].root.op==OP_NOT){
-            return 1;
-        }
-        if(e[i].type==Ast_op_t && ( e[i].root.op==OP_PLUS || e[i].root.op==OP_MINUS)){
-            if(i-1>=0&&e[i-1].type==Ast_op_t){
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
-
 Ast*tok_to_Ast(Token*tok,int start,int end){
-    int len=end-start;
+    int len=end-start+1;
     Ast*e=malloc(sizeof(Ast)*(len));
     for(int i=start;i<end;i++){
+        token_print(tok[i],"--");
         e[i-start].left=NULL;
         e[i-start].right=NULL;
         e[i-start].type=Ast_object_t;
+        e[i-start].isAst=0;
         switch(tok[i].type){//techniquement faudrait mettre aussi les token end
             case nil:
                 e[i-start].type=Ast_object_t;
                 e[i-start].root.obj->type=Obj_nil_t;
                 break;
             case ount:
+                e[i-start].root.obj=malloc(sizeof(Object));
                 e[i-start].type=Ast_object_t;
                 e[i-start].root.obj->type=Obj_ount_t;
                 e[i-start].root.obj->val.i=malloc(sizeof(long long int));
                 *e[i-start].root.obj->val.i=*tok[i].value.i;
                 break;
             case str:
+                e[i-start].root.obj=malloc(sizeof(Object));
                 e[i-start].type=Ast_object_t;
                 e[i-start].root.obj->type=Obj_string_t;
                 e[i-start].root.obj->val.s=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
                 strcpy(e[i-start].root.obj->val.s,tok[i].value.s);
                 break;
             case floap:
+                e[i-start].root.obj=malloc(sizeof(Object));
                 e[i-start].type=Ast_object_t;
                 e[i-start].root.obj->type=Obj_floap_t;
                 e[i-start].root.obj->val.f=malloc(sizeof(long double));
                 *e[i-start].root.obj->val.f=*tok[i].value.f;
                 break;
             case boolean_t:
+                e[i-start].root.obj=malloc(sizeof(Object));
                 e[i-start].type=Ast_object_t;
                 e[i-start].root.obj->type=Obj_boolean_t;
                 e[i-start].root.obj->val.b=malloc(sizeof(short int));
                 *e[i-start].root.obj->val.b=*tok[i].value.b;
                 break;
             case comp:
+                e[i-start].root.obj=malloc(sizeof(Object));
                 e[i-start].type=Ast_object_t;
                 e[i-start].root.obj->type=Obj_complex_t;
                 e[i-start].root.obj->val.c=malloc(sizeof(long double)*2);
@@ -75,12 +68,15 @@ Ast*tok_to_Ast(Token*tok,int start,int end){
             case op:
                 e[i-start].type=Ast_op_t;
                 e[i-start].root.op=*tok[i].value.t;
+                break;
             case keyword:
                 e[i-start].type=Ast_keyword_t;
                 e[i-start].root.kw=*tok[i].value.t;
+                break;
             case syntax:
                 e[i-start].type=Ast_syntax_t;
                 e[i-start].root.sy=*tok[i].value.t;
+                break;
             case identifier:
                 e[i-start].type=Ast_varcall_t;
                 e[i-start].root.varcall=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
@@ -92,6 +88,74 @@ Ast*tok_to_Ast(Token*tok,int start,int end){
     }
     return e;
 }
+
+
+int find_highest_op(Ast*e,int len){
+    //search for .(dot)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_syntax_t&&e[i].root.sy==dot&&!e[i].isAst){//en theorie ya pasa besoin de verifier isAst
+            return i;
+        }
+    }
+    //search for ^(pow)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&& e[i].root.op==OP_EXPONENT&&!e[i].isAst){
+            return i;
+        }
+    }
+    //search for *(mul) /(div) \(floordiv) %(mod)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_MULTIPLY||e[i].root.op==OP_DIVIDE||e[i].root.op==OP_FLOOR_DIVIDE||e[i].root.op==OP_MODULUS){
+                return i;
+            }
+        }
+    }
+    //search for +(plus) -(minus)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_PLUS||e[i].root.op==OP_MINUS){
+                return i;
+            }
+        }
+    }
+    //search for <(less) >(greater) <=(less_eq) >=(greater_eq)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_LESS||e[i].root.op==OP_LESS_EQUAL||e[i].root.op==OP_GREATER||e[i].root.op==OP_GREATER_EQUAL){
+                return i;
+            }
+        }
+    }
+    //search for ==(eq) !=(not_eq)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_EQUAL||e[i].root.op==OP_NOT_EQUAL){
+                return i;
+            }
+        }
+    }
+    //search for &(and)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_AND){
+                return i;
+            }
+        }
+    }
+    //search for &(and)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_OR){
+                return i;
+            }
+        }
+    }
+    return -1;
+
+}
+
+
 //start included
 //end not included
 //there no check if end and start are out of range
@@ -100,8 +164,56 @@ Ast*make_ast(Ast*e,int len){
     //e contains only tokens turn into ast from start to end(not included) 
     check_syntax(e);
 
-    //make expr '(...)'
+
+    //make funccall 'function(...)'
     int p=0;
+    while(p<len){
+        if(e[p].type==Ast_varcall_t&&p+1<len){
+            if(e[p+1].type==Ast_syntax_t && e[p+1].root.sy==par_L){
+                int opening_par=p+1;
+                int closing_par=-1;
+                //search closing par
+                int count=0;
+                for(int i=opening_par+1;i<len;i++){
+                    if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_L){
+                        count++;
+                    }
+                    else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count>0){
+                        count--;
+                    }
+                    else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count==0){
+                        closing_par=i;
+                        break;
+                    }
+                }
+                
+                if(closing_par==-1){
+                    printf("ERROR missing closing ')' in function call");
+                    exit(1);
+                }
+                Ast*to_parse=malloc(sizeof(Ast)*(closing_par-opening_par-1));
+                for(int i=opening_par+1;i<closing_par;i++){
+                    to_parse[i-(opening_par+1)]=e[i];
+                }
+                funccall f;
+                f.name=e[opening_par-1].root.varcall;
+                //faudra mmettre isAst=1
+                //faire un truc qui compte les virgule arg=virgule+1
+                //et un truc qui fait des sous list pour chaque argument et qui les parse
+
+            }
+        }
+        else{
+            p++;
+        }
+
+
+
+    }
+
+
+    //make expr '(...)'
+    p=0;
     while(p<len){
         if(e[p].type==Ast_syntax_t&&e[p].root.sy==par_L){
             int opening_par=p;
@@ -133,18 +245,24 @@ Ast*make_ast(Ast*e,int len){
             }
             expr=make_ast(expr,closing_par-opening_par-1);
             e[opening_par]=*expr;
-            int k=0;
-            for(int i=closing_par+1;i<len;i++){
-                e[opening_par+1+k]=e[i];
-                k++;
+            e[opening_par].isAst=1;
+
+            for(int i=closing_par;i<len;i++){
+                e[opening_par+1+(i-closing_par)]=e[i];
             }
             len=len-closing_par-opening_par+1-1;
             e=realloc(e,sizeof(Ast)*len);
+            p++;
 
-
+        }
+        else{
+            p++;
         }
 
     }
+    //TODO here:list sub [...]
+
+
     //remove unary ++ -> +  -- -> + !! -> ' '  -> +- -> -  -+ ->
     p=0;
     while (p<len){
@@ -198,12 +316,13 @@ Ast*make_ast(Ast*e,int len){
      
     //make unary + - !
     p=0;
-    while(p<len&& contains_unary(e,len)){
+    while(p<len){
         if(e[p].type==Ast_op_t && e[p].root.op==OP_NOT){// !
-            if(e[p].type==Ast_op_t||e[p].type==Ast_keyword_t||e[p].type==Ast_syntax_t){
+            if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
                 printf("ERROR missing operand after '!' in expression");
                 exit(1);
             }
+            e[p].isAst=1;
             e[p].type=Ast_not_t;
             e[p].right=malloc(sizeof(Ast));
             *e[p].right=e[p+1];
@@ -214,13 +333,90 @@ Ast*make_ast(Ast*e,int len){
             e=realloc(e,sizeof(Ast)*len);
             p++;
         }
-        else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS){
-            if()
+        else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS&&p-1>=0&&e[p-1].type==Ast_op_t){
+            if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
+                printf("ERROR missing operand after '+'(unary) in expression");
+                exit(1);
+            }
+            e[p].isAst=1;
+            e[p].type=Ast_add_t;
+            e[p].left=NULL;
+            e[p].right=malloc(sizeof(Ast));
+            *e[p].right=e[p+1];
+            for(int i=p+2;i<len;i++){
+                e[i-1]=e[i];
+            }
+            len--;
+            e=realloc(e,sizeof(Ast)*len);
+            p++;
+
 
         }
+        else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS&&p-1>=0&&e[p-1].type==Ast_op_t){
+            if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
+                printf("ERROR missing operand after '-'(unary) in expression");
+                exit(1);
+            }
+            e[p].isAst=1;
+            e[p].type=Ast_sub_t;
+            e[p].left=NULL;
+            e[p].right=malloc(sizeof(Ast));
+            *e[p].right=e[p+1];
+            for(int i=p+2;i<len;i++){
+                e[i-1]=e[i];
+            }
+            len--;
+            e=realloc(e,sizeof(Ast)*len);
+            p++;
+
+
+        }
+        else{
+            p++;
+        }
+        
     }
 
+    //make operators
+    p=0;
+    while(len>1){
+        int n=find_highest_op(e,len);
+        if(n==-1){
+            printf("ERROR in expression");
+            exit(1);
+        }
+        if(n-1<0){
+            printf("ERROR missing left operand in expression");
+            exit(1);
+        }
+        if(n+1>=len){
+            printf("ERROR missing right operand in expression");
+            exit(1);
+        }
+        if(!(e[n-1].isAst||e[n-1].type==Ast_object_t||e[n-1].type==Ast_varcall_t)){
+            printf("ERROR missing left operand in expression");
+            exit(1);
+        }
+        if(!(e[n+1].isAst||e[n+1].type==Ast_object_t||e[n+1].type==Ast_varcall_t)){
+            printf("ERROR missing right operand in expression");
+            exit(1);
+        }
+        e[n].left=malloc(sizeof(Ast));
+        *e[n].left=e[n-1];
 
+        e[n].right=malloc(sizeof(Ast));
+        *e[n].right=e[n+1];
+        
+        e[n].type=op_tok_to_op_ast(e[n].type==Ast_syntax_t?e[n].root.sy:e[n].root.op,e[n].type);
+        e[n].isAst=1;
+        e[n-1]=e[n];
+        for(int i=n+2;i<len;i++){
+            e[i-2]=e[i];
+        }
+        len-=2;
+        e=realloc(e,len);
+    }
+    return e;
 
     
 
@@ -424,7 +620,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                                 endifelse_ps[endif_n-1]=*n_inst-1;//ffaut faire ca en bas aussi avec le else oublie pas hein !
                             }
                             else{
-                                printf("ERROR missing opening '{' on line %d after else",tok[p-1].line);
+                                printf("ERROR missing opening '{' on line %d after elif",tok[p-1].line);
                                 exit(-1);
                             }
                         }
@@ -502,8 +698,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
            
                         inst[*n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p+1].value.s))+1);
                         strcpy(inst[*n_inst-1].value.vs->type,tok[p+1].value.s);//set type
-
-                        Ast*v=make_ast(tok_to_Ast(tok,p+1,n),n-(p+1));
+                        Ast*v=make_ast(tok_to_Ast(tok,p+3,n),n-(p+3+1-1));
                         inst[*n_inst-1].value.vs->val=v;//set val
                         p=n+1;
                         continue;

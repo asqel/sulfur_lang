@@ -20,6 +20,7 @@ typedef struct tempexpr{
 
 typedef struct Ast{
     int type;
+    char isAst;
     union{
         Object*obj;
         funccall*fun;
@@ -71,6 +72,7 @@ enum Ast_types{
 //if it has not a right side it will have a null pointer
 int Ast_has_r(Ast x);
 
+int op_tok_to_op_ast(int v,int type);
 
 int Ast_len(Ast*x);
 #endif

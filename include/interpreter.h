@@ -48,7 +48,7 @@ void init_garbage_collect();
 
 Object eval_Ast(Ast*x);
 
-int add_ref(Object*o);
+int add_ref(Object o);
 
 
 int execute(Instruction*code,char*file_name,int len);
