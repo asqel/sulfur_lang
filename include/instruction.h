@@ -131,7 +131,5 @@ extern long long int FUNCDEFS_len;
 extern Lib*LIBS;
 extern long long int LIBS_len;
 
-void init_libs() __attribute__((constructor));;
-
 
 #endif

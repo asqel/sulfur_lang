@@ -126,15 +126,16 @@ int get_nbr_of_digits(long long int x){
 //faire pareil pour les float en ajouter un parametre precision si p=0 alors le traiter comme un int si alors *10^1 et le traiter comme  un int et cherccher ou faut metre la virgule
 
 long long int*str_to_llint_p(char*s){
-    long long int*x=malloc(sizeof(long long int));
-    *x=0;
-    int len=strlen(s);
-    long long int pow_10=1;
-    for(int i=0;i<len;i++){
-        (*x)+=pow_10*(long long int)(s[i]-'0');
-        pow_10*=10;
-    }
-    return x;
+    //long long int x=0;
+    //int len=strlen(s);
+    //long long int pow_10=1;
+    //for(int i=0;i<len;i++){
+    //    x+=pow_10*(long long int)(s[i]-'0');
+    //    pow_10*=10;
+    //}
+    long long int*a=malloc(sizeof(long long int));
+    *a=atoll(s);
+    return a;
 }
 
 long long int str_to_llint(char*s){

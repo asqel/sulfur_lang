@@ -142,7 +142,10 @@ int free_tok_val(Token x){
         case syntax:
             free(x.value.t);break;
         case identifier:
+            x.value.s=realloc(x.value.s,sizeof(char)*(strlen(x.value.s)+1));
+            printf("-%p-",x.value.s);
             free(x.value.s);break;
+
         default:
             return 1;
     }
@@ -157,10 +160,9 @@ int id_acceptable(char v){
     if(sy_to_enum(s)!=-1){
         return 0;
     }
-    if(v==' '||v=='\t'||v=='\n'){
+    if(v==' '||v=='\t'||v=='\n'||v=='\r'){
         return 0;
     }
-    
     return 1;
 }
 

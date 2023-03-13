@@ -1,1 +1,8 @@
-ount aque=3+80;
+ount a=0;
+ount c=4;
+if(0){
+    ount k=9;
+}
+else{
+    ount u=3;
+}

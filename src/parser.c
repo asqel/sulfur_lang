@@ -19,7 +19,6 @@ Ast*tok_to_Ast(Token*tok,int start,int end){
     int len=end-start+1;
     Ast*e=malloc(sizeof(Ast)*(len));
     for(int i=start;i<end;i++){
-        token_print(tok[i],"--");
         e[i-start].left=NULL;
         e[i-start].right=NULL;
         e[i-start].type=Ast_object_t;
@@ -382,39 +381,45 @@ Ast*make_ast(Ast*e,int len){
     while(len>1){
         int n=find_highest_op(e,len);
         if(n==-1){
-            printf("ERROR in expression");
+            printf("ERROR in expression #0");
             exit(1);
         }
         if(n-1<0){
-            printf("ERROR missing left operand in expression");
+            printf("ERROR missing left operand in expression #1");
             exit(1);
         }
         if(n+1>=len){
-            printf("ERROR missing right operand in expression");
+            printf("ERROR missing right operand in expression #2");
             exit(1);
         }
         if(!(e[n-1].isAst||e[n-1].type==Ast_object_t||e[n-1].type==Ast_varcall_t)){
-            printf("ERROR missing left operand in expression");
+            printf("ERROR missing left operand in expression #3");
             exit(1);
         }
         if(!(e[n+1].isAst||e[n+1].type==Ast_object_t||e[n+1].type==Ast_varcall_t)){
-            printf("ERROR missing right operand in expression");
+            printf("ERROR missing right operand in expression #4");
             exit(1);
         }
-        e[n].left=malloc(sizeof(Ast));
-        *e[n].left=e[n-1];
+        Ast op_ast;
+        op_ast.isAst=1;
+        op_ast.type=op_tok_to_op_ast(e[n].type==Ast_syntax_t?e[n].root.sy:e[n].root.op,e[n].type);;
+        op_ast.right=malloc(sizeof(Ast));
+        op_ast.left=malloc(sizeof(Ast));
 
-        e[n].right=malloc(sizeof(Ast));
-        *e[n].right=e[n+1];
-        
-        e[n].type=op_tok_to_op_ast(e[n].type==Ast_syntax_t?e[n].root.sy:e[n].root.op,e[n].type);
-        e[n].isAst=1;
-        e[n-1]=e[n];
+        *op_ast.right=e[n+1];
+        *op_ast.left=e[n-1];
+        Ast*e2=malloc(sizeof(Ast)*(len-2));
+        for(int i=0;i<n;i++){
+            e2[i]=e[i];
+        }
         for(int i=n+2;i<len;i++){
-            e[i-2]=e[i];
+            e2[i-2]=e[i];
         }
         len-=2;
-        e=realloc(e,len);
+        e2[n-1]=op_ast;
+        //utiliser le realloc fait que certain valeur de certaine struct se modifie donc bah non 
+        free(e);
+        e=e2;
     }
     return e;
 
@@ -579,7 +584,9 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     (*n_inst)++;
                     inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_endif;
+                    printf("endif--%d-%x-",*n_inst-1,inst[if_index].value.i);
                     inst[if_index].value.i->endif_p=*n_inst-1;
+                    printf("cest ok");
 
                     int*endifelse_ps=malloc(sizeof(int)*(1+count_elseelif(tok,closing_rback+1)));//list des endif ou on doit leur rajouter le pointer vers un endifelse
                     int endif_n=1;
@@ -693,12 +700,13 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                         inst[*n_inst-1].type=inst_varset_t;
 
                         inst[*n_inst-1].value.vs=malloc(sizeof(varset));
-                        inst[*n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
-                        strcpy(inst[*n_inst-1].value.vs->name,tok[p].value.s);//set name
+                        inst[*n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p+1].value.s))+1);
+                        strcpy(inst[*n_inst-1].value.vs->name,tok[p+1].value.s);//set name
            
-                        inst[*n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p+1].value.s))+1);
-                        strcpy(inst[*n_inst-1].value.vs->type,tok[p+1].value.s);//set type
-                        Ast*v=make_ast(tok_to_Ast(tok,p+3,n),n-(p+3+1-1));
+                        inst[*n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
+                        strcpy(inst[*n_inst-1].value.vs->type,tok[p].value.s);//set type
+                        Ast *a=tok_to_Ast(tok,p+3,n);
+                        Ast*v=make_ast(a,n-(p+3+1-1));
                         inst[*n_inst-1].value.vs->val=v;//set val
                         p=n+1;
                         continue;
@@ -707,10 +715,12 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     else{
                         if (n==-1){
                             printf("ERROR : missing semicollon ';' on line %d after Token ",tok[p+2].line);
+                            token_print(tok[p+2],"\n");
                             exit(1);
                         }
                         if(tok[p+2].type!=op||*tok[p+2].value.t!=OP_ASSIGN){
                             printf("ERROR : missing assignement '=' on line %d after token",tok[p+2].line);
+                            token_print(tok[p+2],"\n");
                             exit(1);
                         }
                     }

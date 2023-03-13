@@ -1,5 +1,6 @@
 #include "../include/interpreter.h"
 #include "../include/instruction.h"
+#include <stdlib.h>
 
 //builtin libs
 #include "../sulfur_libs/blt_libs/std.h"
@@ -27,18 +28,18 @@ long long int REF_COUNT_len;
 
 
 
-void check_libs(){
-    for(int i=0;i<LIBS_len;i++){
-        if(LIBS[i].name[0]==" "[0]){
-            FUNCDEFS_len+=LIBS[i].nbr_funcs;
-            FUNCDEFS=realloc(FUNCDEFS,sizeof(Funcdef)*FUNCDEFS_len);
-            for(int k=0;k<LIBS[i].nbr_funcs;k++){
-                FUNCDEFS[FUNCDEFS_len-LIBS[i].nbr_funcs+k]=LIBS[i].funcs[k];
-
-            }
-        }
-    }
-}
+//void check_libs(){
+//    for(int i=0;i<LIBS_len;i++){
+//        if(LIBS[i].name[0]==" "[0]){
+//            FUNCDEFS_len+=LIBS[i].nbr_funcs;
+//            FUNCDEFS=realloc(FUNCDEFS,sizeof(Funcdef)*FUNCDEFS_len);
+//            for(int k=0;k<LIBS[i].nbr_funcs;k++){
+//                FUNCDEFS[FUNCDEFS_len-LIBS[i].nbr_funcs+k]=LIBS[i].funcs[k];
+//
+//            }
+//        }
+//    }
+//}
 
 
 void init_memory(){
@@ -76,8 +77,7 @@ void init_garbage_collect(){
 
 
 Object eval_Ast(Ast*x){
-    if(x->left==NULL && x->right==NULL){
-        printf("gein ?");
+    if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type==Ast_funccall_t){
             printf("ERROR not implemented yet(funccall)");
             exit(-1);
@@ -87,6 +87,7 @@ Object eval_Ast(Ast*x){
             exit(-1);
         }
         if(x->type == Ast_object_t){
+            printf("dans le eval %hi \n",*(x->root.obj)->val.b);
             return *(x->root.obj);
         }
         else{
@@ -95,15 +96,13 @@ Object eval_Ast(Ast*x){
         }
     }
     if(x->isAst){
-        printf("uuu");
         if(x->type==Ast_add_t){
-            printf("''''");
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
-                printf("sss");
-                printf("é%xé",x->right->root.obj);
                 Object b=eval_Ast(x->right);
-                printf("sss");
+                println_prompt(&b,1);
+                println_prompt(&a,1);
+
 
                 return add(a,b);
             }
@@ -151,15 +150,17 @@ int add_ref(Object o){
 
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
-    check_libs();
+    //check_libs();
+    printf("mmmmmmmmmm\n");
+    printf("è è %d é é\n",len);
     while(p<len){
         if(code[p].type==inst_varset_t){
             MEMORY_len++;
             MEMORY=realloc(MEMORY,sizeof(Object)*MEMORY_len);
             MEMORY_key=realloc(MEMORY_key,sizeof(char*)*MEMORY_len);
-            printf("zer");
+            MEMORY_key[MEMORY_len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.vs->name)));
+            strcpy(MEMORY_key[MEMORY_len-1],code[p].value.vs->name);
             Object o=eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
-            printf("ddff");
             add_ref(o);
             MEMORY[MEMORY_len-1]=o;
             p++;
@@ -168,10 +169,11 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_if_t){
             Object condition=eval_Ast(code[p].value.i->condition);
-            if(std_bool(&condition,1).val.b){
+            if(*(std_bool(&condition,1).val.b)){
                 p++;
                 continue;
             }
+            printf("pointeur %d endif %d  if %x-",p,code[p].value.i->endif_p+1,code[p].value.i);
             p=code[p].value.i->endif_p+1;
             continue;
         }
@@ -199,12 +201,19 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_return_t){
             p++;
+
+            Object*x=malloc(sizeof(Object));
+            printf("eee%x\n",code[p].value.ret);
+
+            *x=eval_Ast(code[p].value.ret);
+            println_prompt(x,1);
             continue;
         }
     }
-    for(int i=0;i<len;i++){
-        printf("%s-@@@\n",MEMORY_key[i]);
+    printf("\n %d\nMEMORY:\n",MEMORY_len);
+    for(int i=0;i<MEMORY_len;i++){
+        printf("    %s: ",MEMORY_key[i]);
+        println_prompt(&MEMORY[i],1);
     }
-    print_prompt(MEMORY,MEMORY_len);
     return 0;
 }

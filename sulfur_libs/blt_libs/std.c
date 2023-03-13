@@ -68,7 +68,7 @@ Object print_prompt(Object*obj,int n_arg){
         return nil_Obj;
     }
     if(obj->type==Obj_ount_t){
-        printf("%d",*obj->val.i);
+        printf("%lld",*obj->val.i);
         return nil_Obj;
     }
     if(obj->type==Obj_typeid_t){
@@ -96,7 +96,7 @@ Object std_bool(Object*obj,int n_arg){
     res.val.b=malloc(sizeof(short int));
     *res.val.b=1;
     if(obj->type==Obj_ount_t){
-        if(obj->val.i==0){
+        if(*obj->val.i==0){
             *res.val.b=0;
         }
         return res;

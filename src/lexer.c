@@ -21,7 +21,7 @@ Token*lexe(char*text){
             p++;
             continue;
         }
-        if(text[p]=='\t'||text[p]==' '){
+        if(text[p]=='\t'||text[p]==' '||text[p]=='\r'){
             p++;
             continue;
         }
@@ -35,29 +35,30 @@ Token*lexe(char*text){
             p+=2;
             continue;
         }
-        if(text[p]=='$' && p+1<len&& (text[p]=='i'||text[p]=='I')){
+        if(text[p]=='$' && p+1<len&& (text[p+1]=='i'||text[p+1]=='I')){
             n_tok++;
             toks=realloc(toks,sizeof(Token)*n_tok);
             toks[n_tok-1].type=comp;
             toks[n_tok-1].line=line;
             toks[n_tok-1].value.c=malloc(sizeof(long double)*n_tok);
             toks[n_tok-1].value.c[0]=0.0;
-            toks[n_tok-1].value.c[0]=1.0;
+            toks[n_tok-1].value.c[1]=1.0;
 
 
         }
         if(str_contains_char(DIGITS,text[p])){
             int e=p;
+            int longeur=1;
+            e++;
             while(e<len&&(str_contains_char(DIGITS,text[e])||text[e]=='.')){
                 e++;
+                longeur++;
             }
-            e--;
-            char*s=malloc(sizeof(char)*(e-p+1));
-            for(int i=0;i<e;i++){
+            char*s=malloc(sizeof(char)*(longeur+1));
+            for(int i=0;i<longeur;i++){
                 s[i]=text[p+i];
             }
-            s[e-p+1]='\0';
-            e++;
+            s[longeur]='\0';
 
             int n=str_count(s,'.');
             if(n==0){
@@ -66,7 +67,7 @@ Token*lexe(char*text){
                 toks[n_tok-1].line=line;
                 toks[n_tok-1].value.i=str_to_llint_p(s);
                 toks[n_tok-1].type=ount;
-                p=e;
+                p+=longeur;
                 continue;
             }
             if(n>1){
@@ -96,7 +97,7 @@ Token*lexe(char*text){
             *toks[n_tok-1].value.f=v;
             toks[n_tok-1].type=floap;
             toks[n_tok-1].line=line;
-            p=e;
+            p+=longeur;
             continue;
         }
         if(p+1<len){//ops 2 char
@@ -200,9 +201,7 @@ Token*lexe(char*text){
         n_tok++;
         toks=realloc(toks,sizeof(Token)*n_tok);
         toks[n_tok-1].type=identifier;
-        toks[n_tok-1].value.s=malloc(sizeof(char)*len);
-        strcpy(toks[n_tok-1].value.s,m);
-        free(m);
+        toks[n_tok-1].value.s=m;
         toks[n_tok-1].line=line;
         p=e+1;
         continue;
