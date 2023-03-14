@@ -51,7 +51,7 @@ typedef struct  Elif{
 
 typedef struct If{
     Ast*condition;
-    struct Instruction*endif_p;
+    long long int endif_p;
 }If;
 
 

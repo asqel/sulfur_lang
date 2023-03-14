@@ -584,9 +584,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     (*n_inst)++;
                     inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_endif;
-                    printf("endif--%d-%x-",*n_inst-1,inst[if_index].value.i);
                     inst[if_index].value.i->endif_p=*n_inst-1;
-                    printf("cest ok");
 
                     int*endifelse_ps=malloc(sizeof(int)*(1+count_elseelif(tok,closing_rback+1)));//list des endif ou on doit leur rajouter le pointer vers un endifelse
                     int endif_n=1;
@@ -668,7 +666,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                         }
                     }
                     (*n_inst)++;
-                    inst=realloc(inst,sizeof(inst)*(*n_inst));
+                    inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_endifelse;
 
                     for(int i=0;i<endif_n;i++){
@@ -805,7 +803,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                             inst=parse(tok,n+2,k,inst,n_inst);
 
                             (*n_inst)++;
-                            inst=realloc(inst,sizeof(inst)*(*n_inst));
+                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                             inst[*n_inst-1].type=inst_endfor_t;
                             inst[*n_inst-1].value.endfor=for_idx;
                             inst[for_idx].value.fo->endfor=*n_inst-1;

@@ -1,6 +1,6 @@
 ount a=0;
 ount c=4;
-if(0){
+if(1){
     ount k=9;
 }
 else{
