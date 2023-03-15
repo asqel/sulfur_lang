@@ -46,7 +46,7 @@ typedef struct Funcdef{
 
 typedef struct  Elif{
     Ast*condition;
-    struct Instruction*endif_p;
+    long long int endif_p;
 }Elif;
 
 typedef struct If{
@@ -59,12 +59,12 @@ typedef struct For{
     char*var_name;
     Ast*start;
     Ast*end;
-    struct Instruction*endfor;
+    long long int endfor;
 }For;
 
 typedef struct While{
     Ast*condition;
-    struct Instruction*endwhile;
+    long long int endwhile;
 }While;
 
 typedef struct Swap{
@@ -81,14 +81,16 @@ typedef struct Instruction{
         If*i;
         For*fo;
         While*wh;
-        struct Instruction*endwhile;
-        struct Instruction*endfor;
+        long long int endwhile;
+        long long int endfor;
         Ast*ret;
         Ast*expr;
-        struct Instruction*endif;
-        struct Instruction*endifelse;
+        long long int endif;
+        long long int endifelse;
         Elif*el;
         Swap*sw;
+        char*section;
+        char*goto_sec;
     }value;
 }Instruction;
 
@@ -106,7 +108,9 @@ enum instruction_type{
     inst_for_t,
     inst_while_t,
     inst_return_t,
-    inst_swap_t
+    inst_swap_t,
+    inst_section_t,
+    inst_goto_t
 };
 
 //to acces an element

@@ -143,7 +143,6 @@ int free_tok_val(Token x){
             free(x.value.t);break;
         case identifier:
             x.value.s=realloc(x.value.s,sizeof(char)*(strlen(x.value.s)+1));
-            printf("-%p-",x.value.s);
             free(x.value.s);break;
 
         default:

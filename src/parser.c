@@ -174,13 +174,13 @@ Ast*make_ast(Ast*e,int len){
                 //search closing par
                 int count=0;
                 for(int i=opening_par+1;i<len;i++){
-                    if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_L){
+                    if(e[i].type==Ast_syntax_t&&e[i].root.sy==par_L){
                         count++;
                     }
-                    else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count>0){
+                    else if(e[i].type==Ast_syntax_t&&e[i].root.sy==par_R&& count>0){
                         count--;
                     }
-                    else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count==0){
+                    else if(e[i].type==Ast_syntax_t&&e[i].root.sy==par_R&& count==0){
                         closing_par=i;
                         break;
                     }
@@ -189,6 +189,22 @@ Ast*make_ast(Ast*e,int len){
                 if(closing_par==-1){
                     printf("ERROR missing closing ')' in function call");
                     exit(1);
+                }
+                if(closing_par==opening_par+1){
+                    funccall f;
+                    f.args=NULL;
+                    f.nbr_arg=0;
+                    f.name=e[opening_par-1].root.varcall;
+                    for(int i=closing_par+1;i<len;i++){
+                        e[i-2]=e[i];
+                    }
+                    len-=2;
+                    e=realloc(e,sizeof(Ast)*len);
+                    e[opening_par-1].type=Ast_funccall_t;
+                    e[opening_par-1].root.fun=malloc(sizeof(funccall));
+                    *e[opening_par-1].root.fun=f;
+                    p++;
+                    continue;
                 }
                 Ast*to_parse=malloc(sizeof(Ast)*(closing_par-opening_par-1));
                 for(int i=opening_par+1;i<closing_par;i++){
@@ -618,7 +634,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                                 (*n_inst)++;
                                 inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                                 inst[*n_inst-1].type=inst_endif;
-                                inst[elif_index].value.i->endif_p=*n_inst-1;
+                                inst[elif_index].value.el->endif_p=*n_inst-1;
                                 p=closing_rback+1;
 
                                 endif_n++;
@@ -746,7 +762,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 inst[*n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
                 strcpy(inst[*n_inst-1].value.vs->name,tok[p].value.s);//set name
 
-                Ast*v=make_ast(tok_to_Ast(tok,p+1,n),n-(p+1));
+                Ast*v=make_ast(tok_to_Ast(tok,p+2,n),n-(p+2));
                 inst[*n_inst-1].value.vs->val=v;//set val
                 p=n+1;
                 continue;
@@ -918,6 +934,28 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     p=closing_rback+1;
                 }
             }
+        }
+        if(tok[p].type==identifier&&p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==colon){
+            (*n_inst)++;
+            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+            inst[*n_inst-1].type=inst_section_t;
+            inst[*n_inst-1].value.section=malloc(sizeof(char)*(1+strlen(tok[p].value.s)));
+            strcpy(inst[*n_inst-1].value.section,tok[p].value.s);
+            p+=2;
+            continue;
+        }
+        if(tok[p].type==keyword&&*tok[p].value.t==goto_t){
+            if(!(p+1<len&&tok[p+1].type==identifier)){
+                printf("missing identifier after goto on line %d",tok[p].line);
+                exit(1);
+            }
+            (*n_inst)++;
+            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+            inst[*n_inst-1].type=inst_goto_t;
+            inst[*n_inst-1].value.goto_sec=malloc(sizeof(char)*(1+strlen(tok[p+1].value.s)));
+            strcpy(inst[*n_inst-1].value.section,tok[p+1].value.s);
+            p+=2;
+            continue;
         }
         else{
             int n=find_semicol(tok,p);

@@ -16,6 +16,22 @@ Token*lexe(char*text){
     toks=malloc(sizeof(Token));
     toks[n_tok-1]=nil_token;
     while(p<len){
+        if(text[p]=='/'&&p+1<len&&text[p+1]=='/'){
+            while(p<len&&text[p]!='\n'){
+                p++;
+            }
+            continue;
+        }
+        if(text[p]=='/'&&p+1<len&&text[p+1]=='*'){
+            p+=2;
+            while(p<len){
+                if(text[p]=='*'&&p+1<len&&text[p+1]=='/'){
+                    p+=2;
+                    break;
+                }
+            }
+            continue;
+        }
         if(text[p]=='\n'){
             line++;
             p++;

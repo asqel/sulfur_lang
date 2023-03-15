@@ -77,17 +77,31 @@ void init_garbage_collect(){
 
 
 Object eval_Ast(Ast*x){
-    if(x->left==NULL && x->right==NULL&& !x->isAst){
-        if(x->type==Ast_funccall_t){
-            printf("ERROR not implemented yet(funccall)");
-            exit(-1);
+    if(x->type==Ast_funccall_t){
+        if(!strcmp(x->root.fun->name,"print")){
+            int n=-1;
+            for(int i=0;i<MEMORY_len;i++){
+                if(!strcmp(MEMORY_key[i],"pr")){
+                    n=i;
+                    break;
+                }
+            }
+            if(n!=-1){
+                return print_prompt(&MEMORY[n],1);
+                
+            }
         }
+        else{
+            printf("function doesnt exit");
+            exit(1);
+        }
+    }
+    if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type == Ast_varcall_t){
             printf("ERROR not implemented yet(varcall)");
             exit(-1);
         }
         if(x->type == Ast_object_t){
-            printf("dans le eval %hi \n",*(x->root.obj)->val.b);
             return *(x->root.obj);
         }
         else{
@@ -100,10 +114,6 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                println_prompt(&b,1);
-                println_prompt(&a,1);
-
-
                 return add(a,b);
             }
         }
@@ -151,10 +161,14 @@ int add_ref(Object o){
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
     //check_libs();
-    printf("mmmmmmmmmm\n");
-    printf("è è %d é é\n",len);
     while(p<len){
         if(code[p].type==inst_varset_t){
+            for(int i=0;i<MEMORY_len;i++){
+                if(!strcmp(MEMORY_key[i],code[p].value.vs->name)){
+                    printf("error redefinition of var please delete var befor");
+                    exit(1);
+                }
+            }
             MEMORY_len++;
             MEMORY=realloc(MEMORY,sizeof(Object)*MEMORY_len);
             MEMORY_key=realloc(MEMORY_key,sizeof(char*)*MEMORY_len);
@@ -167,19 +181,29 @@ int execute(Instruction*code,char*file_name,int len){
             continue;       
 
         }
+        if(code[p].type==inst_new_varset_t){
+            int n=-1;
+            for(int i=0;i<MEMORY_len;i++){
+                if(!strcmp(MEMORY_key[i],code[p].value.vs->name)){
+                    n=i;
+                    break;
+                }
+            }
+            MEMORY[n]=eval_Ast(code[p].value.vs->val);
+            p++;         
+        }
         if(code[p].type==inst_if_t){
             Object condition=eval_Ast(code[p].value.i->condition);
             if(*(std_bool(&condition,1).val.b)){
                 p++;
                 continue;
             }
-            printf("pointeur %d endif %d  if %x-",p,code[p].value.i->endif_p+1,code[p].value.i);
             p=code[p].value.i->endif_p+1;
             continue;
         }
         if(code[p].type==inst_elif_t){
             Object condition=eval_Ast(code[p].value.el->condition);
-            if(std_bool(&condition,1).val.b){
+            if(*(std_bool(&condition,1).val.b)){
                 p++;
                 continue;
             }
@@ -200,17 +224,51 @@ int execute(Instruction*code,char*file_name,int len){
             continue;
         }
         if(code[p].type==inst_return_t){
-            p++;
-
             Object*x=malloc(sizeof(Object));
-            printf("eee%x\n",code[p].value.ret);
-
             *x=eval_Ast(code[p].value.ret);
-            println_prompt(x,1);
+            p++;
+            continue;
+        }
+
+        if(code[p].type==inst_expr_t){
+            eval_Ast(code[p].value.expr);
+            p++;
+            continue;
+        }
+        if(code[p].type==inst_section_t){
+            p++;
+        }
+        if(code[p].type==inst_goto_t){
+            int n=-1;
+            //search down
+            for(int i=p+1;i<len;i++){
+                if(code[i].type==inst_section_t){
+                    if(!strcmp(code[p].value.goto_sec,code[i].value.section)){
+                        n=i;
+                        break;
+                    }
+                }
+            }
+            if(n==-1){
+                //search up
+                for(int i=p-1;i>=0;i--){
+                    if(code[i].type==inst_section_t){
+                        if(!strcmp(code[p].value.goto_sec,code[i].value.section)){
+                            n=i;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(n==-1){
+                printf("section %s doesnt exists",code[p].value.goto_sec);
+                exit(1);
+            }
+            p=n;
             continue;
         }
     }
-    printf("\n %d\nMEMORY:\n",MEMORY_len);
+    printf("\n \nMEMORY:\n",MEMORY_len);
     for(int i=0;i<MEMORY_len;i++){
         printf("    %s: ",MEMORY_key[i]);
         println_prompt(&MEMORY[i],1);

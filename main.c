@@ -9,15 +9,12 @@
 
 
 int main(int argc,char **argv){
-    printf("salut2");
     back_slash_to_path(argv[0]);
     char *d=dirname(argv[0]);
     char *filepath=str_cat_new(d,"/main.su");
     char *text=read_file(filepath);
     Token*l=lexe(text);
     int len=token_len(l); 
-
-    tokens_print(l,"\n");
 
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
@@ -29,7 +26,6 @@ int main(int argc,char **argv){
         free_tok_val(l[i]);
     }
     free(l);
-    printf("ssssss");
     init_memory();
     init_stack();    
     init_funcdefs();
@@ -43,8 +39,8 @@ int main(int argc,char **argv){
     MEMORY[MEMORY_len-1].type=Obj_string_t;
     MEMORY[MEMORY_len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
     strcpy(MEMORY[0].val.s,filepath);
-    printf("before exec Ok");
+    printf("before exec Ok\n");
     execute(code,filepath,*instruction_len);
-    printf("after exec ok");
+    printf("after exec ok\n");
     return 0;
 }
