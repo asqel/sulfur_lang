@@ -20,6 +20,7 @@ int main(int argc,char **argv){
     *instruction_len=0;
 
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
+
     //parser copy values of tokens so
     //you can free tokens after parsing 
     for(int i=0;i<=len-1;i++){
@@ -27,8 +28,11 @@ int main(int argc,char **argv){
     }
     free(l);
     init_memory();
-    init_stack();  
+    init_stack(); 
+    
     init_libs();  
+    
+
 
     //set a var __path__ to current .su file path executed
     MEMORY.len++;
@@ -41,15 +45,18 @@ int main(int argc,char **argv){
     free(MEMORY.values);
     MEMORY.values=e;
 
-    MEMORY.keys=realloc(MEMORY.keys,sizeof(char)*MEMORY.len);
+    
+    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
+    
     MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(strlen("__path__")+1));
     strcpy(MEMORY.keys[MEMORY.len-1],"__path__");
+    
+    
 
     MEMORY.values[MEMORY.len-1].type=Obj_string_t;
     MEMORY.values[MEMORY.len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
     strcpy(MEMORY.values[MEMORY.len-1].val.s,filepath);
 
     execute(code,filepath,*instruction_len);
-    printf("ok4");
     return 0;
 }

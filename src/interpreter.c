@@ -84,7 +84,9 @@ void init_libs(){
 Object eval_Ast(Ast*x){
     if(x->type==Ast_funccall_t){
         int n=-1;
+        
         for(int i=0;i<MEMORY.len;i++){
+
             if(!strcmp(MEMORY.keys[i],x->root.fun->name)&& MEMORY.values[i].type==Obj_funcid_t){
                 n=i;
             }
@@ -314,7 +316,7 @@ int execute(Instruction*code,char*file_name,int len){
             
         }
     }
-    printf("\n \nMEMORY:\n",MEMORY.len);
+    printf("\n \nMEMORY:%d\n",MEMORY.len);
     for(int i=0;i<MEMORY.len;i++){
         printf("    %s: ",MEMORY.keys[i]);
         println_prompt(&MEMORY.values[i],1);
