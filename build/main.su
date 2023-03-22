@@ -1,26 +1,3 @@
-ount a=0;
-ount c=4;
-ount le="salut"+" "+"proute";
-
-ount pr="comment ca va 
-";
-//mettre \n ne marche pas (volontairement c'est une feature pas un bug donc faut ecrir le string comme ca  )
-print();
-
-pr="ca va tres vien";
-
-print();
-
-goto sec
-
-if(0){
-    ount k=9;
-}
-elif(0){
-    ount el=3;
-}
-else{
-    ount u=3;
-}
-
-sec:
+print("salut","et toi",3.14);
+ount a=3;
+print(3+a+4);

@@ -151,3 +151,19 @@ void*get_obj_pointer(Object o){
             break;
     }
 }
+
+Funcdef new_blt_func(char*name,Object (*func)(Object*,int),char*desc){
+    Funcdef f;
+    f.arg_names=NULL;
+    f.arg_types=NULL;
+    f.code=NULL;
+    f.description=desc;
+    f.func_p=func;
+    f.is_builtin=1;
+    f.name=malloc(sizeof(char)*(1+strlen(name)));
+    strcpy(f.name,name);
+    f.nbr_of_args=-1;
+    f.nbr_ret_type=-1;
+    f.ret_type=NULL;
+    return f;
+}

@@ -25,7 +25,14 @@ Object read_prompt(Object*o) {
  
 
 Object print_prompt(Object*obj,int n_arg){
+    if(n_arg>1){
+        for(int i=0;i<n_arg-1;i++){
+            print_prompt(&obj[i],1);
+            printf(" ");
+        }
+        return print_prompt(&obj[n_arg-1],1);
 
+    }
     if(obj->type==Obj_string_t){
         printf("%s",obj->val.s);
         return nil_Obj;
@@ -114,4 +121,39 @@ Object std_bool(Object*obj,int n_arg){
 }
 
 
+
+memory init_std(memory MEMORY){
+    MEMORY.len+=3;
+    MEMORY.keys=realloc(MEMORY.keys,sizeof(char*)*MEMORY.len);
+
+    MEMORY.keys[MEMORY.len-3]=malloc(sizeof(char)*(1+strlen("print")));
+    strcpy(MEMORY.keys[MEMORY.len-3],"print");  
+
+    MEMORY.values=realloc(MEMORY.values,MEMORY.len);
+    MEMORY.values[MEMORY.len-3].type=Obj_funcid_t;
+    MEMORY.values[MEMORY.len-3].val.funcid=malloc(sizeof(Funcdef));
+    *MEMORY.values[MEMORY.len-3].val.funcid=new_blt_func("print",&print_prompt,"");
+
+
+    MEMORY.keys[MEMORY.len-2]=malloc(sizeof(char)*(1+strlen("println")));
+    strcpy(MEMORY.keys[MEMORY.len-2],"println");  
+
+    MEMORY.values=realloc(MEMORY.values,MEMORY.len);
+    MEMORY.values[MEMORY.len-2].type=Obj_funcid_t;
+    MEMORY.values[MEMORY.len-2].val.funcid=malloc(sizeof(Funcdef));
+    *MEMORY.values[MEMORY.len-2].val.funcid=new_blt_func("println",&println_prompt,"");
+    
+
+    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("bool")));
+    strcpy(MEMORY.keys[MEMORY.len-1],"bool");  
+
+    MEMORY.values=realloc(MEMORY.values,MEMORY.len);
+    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
+    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
+    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("bool",&std_bool,"");
+    
+    
+    
+    return MEMORY;
+}
 

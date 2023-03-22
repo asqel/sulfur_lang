@@ -16,42 +16,16 @@ typedef struct varset{
 
 }varset;
 
-/*every blt function should be definied like this
-{
-    name;
-    return types;
-    number of return types;
-    types of args; (NULL if number of args is -1)
-    NULL;
-    number of args; (-1 if not specified)
-    1;
-    the pointer to the builtin function;
-    NULL;
-}
-the builtin function written in c has to to take 2 argument: an array of Object and the length of this array
-if the function number of args=0 a NULL pointer is passed
-return type must be Object
-*/
-typedef struct Funcdef{
-    char*name;//name of function
-    char**ret_type;// list of types that can be returned by the function
-    int nbr_ret_type;//len of ret_type
-    char**arg_types;
-    char**arg_names;
-    int nbr_of_args;
-    char is_builtin;
-    Object (*func_p)(Object*,int);//pointer to the builtin function
-    struct Instruction*code;
-}Funcdef;
+
 
 typedef struct  Elif{
     Ast*condition;
-    long long int endif_p;
+    int endif_p;
 }Elif;
 
 typedef struct If{
     Ast*condition;
-    long long int endif_p;
+    int endif_p;
 }If;
 
 
@@ -59,12 +33,12 @@ typedef struct For{
     char*var_name;
     Ast*start;
     Ast*end;
-    long long int endfor;
+    int endfor;
 }For;
 
 typedef struct While{
     Ast*condition;
-    long long int endwhile;
+    int endwhile;
 }While;
 
 typedef struct Swap{
@@ -81,12 +55,12 @@ typedef struct Instruction{
         If*i;
         For*fo;
         While*wh;
-        long long int endwhile;
-        long long int endfor;
+        int endwhile;
+        int endfor;
         Ast*ret;
         Ast*expr;
-        long long int endif;
-        long long int endifelse;
+        int endif;
+        int endifelse;
         Elif*el;
         Swap*sw;
         char*section;

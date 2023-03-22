@@ -4,4 +4,10 @@
 
 Object add(Object a,Object b);
 
+Object sub(Object a,Object b);
+
+
+
+
+
 #endif

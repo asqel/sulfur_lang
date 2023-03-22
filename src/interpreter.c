@@ -5,15 +5,16 @@
 //builtin libs
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../include/operation.h"
+#include "../include/utilities.h"
 
 
 
-Object*MEMORY;//array of Objec
-char**MEMORY_key;//array of st
+memory MEMORY;
+
+
 Object**STACK;//end with an ar
 char***STACK_KEY;//end with an
 
-long long int MEMORY_len;
 long long int STACK_len;
 long long int*sub_STACK_len;//
 
@@ -43,9 +44,9 @@ long long int REF_COUNT_len;
 
 
 void init_memory(){
-    MEMORY=malloc(sizeof(Object));
-    MEMORY_key=malloc(sizeof(char *));
-    MEMORY_len=0;
+    MEMORY.values=malloc(sizeof(Object));
+    MEMORY.keys=malloc(sizeof(char *));
+    MEMORY.len=0;
 }
 
 
@@ -74,37 +75,57 @@ void init_garbage_collect(){
     REF_COUNTS=malloc(sizeof(ref_counter));
 }
 
+void init_libs(){
+    MEMORY=init_std(MEMORY);
+}
+
 
 
 Object eval_Ast(Ast*x){
     if(x->type==Ast_funccall_t){
         if(!strcmp(x->root.fun->name,"print")){
-            int n=-1;
-            for(int i=0;i<MEMORY_len;i++){
-                if(!strcmp(MEMORY_key[i],"pr")){
-                    n=i;
-                    break;
-                }
-            }
-            if(n!=-1){
-                return print_prompt(&MEMORY[n],1);
-                
+            //Object*a=malloc(sizeof(Object));
+            //*a=eval_Ast(x->root.fun->args);
+            //return print_prompt(a,1);*
+            
+        }
+        int n=-1;
+
+        for(int i=0;i<MEMORY.len;i++){
+            if(!strcmp(MEMORY.keys[i],x->root.fun->name)&& MEMORY.values[i].type==Obj_funcid_t){
+                n=i;
             }
         }
-        else{
-            printf("function doesnt exit");
+        if(n==-1){
+            printf("function '%s' doesnt exit",x->root.fun->name);
             exit(1);
+        }
+        if(MEMORY.values[n].val.funcid->is_builtin){
+            Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
+            for(int i=0;i<x->root.fun->nbr_arg;i++){
+                a[i]=eval_Ast(&x->root.fun->args[i]);
+            }
+            return (*MEMORY.values[n].val.funcid->func_p)(a,x->root.fun->nbr_arg);
         }
     }
     if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type == Ast_varcall_t){
-            printf("ERROR not implemented yet(varcall)");
-            exit(-1);
+            int n=-1;
+            for(int i=0;i<MEMORY.len;i++){
+                if(!strcmp(MEMORY.keys[i],x->root.varcall)){
+                    n=i;
+                }
+            }
+            if(n==-1){
+                printf("ERROR var '%s' doesnt exist",x->root.varcall);
+            }
+            return MEMORY.values[n];
         }
         if(x->type == Ast_object_t){
             return *(x->root.obj);
         }
         else{
+            printf("type:%d:",x->type);
             printf("ERROR in Ast");
             exit(-1);
         }
@@ -163,33 +184,33 @@ int execute(Instruction*code,char*file_name,int len){
     //check_libs();
     while(p<len){
         if(code[p].type==inst_varset_t){
-            for(int i=0;i<MEMORY_len;i++){
-                if(!strcmp(MEMORY_key[i],code[p].value.vs->name)){
+            for(int i=0;i<MEMORY.len;i++){
+                if(!strcmp(MEMORY.keys[i],code[p].value.vs->name)){
                     printf("error redefinition of var please delete var befor");
                     exit(1);
                 }
             }
-            MEMORY_len++;
-            MEMORY=realloc(MEMORY,sizeof(Object)*MEMORY_len);
-            MEMORY_key=realloc(MEMORY_key,sizeof(char*)*MEMORY_len);
-            MEMORY_key[MEMORY_len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.vs->name)));
-            strcpy(MEMORY_key[MEMORY_len-1],code[p].value.vs->name);
+            MEMORY.len++;
+            MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
+            MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
+            MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.vs->name)));
+            strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.vs->name);
             Object o=eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
             add_ref(o);
-            MEMORY[MEMORY_len-1]=o;
+            MEMORY.values[MEMORY.len-1]=o;
             p++;
             continue;       
 
         }
         if(code[p].type==inst_new_varset_t){
             int n=-1;
-            for(int i=0;i<MEMORY_len;i++){
-                if(!strcmp(MEMORY_key[i],code[p].value.vs->name)){
+            for(int i=0;i<MEMORY.len;i++){
+                if(!strcmp(MEMORY.keys[i],code[p].value.vs->name)){
                     n=i;
                     break;
                 }
             }
-            MEMORY[n]=eval_Ast(code[p].value.vs->val);
+            MEMORY.values[n]=eval_Ast(code[p].value.vs->val);
             p++;         
         }
         if(code[p].type==inst_if_t){
@@ -268,10 +289,10 @@ int execute(Instruction*code,char*file_name,int len){
             continue;
         }
     }
-    printf("\n \nMEMORY:\n",MEMORY_len);
-    for(int i=0;i<MEMORY_len;i++){
-        printf("    %s: ",MEMORY_key[i]);
-        println_prompt(&MEMORY[i],1);
+    printf("\n \nMEMORY:\n",MEMORY.len);
+    for(int i=0;i<MEMORY.len;i++){
+        printf("    %s: ",MEMORY.keys[i]);
+        println_prompt(&MEMORY.values[i],1);
     }
     return 0;
 }

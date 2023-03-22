@@ -4,12 +4,11 @@
 #include "memlib.h"
 
 
-extern Object*MEMORY;
-extern char**MEMORY_key;
+extern memory MEMORY;
+
 extern Object**STACK;
 extern char***STACK_KEY;
 
-extern long long int MEMORY_len;
 extern long long int STACK_len;
 extern long long int*sub_STACK_len;//list of int its len is stack_len
 
@@ -43,6 +42,8 @@ void init_stack();
 void init_funcdefs();
 
 void init_classdefs();
+
+void init_libs();
 
 void init_garbage_collect();
 

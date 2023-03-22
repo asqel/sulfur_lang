@@ -27,20 +27,27 @@ int main(int argc,char **argv){
     }
     free(l);
     init_memory();
-    init_stack();    
-    init_funcdefs();
+    init_stack();  
+    init_libs();  
 
     //set a var __path__ to current .su file path executed
-    MEMORY_len++;
-    MEMORY=realloc(MEMORY,sizeof(Object)*(MEMORY_len));
-    MEMORY_key[MEMORY_len-1]=malloc(sizeof(char)*(strlen("__path__")+1));
-    strcpy(MEMORY_key[MEMORY_len-1],"__path__");
+    MEMORY.len++;
+    //MEMORY.values=realloc(MEMORY.values,sizeof(Object)*MEMORY.len);
+    //utiliser le realloc modifier des valeurs 
+    Object*e=malloc(sizeof(Object)*MEMORY.len);
+    for(int i=0;i<MEMORY.len-1;i++){
+        e[i]=MEMORY.values[i];
+    }
+    free(MEMORY.values);
+    MEMORY.values=e;
 
-    MEMORY[MEMORY_len-1].type=Obj_string_t;
-    MEMORY[MEMORY_len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
-    strcpy(MEMORY[0].val.s,filepath);
-    printf("before exec Ok\n");
+    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(strlen("__path__")+1));
+    strcpy(MEMORY.keys[MEMORY.len-1],"__path__");
+
+    MEMORY.values[MEMORY.len-1].type=Obj_string_t;
+    MEMORY.values[MEMORY.len-1].val.s=malloc(sizeof(char)*(1+strlen(filepath)));
+    strcpy(MEMORY.values[MEMORY.len-1].val.s,filepath);
+    
     execute(code,filepath,*instruction_len);
-    printf("after exec ok\n");
     return 0;
 }

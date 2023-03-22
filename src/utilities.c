@@ -148,3 +148,26 @@ long long int str_to_llint(char*s){
     }
     return x;
 }
+
+void*realloc_c(void*mem,long long int old_size,long long int new_size){
+    if(old_size==new_size){
+        return mem;
+    }
+    if(old_size<new_size){
+        char*x=malloc(new_size);
+        for(int i=0;i<old_size;i++){
+            *(x+i)=((char*)mem)[i];
+        }
+        return (void*)x;
+    }
+    if(old_size>new_size){
+        char*x=malloc(new_size);
+        for(int i=0;i<new_size;i++){
+            *(x+i)=((char*)mem)[i];
+        }
+        return (void*)x;
+    }
+    if(new_size==0){
+        return NULL;
+    }
+}

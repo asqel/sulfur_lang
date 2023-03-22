@@ -154,6 +154,51 @@ int find_highest_op(Ast*e,int len){
 
 }
 
+int count_comma(Ast*e,int len){
+    int com_c=0;
+    int i=0;
+    while(i<len){
+        if(e[i].type==Ast_syntax_t && e[i].root.sy==comma){
+            com_c++;
+            i++;
+            continue;
+        }
+        if(e[i].type==Ast_varcall_t && i+1<len && e[i+1].type==syntax && e[i+1].root.sy==par_L){
+            int op_par=i+1;
+            int cl_par=-1;
+            int count=0;
+            for(int k=op_par+1;k<len;k++){
+                if(e[k].type==syntax && e[k].root.sy==par_L){
+                    count++;
+                    continue;
+                }
+                if(e[k].type==syntax && e[k].root.sy==par_R && count>0){
+                    count--;
+                    continue;
+                }
+                if(e[k].type==syntax && e[k].root.sy==par_R && count==0){
+                    cl_par=k;
+                    break;
+                }
+            }
+            if(cl_par==-1){
+                printf("ERROR missing closing ')' in expression on function call");
+                exit(1);
+            }
+            i=cl_par+1;
+            continue;
+        }
+        else{
+            i++;
+        }
+    }
+    return com_c;
+}
+
+typedef struct parse_arg{
+    Ast*v;
+    int l;
+}parse_arg;
 
 //start included
 //end not included
@@ -190,7 +235,7 @@ Ast*make_ast(Ast*e,int len){
                     printf("ERROR missing closing ')' in function call");
                     exit(1);
                 }
-                if(closing_par==opening_par+1){
+                if(closing_par==opening_par+1){//funccall without arg
                     funccall f;
                     f.args=NULL;
                     f.nbr_arg=0;
@@ -207,15 +252,105 @@ Ast*make_ast(Ast*e,int len){
                     continue;
                 }
                 Ast*to_parse=malloc(sizeof(Ast)*(closing_par-opening_par-1));
+                int to_parse_len=closing_par-opening_par-1;
                 for(int i=opening_par+1;i<closing_par;i++){
                     to_parse[i-(opening_par+1)]=e[i];
                 }
-                funccall f;
-                f.name=e[opening_par-1].root.varcall;
-                //faudra mmettre isAst=1
-                //faire un truc qui compte les virgule arg=virgule+1
-                //et un truc qui fait des sous list pour chaque argument et qui les parse
+                if(count_comma(to_parse,to_parse_len)==0){
+                    Ast*o=make_ast(to_parse,to_parse_len);
+                    funccall f;
+                    f.args=o;
+                    f.name=e[opening_par-1].root.varcall;
+                    f.nbr_arg=1;
+                    for(int i=closing_par+1;i<len;i++){
+                        e[i-(closing_par+1)+opening_par]=e[i];
+                    }
 
+                    len-=closing_par-opening_par+1;
+                    e=realloc(e,len);
+                    e[opening_par-1].type=Ast_funccall_t;
+                    e[opening_par-1].root.fun=malloc(sizeof(funccall));
+                    *e[opening_par-1].root.fun=f;
+                    p++;
+                    continue;
+                }
+                else{
+                    parse_arg*a=malloc(sizeof(parse_arg));
+                    int k=0;
+                    a[0].l=0;
+                    a[0].v=malloc(sizeof(Ast));
+                    for(int i=0;i<to_parse_len;i++){
+                        if(to_parse[i].type==Ast_syntax_t && to_parse[i].root.sy==comma){
+                            k++;
+                            a=realloc(a,sizeof(parse_arg)*(k+1));
+                            a[k].l=0;
+                            a[k].v=malloc(sizeof(Ast));
+                            continue;
+
+                        }
+                        if(to_parse[i].type==Ast_funccall_t && i+1<to_parse_len){
+                            if(to_parse[i+1].type==Ast_syntax_t && to_parse[i+1].root.sy==par_L){
+                                int op_par=i+1;
+                                int cl_par=-1;
+                                int count=0;
+                                for(int u=op_par+1;u<to_parse_len;u++){
+                                    if(to_parse[u].type==Ast_syntax_t && to_parse[u].root.sy==par_L){
+                                        count++;
+                                        continue;
+                                    }
+                                    if(to_parse[u].type==Ast_syntax_t && to_parse[u].root.sy==par_R && count>0){
+                                        count--;
+                                        continue;
+                                    }
+                                    if(to_parse[u].type==Ast_syntax_t && to_parse[u].root.sy==par_R && count==0){
+                                        cl_par=u;
+                                        break;
+                                    }
+                                }
+                                if(cl_par==-1){
+                                    printf("ERROR missing closing ')' in expression on function call");
+                                    exit(1);
+                                }
+                                int l=cl_par-op_par+2;
+                                a[k].l+=l;
+                                a[k].v=realloc(a[k].v,sizeof(Ast)*a[k].l);
+                                for(int j=op_par;j<=cl_par;j++){
+                                    a[k].v[j-op_par+a[k].l-l]=to_parse[j];
+                                }
+                                i=cl_par;
+                                continue;
+                            }
+                        }
+                        a[k].l++;
+                        a[k].v=realloc(a[k].v,sizeof(Ast)*(a[k].l));
+                        a[k].v[a[k].l-1]=to_parse[i];
+                    }
+
+                    funccall f;
+                    f.args=malloc(sizeof(Ast)*(k+1));
+                    for(int i=0;i<=k;i++){
+                        f.args[i]=*make_ast(a[i].v,a[i].l);
+                    }
+                    f.name=e[opening_par-1].root.varcall;
+                    f.nbr_arg=k+1;
+                    for(int i=closing_par+1;i<len;i++){
+                        e[i-(closing_par+1)+opening_par]=e[i];
+                    }
+
+                    len-=closing_par-opening_par+1;
+                    e=realloc(e,len);
+                    e[opening_par-1].type=Ast_funccall_t;
+                    e[opening_par-1].root.fun=malloc(sizeof(funccall));
+                    *e[opening_par-1].root.fun=f;
+                    p++;
+                    continue;
+
+                }
+
+
+            }
+            else{
+                p++;
             }
         }
         else{
@@ -225,7 +360,6 @@ Ast*make_ast(Ast*e,int len){
 
 
     }
-
 
     //make expr '(...)'
     p=0;
@@ -251,7 +385,7 @@ Ast*make_ast(Ast*e,int len){
             }
 
             if(closing_par==-1){
-                printf("ERROR missing closing '(' in expression");
+                printf("ERROR missing closing ')' in expression");
                 exit(1);
             }
             Ast*expr=malloc(sizeof(Ast)*closing_par-opening_par-1);
@@ -394,6 +528,7 @@ Ast*make_ast(Ast*e,int len){
 
     //make operators
     p=0;
+
     while(len>1){
         int n=find_highest_op(e,len);
         if(n==-1){
