@@ -83,14 +83,7 @@ void init_libs(){
 
 Object eval_Ast(Ast*x){
     if(x->type==Ast_funccall_t){
-        if(!strcmp(x->root.fun->name,"print")){
-            //Object*a=malloc(sizeof(Object));
-            //*a=eval_Ast(x->root.fun->args);
-            //return print_prompt(a,1);*
-            
-        }
         int n=-1;
-
         for(int i=0;i<MEMORY.len;i++){
             if(!strcmp(MEMORY.keys[i],x->root.fun->name)&& MEMORY.values[i].type==Obj_funcid_t){
                 n=i;
@@ -100,6 +93,7 @@ Object eval_Ast(Ast*x){
             printf("function '%s' doesnt exit",x->root.fun->name);
             exit(1);
         }
+        
         if(MEMORY.values[n].val.funcid->is_builtin){
             Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
             for(int i=0;i<x->root.fun->nbr_arg;i++){
@@ -287,6 +281,37 @@ int execute(Instruction*code,char*file_name,int len){
             }
             p=n;
             continue;
+        }
+        if(code[p].type==inst_for_t){
+            //start var for start
+            MEMORY.len++;
+            MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
+            MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
+            MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fo->var_name)));
+            strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fo->var_name);
+            Object o=eval_Ast(code[p].value.fo->start);
+            add_ref(o);
+            MEMORY.values[MEMORY.len-1]=o;
+            Object start=eval_Ast(code[p].value.fo->start);
+            Object end=eval_Ast(code[p].value.fo->end);
+            if(start.type!= Obj_ount_t || end.type!=Obj_ount_t){
+                printf("ERROR not a ount value in for (start or end)");
+                exit(1);//TODO : detailler l'erreur en disant le type et le quelle est pas bon start ou end et pottentiellement le convertir en ount si possible genre les floap
+            }
+
+            if(start.val.i<end.val.i || start.val.i>end.val.i){
+                p++;
+                continue;
+            }
+            else{
+                p=code[p].value.fo->endfor+1;
+            }
+
+        }
+        if(code[p].type==inst_endfor_t){
+            int for_p=code[p].value.endfor;
+            //get la variable check les condition tout ca tout ca
+            
         }
     }
     printf("\n \nMEMORY:\n",MEMORY.len);

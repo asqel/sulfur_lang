@@ -155,17 +155,13 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size){
         return mem;
     }
     if(old_size<new_size){
-        char*x=malloc(new_size);
-        for(int i=0;i<old_size;i++){
-            *(x+i)=((char*)mem)[i];
-        }
+        void*x=malloc(new_size);
+        memcpy(x,mem,old_size);
         return (void*)x;
     }
     if(old_size>new_size){
-        char*x=malloc(new_size);
-        for(int i=0;i<new_size;i++){
-            *(x+i)=((char*)mem)[i];
-        }
+        void*x=malloc(new_size);
+        memcpy(x,mem,new_size);
         return (void*)x;
     }
     if(new_size==0){

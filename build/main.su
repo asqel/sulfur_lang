@@ -1,3 +1,4 @@
 print("salut","et toi",3.14);
-ount a=bool(3);
-print(3);
+println(3);
+string a=input();
+println("vous avez dit :["+a+"]");

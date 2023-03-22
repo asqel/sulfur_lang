@@ -4,7 +4,7 @@
 #include "../../include/memlib.h"
 
 
-Object read_prompt(Object*o);
+Object read_prompt(Object*o,int n_arg);
  
 Object print_prompt(Object*obj,int n_arg);
 
