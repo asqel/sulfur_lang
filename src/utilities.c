@@ -107,6 +107,7 @@ char*read_file(char*path){
         text[n-1]=c;
     }
     text[n-1]='\0';
+    fclose(f);
     return text;
 }
 
