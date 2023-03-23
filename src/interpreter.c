@@ -134,6 +134,13 @@ Object eval_Ast(Ast*x){
                 return add(a,b);
             }
         }
+        if(x->type==Ast_le_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return less(a,b);
+            }
+        }
     }
 }
 
@@ -179,6 +186,10 @@ int execute(Instruction*code,char*file_name,int len){
     int p=0;
     //check_libs();
     while(p<len){
+        if(code[p].type==inst_pass_t){
+            p++;
+            continue;
+        }
         if(code[p].type==inst_varset_t){
             for(int i=0;i<MEMORY.len;i++){
                 if(!strcmp(MEMORY.keys[i],code[p].value.vs->name)){
@@ -286,14 +297,26 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_for_t){
             //start var for start
-            MEMORY.len++;
-            MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-            MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-            MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fo->var_name)));
-            strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fo->var_name);
-            Object o=eval_Ast(code[p].value.fo->start);
-            add_ref(o);
-            MEMORY.values[MEMORY.len-1]=o;
+            int n=-1;
+            for(int i=0;i<MEMORY.len;i++){
+                if(!strcmp(MEMORY.keys[i],code[p].value.fo->var_name)){
+                    n=i;
+                    break;
+                }
+            }
+            if(n==-1){
+                MEMORY.len++;
+                MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
+                MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
+                MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fo->var_name)));
+                strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fo->var_name);
+                Object o=eval_Ast(code[p].value.fo->start);
+                add_ref(o);
+                MEMORY.values[MEMORY.len-1]=o;
+            }
+            else{
+                MEMORY.values[n]=eval_Ast(code[p].value.fo->start);
+            }
             Object start=eval_Ast(code[p].value.fo->start);
             Object end=eval_Ast(code[p].value.fo->end);
             start=std_ount(&start,1);
@@ -306,7 +329,7 @@ int execute(Instruction*code,char*file_name,int len){
                 printf("ERROR cant convert end to ount on for");
                 exit(1);
             }
-            if(*start.val.i<*end.val.i || *start.val.i>*end.val.i){
+            if(*start.val.i!=*end.val.i){
                 p++;
                 continue;
             }
@@ -333,9 +356,9 @@ int execute(Instruction*code,char*file_name,int len){
                 continue;
             }
             current=std_ount(&current,1);
-           
-            if(*start.val.i<*end.val.i){
-                (*current.val.i)++;
+            int reversed=*start.val.i<*end.val.i;
+            if(!reversed){
+                (*current.val.i)+=1;
                 if(*current.val.i<*end.val.i){
                     for(int i=0;i<MEMORY.len;i++){
                         if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
@@ -343,11 +366,13 @@ int execute(Instruction*code,char*file_name,int len){
                             break;
                         }
                     }
-                    p=for_p+1;
+                    p=code[p].value.endfor+1;
                     continue;
                 }
-                p++;
-                continue;
+                else{
+                    p++;
+                    continue;
+                }
             }
             if(*start.val.i>*end.val.i){
                 (*current.val.i)--;
@@ -358,7 +383,7 @@ int execute(Instruction*code,char*file_name,int len){
                             break;
                         }
                     }
-                    p=for_p+1;
+                    p=code[p].value.endfor+1;
                     continue;
                 }
                 p++;
@@ -368,6 +393,28 @@ int execute(Instruction*code,char*file_name,int len){
                 p++;
             }
             
+        }
+        if(code[p].type==inst_while_t){
+            Object condition=eval_Ast(code[p].value.wh->condition);
+            if(*(std_bool(&condition,1).val.b)){
+                p++;
+                continue;
+            }
+            else{
+                p=code[p].value.wh->endwhile+1;
+                continue;
+            }
+        }
+        if(code[p].type==inst_endwhile_t){
+            int while_p=code[p].value.endwhile;
+            Object condition=eval_Ast(code[while_p].value.wh->condition);
+            if(*(std_bool(&condition,1).val.b)){
+                p=code[p].value.endwhile+1;
+                continue;
+            }
+            else{
+                p++;
+            }
         }
     }
     printf("\n \nMEMORY:%d\n",MEMORY.len);

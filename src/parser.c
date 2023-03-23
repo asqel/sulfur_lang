@@ -1068,6 +1068,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     inst[*n_inst-1].value.endwhile=while_index;
                     inst[while_index].value.wh->endwhile=*n_inst-1;
                     p=closing_rback+1;
+                    continue;
                 }
             }
         }

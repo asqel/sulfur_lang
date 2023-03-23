@@ -84,7 +84,8 @@ enum instruction_type{
     inst_return_t,
     inst_swap_t,
     inst_section_t,
-    inst_goto_t
+    inst_goto_t,
+    inst_pass_t
 };
 
 //to acces an element

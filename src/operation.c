@@ -38,6 +38,7 @@ Object add(Object a,Object b){
         return x;
 
     }
+    
     printf("ERROR : operation between 2 types not supported\n");
     exit(1);
 }
@@ -100,4 +101,14 @@ Object mul(Object a,Object b){
     }
     printf("ERROR : operation between 2 types not supported\n");
     exit(1);
+}
+
+Object less(Object a,Object b){
+    if(a.type==Obj_ount_t && b.type==Obj_ount_t){
+        Object x;
+        x.type=Obj_boolean_t;
+        x.val.b=malloc(sizeof(short int));
+        *x.val.b=*a.val.i<*b.val.i;
+        return x;
+    }
 }

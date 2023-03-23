@@ -6,7 +6,7 @@ Object add(Object a,Object b);
 
 Object sub(Object a,Object b);
 
-
+Object less(Object a,Object b);
 
 
 
