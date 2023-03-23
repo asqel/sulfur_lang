@@ -118,6 +118,27 @@ Object std_bool(Object*obj,int n_arg){
         *res.val.b=*obj->val.b;
         return res;
     }
+    return nil_Obj;
+}
+
+Object std_ount(Object*obj,int n_arg){
+    if(obj->type==Obj_ount_t){
+        return *obj;
+    }
+    Object res;
+    res.type=Obj_ount_t;
+    res.val.i=malloc(sizeof(long long int));
+
+    if(obj->type==Obj_floap_t){
+        *res.val.i=(int)*(obj->val.f);
+        return res;
+    }
+
+    if(obj->type==Obj_boolean_t){
+        *res.val.i=(int)*(obj->val.b);
+        return res;
+    }
+    return nil_Obj;
 }
 
 
@@ -171,6 +192,19 @@ memory init_std(memory MEMORY){
     MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
     MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
     *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("input",&read_prompt," ");
+
+//-------------------------------------
+    //add ount
+    MEMORY.len+=1;
+    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
+
+    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("ount")));
+    strcpy(MEMORY.keys[MEMORY.len-1],"ount");  
+
+    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
+    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
+    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
+    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("ount",&std_ount," ");
         
     
     return MEMORY;

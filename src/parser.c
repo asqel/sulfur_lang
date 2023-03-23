@@ -920,7 +920,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     if(p+3<len&&tok[p+3].type==keyword&&*tok[p+3].value.t==from_t){
                         int n2=-1;
                         for(int i=p+4;i<len;i++){
-                            if(tok[i].type!=keyword&&*tok[i].value.t==to_t){
+                            if(tok[i].type==keyword&&*tok[i].value.t==to_t){
                                 n2=i;
                                 break;
                             }
@@ -935,6 +935,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                                 printf("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[n+1].line);
                                 exit(-1);
                             }
+
                             Ast*x=make_ast(tok_to_Ast(tok,p+4,n2),n2-(p+4));
                             Ast*x2=make_ast(tok_to_Ast(tok,n2+1,n),n-(n2+1));
 

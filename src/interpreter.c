@@ -296,12 +296,17 @@ int execute(Instruction*code,char*file_name,int len){
             MEMORY.values[MEMORY.len-1]=o;
             Object start=eval_Ast(code[p].value.fo->start);
             Object end=eval_Ast(code[p].value.fo->end);
-            if(start.type!= Obj_ount_t || end.type!=Obj_ount_t){
-                printf("ERROR not a ount value in for (start or end)");
-                exit(1);//TODO : detailler l'erreur en disant le type et le quelle est pas bon start ou end et pottentiellement le convertir en ount si possible genre les floap
+            start=std_ount(&start,1);
+            end=std_ount(&end,1);
+            if(start.type==Obj_nil_t){
+                printf("ERROR cant convert start to ount on for");
+                exit(1);
             }
-
-            if(start.val.i<end.val.i || start.val.i>end.val.i){
+            if(end.type==Obj_nil_t){
+                printf("ERROR cant convert end to ount on for");
+                exit(1);
+            }
+            if(*start.val.i<*end.val.i || *start.val.i>*end.val.i){
                 p++;
                 continue;
             }
@@ -312,7 +317,56 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_endfor_t){
             int for_p=code[p].value.endfor;
-            //get la variable check les condition tout ca tout ca
+            Object start=eval_Ast(code[for_p].value.fo->start);
+            Object end=eval_Ast(code[for_p].value.fo->end);
+            start=std_ount(&start,1);
+            end=std_ount(&end,1);
+            Object current=nil_Obj;
+            for(int i=0;i<MEMORY.len;i++){
+                if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
+                    current=MEMORY.values[i];
+                    break;
+                }
+            }
+            if(current.type==Obj_nil_t){
+                p++;
+                continue;
+            }
+            current=std_ount(&current,1);
+           
+            if(*start.val.i<*end.val.i){
+                (*current.val.i)++;
+                if(*current.val.i<*end.val.i){
+                    for(int i=0;i<MEMORY.len;i++){
+                        if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
+                            MEMORY.values[i]=current;
+                            break;
+                        }
+                    }
+                    p=for_p+1;
+                    continue;
+                }
+                p++;
+                continue;
+            }
+            if(*start.val.i>*end.val.i){
+                (*current.val.i)--;
+                if(*current.val.i>*end.val.i){
+                    for(int i=0;i<MEMORY.len;i++){
+                        if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
+                            MEMORY.values[i]=current;
+                            break;
+                        }
+                    }
+                    p=for_p+1;
+                    continue;
+                }
+                p++;
+                continue;
+            }
+            else{
+                p++;
+            }
             
         }
     }
