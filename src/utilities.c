@@ -150,6 +150,42 @@ long long int str_to_llint(char*s){
     return x;
 }
 
+//long double str_to_ldouble(char*s){
+//    long double x=0;
+//    int n=-1;
+//    int len=strlen(s);
+//    for(int i=0;i<len;i++){
+//        if(s[i]=='.'){
+//            n=i;
+//            continue;
+//        }
+//        if(n!=-1 && s[i]=='.'){
+//            return x;
+//        }
+//    }
+//    char*left=malloc(sizeof(char)*n);
+//    for(int i=0;i<n;i++){
+//        left[i]=s[i];
+//    }
+//    x+=str_to_llint(left);
+//    char*right=malloc(sizeof(char)*(len-n-1));
+//    for(int i=n+1;i<len;i++){
+//        right[i-n-1]=s[i];
+//    }
+//    long long int x2=str_to_llint(right);
+//    len=strlen(right);
+//    int tens=0;
+//    for(int i=0;i<len;i++){
+//        if(right[i]=='0'){
+//            tens+=1;
+//        }
+//    }
+//    x+=x2/(pow(10,tens));
+//    free(right);
+//    free(left);
+//    return x;
+//}
+
 void*realloc_c(void*mem,long long int old_size,long long int new_size){
     if(old_size==new_size){
         return mem;

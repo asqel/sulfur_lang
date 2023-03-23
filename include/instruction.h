@@ -102,6 +102,8 @@ typedef struct Lib{
     int nbr_vars;
 }Lib;
 
+int inst_to_str(Instruction*i);
+
 
 
 extern Funcdef*FUNCDEFS;

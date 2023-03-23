@@ -39,6 +39,8 @@ long long int*str_to_llint_p(char*s);
 
 long long int str_to_llint(char*s);
 
+//long double str_to_ldouble(char*s);
+
 void*realloc_c(void*mem,long long int old_size,long long int new_size);
 
 #endif

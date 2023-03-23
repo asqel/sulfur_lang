@@ -141,6 +141,38 @@ Object eval_Ast(Ast*x){
                 return less(a,b);
             }
         }
+        if(x->type==Ast_ge_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return greater(a,b);
+            }
+        }
+        if(x->type==Ast_sub_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return sub(a,b);
+            }
+            if(x->left==NULL && x->right!=NULL){
+                Object b=eval_Ast(x->right);
+                return negate(b);
+            }
+        }
+        if(x->type==Ast_pow_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return _pow(a,b);
+            }
+        }
+        if(x->type==Ast_eq_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return eq(a,b);
+            }
+        }
     }
 }
 
@@ -296,7 +328,19 @@ int execute(Instruction*code,char*file_name,int len){
             continue;
         }
         if(code[p].type==inst_for_t){
-            //start var for start
+            Object start=eval_Ast(code[p].value.fo->start);
+            start=std_ount(&start,1);
+            Object end=eval_Ast(code[p].value.fo->end);
+            end=std_ount(&end,1);
+            if(start.type==Obj_nil_t){
+                printf("ERROR cant convert the value of start to ount in for");
+                exit(1);
+            }
+            if(end.type==Obj_nil_t){
+                printf("ERROR cant convert the value of end to ount in for");
+                exit(1);
+            }
+
             int n=-1;
             for(int i=0;i<MEMORY.len;i++){
                 if(!strcmp(MEMORY.keys[i],code[p].value.fo->var_name)){
@@ -310,63 +354,56 @@ int execute(Instruction*code,char*file_name,int len){
                 MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
                 MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fo->var_name)));
                 strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fo->var_name);
-                Object o=eval_Ast(code[p].value.fo->start);
-                add_ref(o);
-                MEMORY.values[MEMORY.len-1]=o;
+                MEMORY.values[MEMORY.len-1].type=Obj_ount_t;
+                MEMORY.values[MEMORY.len-1].val.i=malloc(sizeof(long long int));
+                *MEMORY.values[MEMORY.len-1].val.i=*start.val.i;
+                add_ref(MEMORY.values[MEMORY.len-1]);
             }
             else{
-                MEMORY.values[n]=eval_Ast(code[p].value.fo->start);
-            }
-            Object start=eval_Ast(code[p].value.fo->start);
-            Object end=eval_Ast(code[p].value.fo->end);
-            start=std_ount(&start,1);
-            end=std_ount(&end,1);
-            if(start.type==Obj_nil_t){
-                printf("ERROR cant convert start to ount on for");
-                exit(1);
-            }
-            if(end.type==Obj_nil_t){
-                printf("ERROR cant convert end to ount on for");
-                exit(1);
-            }
-            if(*start.val.i!=*end.val.i){
-                p++;
-                continue;
-            }
-            else{
-                p=code[p].value.fo->endfor+1;
+                MEMORY.values[n].type=Obj_ount_t;
+                MEMORY.values[n].val.i=malloc(sizeof(long long int));
+                *MEMORY.values[n].val.i=*start.val.i;
+                add_ref(MEMORY.values[n]);
+
             }
 
+            if(*start.val.i==*end.val.i){
+                p=code[p].value.fo->endfor+1;
+                continue;
+            }
+            p++;
         }
         if(code[p].type==inst_endfor_t){
             int for_p=code[p].value.endfor;
             Object start=eval_Ast(code[for_p].value.fo->start);
-            Object end=eval_Ast(code[for_p].value.fo->end);
             start=std_ount(&start,1);
+            Object end=eval_Ast(code[for_p].value.fo->end);
             end=std_ount(&end,1);
-            Object current=nil_Obj;
-            for(int i=0;i<MEMORY.len;i++){
-                if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
-                    current=MEMORY.values[i];
-                    break;
-                }
-            }
-            if(current.type==Obj_nil_t){
-                p++;
-                continue;
-            }
-            current=std_ount(&current,1);
-            int reversed=*start.val.i<*end.val.i;
-            if(!reversed){
-                (*current.val.i)+=1;
-                if(*current.val.i<*end.val.i){
-                    for(int i=0;i<MEMORY.len;i++){
-                        if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
-                            MEMORY.values[i]=current;
-                            break;
-                        }
+
+            //positive for 
+            if(*start.val.i<*end.val.i){
+                int n=-1;
+                for(int i=0;i<MEMORY.len;i++){
+                    if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
+                        n=i;
+                        break;
                     }
-                    p=code[p].value.endfor+1;
+                }
+                if(n==-1){
+                    p++;
+                    continue;
+                }
+                
+                MEMORY.values[n]=std_ount(&MEMORY.values[n],1);
+                if(MEMORY.values[n].type==Obj_nil_t){
+                    printf("ERROR in for cant convert loop var to ount");
+                    exit(1);
+                }
+                (*MEMORY.values[n].val.i)++;
+
+                if(*end.val.i>*MEMORY.values[n].val.i){
+
+                    p=for_p+1;
                     continue;
                 }
                 else{
@@ -374,23 +411,35 @@ int execute(Instruction*code,char*file_name,int len){
                     continue;
                 }
             }
-            if(*start.val.i>*end.val.i){
-                (*current.val.i)--;
-                if(*current.val.i>*end.val.i){
-                    for(int i=0;i<MEMORY.len;i++){
-                        if(!strcmp(code[for_p].value.fo->var_name,MEMORY.keys[i])){
-                            MEMORY.values[i]=current;
-                            break;
-                        }
+            else{
+                int n=-1;
+                for(int i=0;i<MEMORY.len;i++){
+                    if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
+                        n=i;
+                        break;
                     }
-                    p=code[p].value.endfor+1;
+                }
+                if(n==-1){
+                    p++;
                     continue;
                 }
-                p++;
-                continue;
-            }
-            else{
-                p++;
+                
+                MEMORY.values[n]=std_ount(&MEMORY.values[n],1);
+                if(MEMORY.values[n].type==Obj_nil_t){
+                    printf("ERROR in for cant convert loop var to ount");
+                    exit(1);
+                }
+                (*MEMORY.values[n].val.i)--;
+
+                if(*end.val.i<*MEMORY.values[n].val.i){
+
+                    p=for_p+1;
+                    continue;
+                }
+                else{
+                    p++;
+                    continue;
+                }
             }
             
         }
