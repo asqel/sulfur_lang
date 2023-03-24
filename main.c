@@ -4,11 +4,11 @@
 #include "include/memlib.h"
 #include "include/parser.h"
 #include "include/interpreter.h"
-    #include "sulfur_libs/blt_libs/std.h"
 
 
 
 int main(int argc,char **argv){
+    
     back_slash_to_path(argv[0]);
     char *d=dirname(argv[0]);
     char *filepath=str_cat_new(d,"/main.su");
@@ -29,7 +29,6 @@ int main(int argc,char **argv){
     free(l);
     init_memory();
     init_stack(); 
-    
     init_libs();  
     
 

@@ -45,8 +45,7 @@ typedef struct Funcdef{
 }Funcdef;
 
 typedef struct list{
-    int len;
-    struct Object*elements;
+    struct Object*elements;// elements[0] is the length stored in an object
 }list;
 
 typedef struct memory{

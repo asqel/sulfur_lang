@@ -43,4 +43,26 @@ long long int str_to_llint(char*s);
 
 void*realloc_c(void*mem,long long int old_size,long long int new_size);
 
+//the first for loop is here to make that the var temp_mem is scoped so when the realloc is finished it doesn't exists
+#define realloc_Macro(mem ,old_size,new_size,type) ({\
+    for(int k=0;k<1;k++){\
+        type*temp_mem_=malloc(new_size);\
+        if(old_size<new_size){\
+            for(int i=0;i<old_size/sizeof(type);i++){\
+                ((type*)temp_mem_)[i]=mem[i];\
+            }\
+        }\
+        else if(old_size>new_size){\
+            for(int i=0;i<new_size/sizeof(type);i++){\
+                ((type*)temp_mem_)[i]=mem[i];\
+            }\
+        }\
+        else{\
+            temp_mem_=NULL;\
+        }\
+        free(mem);\
+        mem=temp_mem_;\
+    }\
+})
+
 #endif

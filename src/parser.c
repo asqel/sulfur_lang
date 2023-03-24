@@ -4,7 +4,7 @@
 #include "../include/parser.h"
 #include "../include/token_class.h"
 #include "../include/Ast.h"
-
+#include "../include/utilities.h"
 
 //take a math expression and see if it ok
 //return nothing 
@@ -266,9 +266,10 @@ Ast*make_ast(Ast*e,int len){
                         e[i-(closing_par+1)+opening_par]=e[i];
                     }
 
-                    len-=closing_par-opening_par+1;
-                    e=realloc(e,len);
+                    len-=(to_parse_len+2);
+                    e=realloc_c(e,sizeof(Ast)*len+(to_parse_len+2),sizeof(Ast)*len);
                     e[opening_par-1].type=Ast_funccall_t;
+                    e[opening_par-1].isAst=1;
                     e[opening_par-1].root.fun=malloc(sizeof(funccall));
                     *e[opening_par-1].root.fun=f;
                     p++;
@@ -854,6 +855,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
            
                         inst[*n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
                         strcpy(inst[*n_inst-1].value.vs->type,tok[p].value.s);//set type
+                       
                         Ast *a=tok_to_Ast(tok,p+3,n);
                         Ast*v=make_ast(a,n-(p+3+1-1));
                         inst[*n_inst-1].value.vs->val=v;//set val

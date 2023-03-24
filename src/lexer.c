@@ -126,7 +126,7 @@ Token*lexe(char*text){
                 *toks[n_tok-1].value.t=x;
                 toks[n_tok-1].type=op;
                 toks[n_tok-1].line=line;
-                p++;
+                p+=2;
                 continue; 
             }
         }

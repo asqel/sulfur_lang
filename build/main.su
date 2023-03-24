@@ -1,4 +1,15 @@
 
-
-    
-    
+println("please enter a number");
+floap end=floap(input());
+boolean isprime=1b;
+for(i from 0 to end+1.0){
+    isprime=1b;
+    for(k from 2 to ount(floap(i)^0.5)+1){
+        if(floap(i)-floap(ount(floap(i)/floap(k)))*floap(k)==0.0){
+            isprime=0b;
+        }
+    }
+    if(isprime){
+        println(i,"is prime");
+    }
+}

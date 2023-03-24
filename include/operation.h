@@ -24,6 +24,8 @@ Object sub(Object a,Object b);
 
 Object mul(Object a,Object b);
 
+Object _div(Object a,Object b);
+
 Object _pow(Object a,Object b);
 
 Object less(Object a,Object b);

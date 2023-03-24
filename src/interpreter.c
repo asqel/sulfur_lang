@@ -173,6 +173,20 @@ Object eval_Ast(Ast*x){
                 return eq(a,b);
             }
         }
+        if(x->type==Ast_div_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return _div(a,b);
+            }
+        }
+        if(x->type==Ast_mul_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                return mul(a,b);
+            }
+        }
     }
 }
 
@@ -195,15 +209,15 @@ int add_ref(Object o){
         return 0;
     }
     if(o.type=Obj_list_t){
-        REF_COUNT_len++;
-        REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
-        REF_COUNTS[REF_COUNT_len-1].count=1;
-        REF_COUNTS[REF_COUNT_len-1].type=Obj_list_t;
-        REF_COUNTS[REF_COUNT_len-1].pointer->li=o.val.li;
-        int len=o.val.li->len;
-        for(int i=0;i<len;i++){
-            add_ref(o.val.li->elements[i]);
-        }
+        //REF_COUNT_len++;
+        //REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+        //REF_COUNTS[REF_COUNT_len-1].count=1;
+        //REF_COUNTS[REF_COUNT_len-1].type=Obj_list_t;
+        //REF_COUNTS[REF_COUNT_len-1].pointer->li=o.val.li;
+        //int len=o.val.li->len;//faut le remplacer par [0]
+        //for(int i=0;i<len;i++){
+        //    add_ref(o.val.li->elements[i]);
+        //}
         return 0;
     }
     REF_COUNT_len++;
@@ -234,6 +248,8 @@ int execute(Instruction*code,char*file_name,int len){
             MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
             MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.vs->name)));
             strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.vs->name);
+            //print_ast(*code[p].value.vs->val);
+            //printf("\n");
             Object o=eval_Ast(code[p].value.vs->val);//faut le raplce par Object pas Object*
             add_ref(o);
             MEMORY.values[MEMORY.len-1]=o;

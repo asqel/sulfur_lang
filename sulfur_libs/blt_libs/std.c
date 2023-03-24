@@ -57,10 +57,15 @@ Object print_prompt(Object*obj,int n_arg){
         return nil_Obj;
     }
     if(obj->type==Obj_list_t){
-        for(int i=0;i<*(obj->val.o[0].val.i);i++){
+        printf("[");
+        for(int i=0;i<*(obj->val.o[0].val.i)-1;i++){
             print_prompt(&obj->val.o[i+1],1);
-            return nil_Obj;
+            printf(",");
         }
+        print_prompt(&obj->val.o[*(obj->val.o[0].val.i)-1],1);
+        printf("]");
+        return nil_Obj;
+
     }
     if(obj->type==Obj_funcid_t){
         printf("function at :%x",obj->val.funcid);
@@ -153,7 +158,7 @@ Object std_floap(Object*obj,int n_arg){
     res.val.f=malloc(sizeof(long long int));
 
     if(obj->type==Obj_ount_t){
-        *res.val.f=(long double)*(obj->val.f);
+        *res.val.f=(long double)*(obj->val.i);
         return res;
     }
 
@@ -168,6 +173,34 @@ Object std_floap(Object*obj,int n_arg){
     return nil_Obj;
 
 }
+
+Object std_list(Object*obj,int n_arg){
+    printf("salut");
+    if(n_arg==0){
+        Object x;
+        x.type=Obj_list_t;
+        x.val.li=malloc(sizeof(list));
+        x.val.li->elements=malloc(sizeof(Object));
+        x.val.li->elements[0].type=Obj_ount_t;
+        x.val.li->elements[0].val.i=malloc(sizeof(long long int));
+        *x.val.li->elements[0].val.i=0;
+        return x;
+    }
+    Object x;
+    x.type=Obj_list_t;
+    x.val.li=malloc(sizeof(list));
+    x.val.li->elements=malloc(sizeof(Object)*(n_arg+1));
+    x.val.li->elements[0].type=Obj_ount_t;
+    x.val.li->elements[0].val.i=malloc(sizeof(long long int));
+    *x.val.li->elements[0].val.i=n_arg;
+    for(int i=0;i<n_arg;i++){
+        x.val.li->elements[i+1]=obj[i];
+    }
+    printf("salut");
+
+    return x;
+}
+
 
 
 
@@ -245,6 +278,7 @@ memory init_std(memory MEMORY){
     MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
     MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
     *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("floap",&std_floap," ");
+
         
     
     return MEMORY;
