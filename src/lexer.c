@@ -29,6 +29,13 @@ Token*lexe(char*text){
                     p+=2;
                     break;
                 }
+                else if(text[p]=='\n'){
+                    line++;
+                    p++;
+                }
+                else{
+                    p++;
+                }
             }
             continue;
         }

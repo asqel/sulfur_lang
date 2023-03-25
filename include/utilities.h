@@ -9,6 +9,8 @@
 //*x pointer to the string  |  v char to search
 int str_contains_char(char *x,char v);
 
+char*abs_path();
+
 //check if a string is in a list of string
 //list:the list | v:the string to searche | list_len:length of the list
 int str_ar_contains_str(char*list[],char*v,int list_len);

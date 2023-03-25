@@ -246,6 +246,7 @@ Ast*make_ast(Ast*e,int len){
                     len-=2;
                     e=realloc(e,sizeof(Ast)*len);
                     e[opening_par-1].type=Ast_funccall_t;
+                    e[opening_par-1].isAst=1;
                     e[opening_par-1].root.fun=malloc(sizeof(funccall));
                     *e[opening_par-1].root.fun=f;
                     p++;
@@ -267,7 +268,7 @@ Ast*make_ast(Ast*e,int len){
                     }
 
                     len-=(to_parse_len+2);
-                    e=realloc_c(e,sizeof(Ast)*len+(to_parse_len+2),sizeof(Ast)*len);
+                    e=realloc_c(e,sizeof(Ast)*(len+(to_parse_len+2)),sizeof(Ast)*len);
                     e[opening_par-1].type=Ast_funccall_t;
                     e[opening_par-1].isAst=1;
                     e[opening_par-1].root.fun=malloc(sizeof(funccall));
@@ -339,8 +340,9 @@ Ast*make_ast(Ast*e,int len){
                     }
 
                     len-=closing_par-opening_par+1;
-                    e=realloc(e,len);
+                    e=realloc(e,sizeof(Ast)*len);
                     e[opening_par-1].type=Ast_funccall_t;
+                    e[opening_par-1].isAst=1;
                     e[opening_par-1].root.fun=malloc(sizeof(funccall));
                     *e[opening_par-1].root.fun=f;
                     p++;
@@ -389,7 +391,7 @@ Ast*make_ast(Ast*e,int len){
                 printf("ERROR missing closing ')' in expression");
                 exit(1);
             }
-            Ast*expr=malloc(sizeof(Ast)*closing_par-opening_par-1);
+            Ast*expr=malloc(sizeof(Ast)*(closing_par-opening_par-1));
             for(int i=opening_par+1;i<closing_par;i++){
                 expr[i-(opening_par+1)]=e[i];
             }
@@ -521,6 +523,24 @@ Ast*make_ast(Ast*e,int len){
 
 
         }
+        else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS && p==0){
+            if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
+                printf("ERROR missing operand after '-'(unary) in expression");
+                exit(1);
+            }
+            e[p].isAst=1;
+            e[p].type=Ast_sub_t;
+            e[p].left=NULL;
+            e[p].right=malloc(sizeof(Ast));
+            *e[p].right=e[p+1];
+            for(int i=p+2;i<len;i++){
+                e[i-1]=e[i];
+            }
+            len--;
+            e=realloc(e,sizeof(Ast)*len);
+            p++;
+
+        }
         else{
             p++;
         }
@@ -545,7 +565,7 @@ Ast*make_ast(Ast*e,int len){
             exit(1);
         }
         if(!(e[n-1].isAst||e[n-1].type==Ast_object_t||e[n-1].type==Ast_varcall_t)){
-            printf("ERROR missing left operand in expression #3");
+            printf("ERROR missing left operand in expression #3 %d\n",e[n-1].type);
             exit(1);
         }
         if(!(e[n+1].isAst||e[n+1].type==Ast_object_t||e[n+1].type==Ast_varcall_t)){

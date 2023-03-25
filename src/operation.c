@@ -242,16 +242,16 @@ Object eq(Object a,Object b){
 Object negate(Object a){
     if(a.type==Obj_ount_t){
         Object x;
-        x.type=Obj_boolean_t;
-        x.val.b=malloc(sizeof(short int));
-        *x.val.b=-*a.val.i;
+        x.type=Obj_ount_t;
+        x.val.i=malloc(sizeof(long long int));
+        *x.val.i=-*a.val.i;
         return x;
     }
     if(a.type==Obj_floap_t){
         Object x;
-        x.type=Obj_boolean_t;
-        x.val.b=malloc(sizeof(short int));
-        *x.val.b=-*a.val.f;
+        x.type=Obj_floap_t;
+        x.val.i=malloc(sizeof(long double));
+        *x.val.i=-*a.val.f;
         return x;
     }
     printf("ERROR : operation(-(unary)) between 2 types not supported\n");

@@ -100,4 +100,11 @@ void Obj_print(Object obj);
 
 //name will be copied
 Funcdef new_blt_func(char*name,Object (*func)(Object*,int),char*desc);
+
+
+memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc);
+
+memory*add_object(memory*MEMORY,char*name,Object x);
+
+memory*add_obj_str(memory*MEMORY,char*name,char*val);
 #endif

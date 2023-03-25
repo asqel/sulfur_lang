@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
 #include <string.h>
 #include "../../include/memlib.h"
 #include "../../include/utilities.h"
@@ -57,12 +59,17 @@ Object print_prompt(Object*obj,int n_arg){
         return nil_Obj;
     }
     if(obj->type==Obj_list_t){
+        int len=*(obj->val.li->elements[0].val.i);
+        if(len==0){
+            printf("[]");
+            return nil_Obj;
+        }
         printf("[");
-        for(int i=0;i<*(obj->val.o[0].val.i)-1;i++){
-            print_prompt(&obj->val.o[i+1],1);
+        for(int i=1;i<len;i++){
+            print_prompt(&obj->val.li->elements[i],1);
             printf(",");
         }
-        print_prompt(&obj->val.o[*(obj->val.o[0].val.i)-1],1);
+        print_prompt(&obj->val.li->elements[len],1);
         printf("]");
         return nil_Obj;
 
@@ -175,7 +182,6 @@ Object std_floap(Object*obj,int n_arg){
 }
 
 Object std_list(Object*obj,int n_arg){
-    printf("salut");
     if(n_arg==0){
         Object x;
         x.type=Obj_list_t;
@@ -193,91 +199,46 @@ Object std_list(Object*obj,int n_arg){
     x.val.li->elements[0].type=Obj_ount_t;
     x.val.li->elements[0].val.i=malloc(sizeof(long long int));
     *x.val.li->elements[0].val.i=n_arg;
-    for(int i=0;i<n_arg;i++){
-        x.val.li->elements[i+1]=obj[i];
+    for(int i=1;i<=n_arg;i++){
+        x.val.li->elements[i]=obj[i-1];
     }
-    printf("salut");
 
     return x;
 }
 
 
+Object current_timestamp(Object *obj,int n_arg) {
+    struct timespec te;
+    clock_gettime(CLOCK_REALTIME, &te);
+    long long milliseconds = te.tv_sec*1000LL + te.tv_nsec/1000000LL;
+    Object o;
+    o.type=Obj_ount_t;
+    o.val.i=malloc(sizeof(long long int));
+    *o.val.i=milliseconds;
+    return o;
+}
+
 
 
 memory init_std(memory MEMORY){
-//-------------------------------------
-    //add print
-    MEMORY.len+=1;
-    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-
-    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("print")));
-    strcpy(MEMORY.keys[MEMORY.len-1],"print");  
-
-    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("print",&print_prompt," ");
-//-------------------------------------
-    //add println
-    MEMORY.len+=1;
-    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-
-    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("println")));
-    strcpy(MEMORY.keys[MEMORY.len-1],"println");  
-
-    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("println",&println_prompt," ");
-//-------------------------------------
-    //add bool
-    MEMORY.len+=1;
-    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-
-    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("bool")));
-    strcpy(MEMORY.keys[MEMORY.len-1],"bool");  
-
-    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("bool",&std_bool," ");
-//-------------------------------------
-    //add input
-    MEMORY.len+=1;
-    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-
-    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("input")));
-    strcpy(MEMORY.keys[MEMORY.len-1],"input");  
-
-    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("input",&read_prompt," ");
-
-//-------------------------------------
-    //add ount
-    MEMORY.len+=1;
-    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-
-    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("ount")));
-    strcpy(MEMORY.keys[MEMORY.len-1],"ount");  
-
-    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("ount",&std_ount," ");
-//-------------------------------------
-    //add floap
-    MEMORY.len+=1;
-    MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-
-    MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen("floap")));
-    strcpy(MEMORY.keys[MEMORY.len-1],"floap");  
-
-    MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-    MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-    MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY.values[MEMORY.len-1].val.funcid=new_blt_func("floap",&std_floap," ");
+    add_object(&MEMORY,"nil",nil_Obj);
+    add_func(&MEMORY,"print",&print_prompt,"");
+    add_func(&MEMORY,"println",&println_prompt,"");
+    add_func(&MEMORY,"bool",&std_bool,"");
+    add_func(&MEMORY,"input",&read_prompt,"");
+    add_func(&MEMORY,"ount",&std_ount,"");
+    add_func(&MEMORY,"floap",&std_floap,"");
+    add_func(&MEMORY,"list",&std_list,"");
+    add_func(&MEMORY,"time",&current_timestamp,"");
+    char*path0=abs_path();
+    back_slash_to_path(path0);
+    char *d=dirname(path0);
+    char *filepath=str_cat_new(d,"/main.su");
+    add_obj_str(&MEMORY,"__path__",filepath);
+    add_obj_str(&MEMORY,"__interpreter_path__",path0);
+    add_obj_str(&MEMORY,"__dir_path__",d);
+    free(d);
+    free(path0);
 
         
     

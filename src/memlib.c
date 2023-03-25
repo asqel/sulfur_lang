@@ -1,4 +1,5 @@
 #include "../include/memlib.h"
+#include "../include/utilities.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -166,4 +167,41 @@ Funcdef new_blt_func(char*name,Object (*func)(Object*,int),char*desc){
     f.nbr_ret_type=-1;
     f.ret_type=NULL;
     return f;
+}
+
+memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc){
+    //add print
+    MEMORY->len+=1;
+    MEMORY->keys=realloc_c(MEMORY->keys,sizeof(char*)*(MEMORY->len-1),sizeof(char*)*MEMORY->len);
+
+    MEMORY->keys[MEMORY->len-1]=malloc(sizeof(char)*(1+strlen(name)));
+    strcpy(MEMORY->keys[MEMORY->len-1],name);  
+
+    MEMORY->values=realloc_c(MEMORY->values,sizeof(Object)*(MEMORY->len-1),sizeof(Object)*MEMORY->len);
+    MEMORY->values[MEMORY->len-1].type=Obj_funcid_t;
+    MEMORY->values[MEMORY->len-1].val.funcid=malloc(sizeof(Funcdef));
+    *MEMORY->values[MEMORY->len-1].val.funcid=new_blt_func(name,func,desc);
+    return MEMORY;
+}
+
+memory*add_object(memory*MEMORY,char*name,Object x){
+    MEMORY->len++;
+    MEMORY->keys=realloc_c(MEMORY->keys,sizeof(char*)*(MEMORY->len-1),sizeof(char*)*MEMORY->len);
+
+    MEMORY->keys[MEMORY->len-1]=malloc(sizeof(char)*(1+strlen(name)));
+    strcpy(MEMORY->keys[MEMORY->len-1],name);  
+
+    MEMORY->values=realloc_c(MEMORY->values,sizeof(Object)*(MEMORY->len-1),sizeof(Object)*MEMORY->len);
+    MEMORY->values[MEMORY->len-1]=x;
+    return MEMORY;
+
+}
+
+memory*add_obj_str(memory*MEMORY,char*name,char*val){
+    Object x;
+    x.type=Obj_string_t;
+    x.val.s=malloc(sizeof(char)*(1+strlen(val)));
+    strcpy(x.val.s,val);
+    return add_object(MEMORY,name,x);
+
 }

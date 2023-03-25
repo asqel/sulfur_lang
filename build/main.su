@@ -1,11 +1,16 @@
 
 println("please enter a number");
+floap start=floap(input());
+
+println("please enter another number");
 floap end=floap(input());
+
 boolean isprime=1b;
-for(i from 0 to end+1.0){
+
+for(i from start to end+1.0){
     isprime=1b;
     for(k from 2 to ount(floap(i)^0.5)+1){
-        if(floap(i)-floap(ount(floap(i)/floap(k)))*floap(k)==0.0){
+        if(floap(i)-floap(ount(floap(i)/floap(k)))*floap(k)==0.0){//this is the formula of modulo because it is not implemented yet
             isprime=0b;
         }
     }
@@ -13,3 +18,21 @@ for(i from 0 to end+1.0){
         println(i,"is prime");
     }
 }
+
+
+for(i from 10 to 0){//this will be a loop in reverse
+    println(i);
+}
+
+list a=list(3,4);
+
+
+ount t0=time();
+for(i from 0 to 1920){
+    for(k from 0 to 1080){
+
+    }
+}
+print("time taken for a loop of 1920x1080 :",floap(time()-t0)/1000.0);
+println("s");
+ount negatif=-4;

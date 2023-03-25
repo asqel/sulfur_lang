@@ -4,6 +4,16 @@
 #include <string.h>
 #include <math.h>
 #include "../include/utilities.h"
+#include <limits.h>
+
+//used for abs_path
+#ifdef _WIN32
+#include <Windows.h>
+#elif __APPLE__
+#include <mach-o/dyld.h>
+#else
+#include <unistd.h>
+#endif
 
 //check if a char is in a string
 //*x pointer to the string  |  v char to search
@@ -16,6 +26,28 @@ int str_contains_char(char *x,char v){
     }
     return 0;
     
+}
+
+char*abs_path(){
+    char *path=malloc(sizeof(char)*PATH_MAX);
+    #ifdef _WIN32
+        if (GetModuleFileName(NULL, path, PATH_MAX) == 0) {
+            perror("GetModuleFileName");
+            exit(EXIT_FAILURE);
+        }
+    #elif __APPLE__
+        uint32_t size = PATH_MAX;
+        if (_NSGetExecutablePath(path, &size) != 0) {
+            perror("_NSGetExecutablePath");
+            exit(EXIT_FAILURE);
+        }
+    #else
+        if (readlink("/proc/self/exe", path, PATH_MAX) == -1) {
+            perror("readlink");
+            exit(EXIT_FAILURE);
+        }
+    #endif
+    return path;
 }
 
 //check if a string is in a list of string
@@ -64,7 +96,7 @@ char*dirname(char*v){
     int n=-1;
     int l=strlen(v);
     for(int i=0;i<l;i++){
-        if(v[i]=='/'){
+        if(v[i]=='/'|| v[i]=='\\'){
             n=i;
         }
     }

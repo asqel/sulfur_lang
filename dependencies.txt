@@ -1,0 +1,13 @@
+stdio.h
+string.h
+limits.h
+time.h
+math.h
+stdlib.h
+
+windows:
+    Windows.h
+macOS:
+    mach-o/dyld.h
+unix:
+    unistd.h

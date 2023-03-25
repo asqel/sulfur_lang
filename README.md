@@ -13,6 +13,10 @@ a programming language in c
         ex : "hi" or 'hello'
     complexe : a complexe number composed of 2 floap ($i : imaginary unit)
         ex : 1+4*$i
+    list : a non typed list 
+        ex : list(3,4,"salut",1b,list(0,-1));
+    nil_type : any variable type can be set to a nil_type
+        ex : ount a=nil;
 
 
 ## Syntax instructions
@@ -89,13 +93,61 @@ a programming language in c
             print("this will not be printed");
             sec:
 
+
+### function definition:
+    def func_name(type1 arg1 , type2 arg2,...): return_type1 | return_type2 :{
+        instructions
+    }
+    
+
+## keywords:
+    if : used for conditions
+    else : used for conditions
+    elif : used for contions
+    while : used for loop
+    for : used for loop
+    class : used to declare a class
+    return : used to return a value in function 
+        ex: return Value;
+    def : used to declare a function
+    from : used in for-loop to declare the starting value
+    to : used in for-loop to declare the ending value
+    swap : used to swap to value
+        ex: ount a=3;
+            ount b=4;
+            swap a b;//now b=3 and a =4
+    goto : used to go to a section
+
+## operators:
+    + : addition
+    * : multiplication
+    - : substraction
+    / : division
+    ^ : power
+    % : modulo
+    \ : floor division
+    | : logical or
+    & : logical and 
+    ! : logical not
+    . : dot operator (used to acces member of class or library)
+    < : less than
+    > : greater than
+    <= : less than or equal
+    >= : greater than or equal
+    == : equal 
+    != : not equal
+    
+
 ## built-in functions:
-    print(x) : print to stdout the value of x
-    println(x) : print to stdout the value of x with a new line at the end
+    print(x,...) : print to stdout the value of each args separated with space
+    println(x,...) : call print with the same arguments and print a new line 
     input() : read input from stdin until there is a new line return the input as a string
+    time() : return the unix time in miliseconds as an ount
 
     bool(x) : return the boolean value of x
     ount(x) : return the ount value of x  
+    list(x,...) : return a list composed of every argument passed if none the list is empty
 
 ## built-in vars:
     __path__ : the path of the executed .su file
+    nil : a constant used like null
