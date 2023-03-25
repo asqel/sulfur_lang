@@ -75,6 +75,8 @@ Ast*tok_to_Ast(Token*tok,int start,int end){
             case syntax:
                 e[i-start].type=Ast_syntax_t;
                 e[i-start].root.sy=*tok[i].value.t;
+                token_print(tok[i],"");
+                printf(" %d\n",i-start);
                 break;
             case identifier:
                 e[i-start].type=Ast_varcall_t;
@@ -368,44 +370,43 @@ Ast*make_ast(Ast*e,int len){
     p=0;
     while(p<len){
         if(e[p].type==Ast_syntax_t&&e[p].root.sy==par_L){
-            int opening_par=p;
-            int closing_par=-1;
-
-            int i=opening_par+1;
-            int count=0;
-            while(i<len){
-                if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_L){
-                    count++;
+            int op_par=p;
+            int cl_par=-1;
+            int c=0;
+            for(int i=op_par+1;i<len;i++){
+                if(e[i].type==Ast_syntax_t && e[i].root.sy==par_L){
+                    c++;
+                    continue;
                 }
-                else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count>0){
-                    count--;
+                if(e[i].type==Ast_syntax_t && e[i].root.sy==par_R && c>0){
+                    c--;
+                    continue;
                 }
-                else if(e[i].type==Ast_syntax_t&&e[p].root.sy==par_R&& count==0){
-                    closing_par=i;
+                if(e[i].type==Ast_syntax_t && e[i].root.sy==par_R && c==0){
+                    cl_par=i;
                     break;
                 }
-                i++;
             }
-
-            if(closing_par==-1){
+            if(cl_par==-1){
                 printf("ERROR missing closing ')' in expression");
                 exit(1);
             }
-            Ast*expr=malloc(sizeof(Ast)*(closing_par-opening_par-1));
-            for(int i=opening_par+1;i<closing_par;i++){
-                expr[i-(opening_par+1)]=e[i];
+            int to_parse_len=cl_par-op_par-1;
+            Ast*to_parse=malloc(sizeof(Ast)*(to_parse_len));
+            for(int i=op_par+1;i<cl_par;i++){
+                to_parse[i-(op_par+1)]=e[i];
             }
-            expr=make_ast(expr,closing_par-opening_par-1);
-            e[opening_par]=*expr;
-            e[opening_par].isAst=1;
 
-            for(int i=closing_par;i<len;i++){
-                e[opening_par+1+(i-closing_par)]=e[i];
+            Ast*expr=make_ast(to_parse,to_parse_len);
+            e[op_par]=*expr;
+            free(expr);
+            e[op_par].isAst=1;
+            for(int i=cl_par+1;i<len;i++){
+                e[i-(cl_par+1)+cl_par]=e[i];
             }
-            len=len-closing_par-opening_par+1-1;
+            len-=(to_parse_len+1);
             e=realloc(e,sizeof(Ast)*len);
             p++;
-
         }
         else{
             p++;

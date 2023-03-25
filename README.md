@@ -2,6 +2,7 @@
 a programming language in c
 
 
+
 ## built-in types
     ount : signed integer   
         ex : 7
@@ -151,3 +152,7 @@ a programming language in c
 ## built-in vars:
     __path__ : the path of the executed .su file
     nil : a constant used like null
+
+
+## the interpreter:
+if you call it with the argument -m the memory will be shown at the end of execution

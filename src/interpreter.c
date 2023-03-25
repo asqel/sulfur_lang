@@ -482,10 +482,6 @@ int execute(Instruction*code,char*file_name,int len){
             }
         }
     }
-    printf("\n \nMEMORY:%d\n",MEMORY.len);
-    for(int i=0;i<MEMORY.len;i++){
-        printf("    %s: ",MEMORY.keys[i]);
-        println_prompt(&MEMORY.values[i],1);
-    }
+    
     return 0;
 }

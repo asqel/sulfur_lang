@@ -217,6 +217,17 @@ Object current_timestamp(Object *obj,int n_arg) {
     *o.val.i=milliseconds;
     return o;
 }
+Object sleep(Object *obj,int n_arg){
+    long long int x=0;
+    Object o=std_ount(&obj[0],1);
+    if(o.type!=Obj_ount_t){
+        return nil_Obj;
+    }
+    x=*o.val.i;
+    long long start=*current_timestamp(NULL,0).val.i;
+    while(*current_timestamp(NULL,0).val.i<start+x){}
+    return nil_Obj;
+}
 
 
 
@@ -230,6 +241,7 @@ memory init_std(memory MEMORY){
     add_func(&MEMORY,"floap",&std_floap,"");
     add_func(&MEMORY,"list",&std_list,"");
     add_func(&MEMORY,"time",&current_timestamp,"");
+    add_func(&MEMORY,"sleep",&sleep,"");
     char*path0=abs_path();
     back_slash_to_path(path0);
     char *d=dirname(path0);
@@ -239,6 +251,7 @@ memory init_std(memory MEMORY){
     add_obj_str(&MEMORY,"__dir_path__",d);
     free(d);
     free(path0);
+
 
         
     

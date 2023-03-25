@@ -110,9 +110,9 @@ Object mul(Object a,Object b){
 Object _div(Object a,Object b){
     if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
         Object x;
-        x.type=Obj_ount_t;
-        x.val.i=malloc(sizeof(long long int));
-        *x.val.i=*a.val.i/ *b.val.i;
+        x.type=Obj_floap_t;
+        x.val.f=malloc(sizeof(long double));
+        *x.val.f=(long double)*a.val.i/ (long double)*b.val.i;
         return x;
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
@@ -137,9 +137,9 @@ Object _div(Object a,Object b){
 Object _pow(Object a,Object b){
     if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
         Object x;
-        x.type=Obj_ount_t;
-        x.val.i=malloc(sizeof(long long int));
-        *x.val.i=(int)pow(*a.val.i,*b.val.i);
+        x.type=Obj_floap_t;
+        x.val.f=malloc(sizeof(long double));
+        *x.val.f=pow(*a.val.i,*b.val.i);
         return x;
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
