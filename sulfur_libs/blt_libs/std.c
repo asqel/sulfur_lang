@@ -251,6 +251,7 @@ memory init_std(memory MEMORY){
     add_obj_str(&MEMORY,"__dir_path__",d);
     free(d);
     free(path0);
+    free(filepath);
 
 
         

@@ -131,29 +131,24 @@ void*get_obj_pointer(Object o){
     switch(o.type){
         case Obj_boolean_t:
             return o.val.b;
-            break;
+        case Obj_list_t:
+            return o.val.li;
         case Obj_complex_t:
             return o.val.c;
-            break;
         case Obj_floap_t:
             return o.val.f;
-            break;
         case Obj_funcid_t:
             return o.val.funcid;
-            break;
         case Obj_ount_t:
             return o.val.i;
-            break;
         case Obj_string_t:
             return o.val.s;
-            break;
         case Obj_typeid_t:
             return o.val.typeid;
-            break;
     }
 }
 
-Funcdef new_blt_func(char*name,Object (*func)(Object*,int),char*desc){
+Funcdef new_blt_func(Object (*func)(Object*,int),char*desc){
     Funcdef f;
     f.arg_names=NULL;
     f.arg_types=NULL;
@@ -161,8 +156,6 @@ Funcdef new_blt_func(char*name,Object (*func)(Object*,int),char*desc){
     f.description=desc;
     f.func_p=func;
     f.is_builtin=1;
-    f.name=malloc(sizeof(char)*(1+strlen(name)));
-    strcpy(f.name,name);
     f.nbr_of_args=-1;
     f.nbr_ret_type=-1;
     f.ret_type=NULL;
@@ -180,7 +173,7 @@ memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc){
     MEMORY->values=realloc_c(MEMORY->values,sizeof(Object)*(MEMORY->len-1),sizeof(Object)*MEMORY->len);
     MEMORY->values[MEMORY->len-1].type=Obj_funcid_t;
     MEMORY->values[MEMORY->len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY->values[MEMORY->len-1].val.funcid=new_blt_func(name,func,desc);
+    *MEMORY->values[MEMORY->len-1].val.funcid=new_blt_func(func,desc);
     return MEMORY;
 }
 

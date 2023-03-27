@@ -13,7 +13,6 @@ typedef struct class{
 
 /*every blt function should be definied like this but inn theory it's not important
 {
-    name: function name
     ret_type: NULL
     nbr_ret_type: 0
     arg_types: NULL
@@ -32,7 +31,6 @@ if the function number of args=0 a NULL pointer is passed
 return type must be Object
 */
 typedef struct Funcdef{
-    char*name;//name of function
     char**ret_type;// list of types that can be returned by the function
     int nbr_ret_type;//len of ret_type
     char**arg_types;
@@ -99,7 +97,7 @@ void Objs_print(Object*obj,int len);
 void Obj_print(Object obj);
 
 //name will be copied
-Funcdef new_blt_func(char*name,Object (*func)(Object*,int),char*desc);
+Funcdef new_blt_func(Object (*func)(Object*,int),char*desc);
 
 
 memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc);

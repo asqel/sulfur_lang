@@ -39,8 +39,8 @@ int main(int argc,char **argv){
     init_stack(); 
     init_libs();  
     
-
     execute(code,filepath,*instruction_len);
+
     if(show_mem){
         printf("\n \nMEMORY:%d\n",MEMORY.len);
         for(int i=0;i<MEMORY.len;i++){

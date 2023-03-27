@@ -15,9 +15,9 @@ extern long long int*sub_STACK_len;//list of int its len is stack_len
 
 
 typedef struct ref_counter{
-    Obj_val*pointer;
-    int type;
+    void*pointer;
     long long int count;
+    char type;
 }ref_counter;
 
 typedef struct CLASSDEF{
@@ -50,6 +50,10 @@ void init_garbage_collect();
 Object eval_Ast(Ast*x);
 
 int add_ref(Object o);
+
+int remove_ref(Object o);
+
+int update_ref();
 
 
 int execute(Instruction*code,char*file_name,int len);

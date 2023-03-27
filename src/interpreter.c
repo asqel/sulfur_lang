@@ -131,6 +131,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return add(a,b);
             }
         }
@@ -138,6 +140,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return less(a,b);
             }
         }
@@ -145,6 +149,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return greater(a,b);
             }
         }
@@ -152,10 +158,13 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return sub(a,b);
             }
             if(x->left==NULL && x->right!=NULL){
                 Object b=eval_Ast(x->right);
+                add_ref(b);remove_ref(b);
                 return negate(b);
             }
         }
@@ -163,6 +172,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return _pow(a,b);
             }
         }
@@ -170,6 +181,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return eq(a,b);
             }
         }
@@ -177,6 +190,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return _div(a,b);
             }
         }
@@ -184,6 +199,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
                 return mul(a,b);
             }
         }
@@ -205,37 +222,120 @@ int add_ref(Object o){
         REF_COUNTS[find].count++;
         return 1;
     }
-    if(o.type=Obj_class_t){
+    if(o.type==Obj_class_t){
         return 0;
     }
-    if(o.type=Obj_list_t){
-        //REF_COUNT_len++;
-        //REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
-        //REF_COUNTS[REF_COUNT_len-1].count=1;
-        //REF_COUNTS[REF_COUNT_len-1].type=Obj_list_t;
-        //REF_COUNTS[REF_COUNT_len-1].pointer->li=o.val.li;
-        //int len=o.val.li->len;//faut le remplacer par [0]
-        //for(int i=0;i<len;i++){
-        //    add_ref(o.val.li->elements[i]);
-        //}
+
+    if(o.type==Obj_list_t){
+        REF_COUNT_len++;
+        REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+        REF_COUNTS[REF_COUNT_len-1].count=1;
+        REF_COUNTS[REF_COUNT_len-1].type=Obj_list_t;
+        REF_COUNTS[REF_COUNT_len-1].pointer=get_obj_pointer(o);
+        int len=*o.val.li->elements[0].val.i;
+        for(int i=0;i<=len;i++){
+            add_ref(o.val.li->elements[i]);
+        }
         return 0;
     }
+    
     REF_COUNT_len++;
     REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
     REF_COUNTS[REF_COUNT_len-1].count=1;
     REF_COUNTS[REF_COUNT_len-1].type=o.type;
-    //REF_COUNTS[REF_COUNT_len-1].pointer=get_obj_pointer(o); faut faire switch case pointer.type
+    REF_COUNTS[REF_COUNT_len-1].pointer=get_obj_pointer(o);
     return 0;
+}
+int remove_ref(Object o){
+    int find=-1;
+    for(int i=0;i<REF_COUNT_len;i++){
+        if(REF_COUNTS[i].pointer==get_obj_pointer(o)){
+            find=i;
+        }
+    }
+    if(find!=-1){
+        REF_COUNTS[find].count--;
+        if(REF_COUNTS[find].type==Obj_list_t){
+            int len=*(o.val.li->elements[0].val.i);
+            for(int i=0;i<=len;i++){
+                remove_ref(o.val.li->elements[i]);
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+int update_ref(){
+    for(int i=0;i<REF_COUNT_len;i++){//faut support les funcid donc faut stocker le type
+                                    //parceque dans les funcid faut free le nom et la desc
+        if(REF_COUNTS[i].count<=0){
+            if(REF_COUNTS[i].type==Obj_funcid_t){
+                Funcdef*f=((Funcdef*)REF_COUNTS[i].pointer);
+                if(f->is_builtin){
+                    free(f->description);
+                    free(f->func_p);
+                }
+                else{
+                    //free isntructions , arg types arg names
+                }
+                free(REF_COUNTS[i].pointer);
+                for(int k=i+1;k<REF_COUNT_len;k++){
+                    REF_COUNTS[k-1]=REF_COUNTS[k];
+                }
+                REF_COUNT_len--;
+                REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+                i--;
+
+            }
+            else if(REF_COUNTS[i].type==Obj_class_t){
+                
+            }
+            else if(REF_COUNTS[i].type==Obj_nil_t){
+                continue;
+            }
+            else{
+                free(REF_COUNTS[i].pointer);
+                for(int k=i+1;k<REF_COUNT_len;k++){
+                    REF_COUNTS[k-1]=REF_COUNTS[k];
+                }
+                REF_COUNT_len--;
+                REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+                i--;
+            }
+        }
+    }
+}
+int temp_ref(Object o){
+    add_ref(o);
+    return remove_ref(o);
+}
+
+int print_refs(ref_counter*r,int len){
+    printf("garbage collecter %d\n",len);
+    for(int i=0;i<len;i++){
+        printf("    %p count %d\n",r[i].pointer,r[i].count);
+    }
 }
 
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
+    int cycle=0;
+    int cycle_number=1;//the garbage collector will be called every cycle_number instruction
     //check_libs();
+    for(int i=0;i<MEMORY.len;i++){printf("%d\n",i);
+        add_ref(MEMORY.values[i]);
+    }
     while(p<len){
+        cycle++;
+        if(cycle==cycle_number){
+            cycle=0;
+            update_ref();
+        }
         if(code[p].type==inst_pass_t){
             p++;
             continue;
         }
+        
         if(code[p].type==inst_varset_t){
             for(int i=0;i<MEMORY.len;i++){
                 if(!strcmp(MEMORY.keys[i],code[p].value.vs->name)){
@@ -265,12 +365,17 @@ int execute(Instruction*code,char*file_name,int len){
                     break;
                 }
             }
+            remove_ref(MEMORY.values[n]);
             MEMORY.values[n]=eval_Ast(code[p].value.vs->val);
+            add_ref(MEMORY.values[n]);
             p++;         
         }
         if(code[p].type==inst_if_t){
             Object condition=eval_Ast(code[p].value.i->condition);
-            if(*(std_bool(&condition,1).val.b)){
+            temp_ref(condition);
+            Object c=std_bool(&condition,1);
+            temp_ref(c);
+            if(*(c.val.b)){
                 p++;
                 continue;
             }
@@ -279,7 +384,10 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_elif_t){
             Object condition=eval_Ast(code[p].value.el->condition);
-            if(*(std_bool(&condition,1).val.b)){
+            temp_ref(condition);
+            Object c=std_bool(&condition,1);
+            temp_ref(c);
+            if(*(c.val.b)){
                 p++;
                 continue;
             }
@@ -307,7 +415,8 @@ int execute(Instruction*code,char*file_name,int len){
         }
 
         if(code[p].type==inst_expr_t){
-            eval_Ast(code[p].value.expr);
+            Object x=eval_Ast(code[p].value.expr);
+            temp_ref(x);
             p++;
             continue;
         }
@@ -345,8 +454,10 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_for_t){
             Object start=eval_Ast(code[p].value.fo->start);
+            temp_ref(start);
             start=std_ount(&start,1);
             Object end=eval_Ast(code[p].value.fo->end);
+            temp_ref(end);
             end=std_ount(&end,1);
             if(start.type==Obj_nil_t){
                 printf("ERROR cant convert the value of start to ount in for");
@@ -356,6 +467,8 @@ int execute(Instruction*code,char*file_name,int len){
                 printf("ERROR cant convert the value of end to ount in for");
                 exit(1);
             }
+            temp_ref(start);
+            temp_ref(end);
 
             int n=-1;
             for(int i=0;i<MEMORY.len;i++){
@@ -378,6 +491,7 @@ int execute(Instruction*code,char*file_name,int len){
             else{
                 MEMORY.values[n].type=Obj_ount_t;
                 MEMORY.values[n].val.i=malloc(sizeof(long long int));
+                remove_ref(MEMORY.values[n]);
                 *MEMORY.values[n].val.i=*start.val.i;
                 add_ref(MEMORY.values[n]);
 
@@ -392,9 +506,15 @@ int execute(Instruction*code,char*file_name,int len){
         if(code[p].type==inst_endfor_t){
             int for_p=code[p].value.endfor;
             Object start=eval_Ast(code[for_p].value.fo->start);
+            temp_ref(start);
             start=std_ount(&start,1);
+            temp_ref(start);
+
             Object end=eval_Ast(code[for_p].value.fo->end);
+            temp_ref(end);
             end=std_ount(&end,1);
+            temp_ref(end);
+
 
             //positive for 
             if(*start.val.i<*end.val.i){
@@ -409,8 +529,10 @@ int execute(Instruction*code,char*file_name,int len){
                     p++;
                     continue;
                 }
+                remove_ref(MEMORY.values[n]);
                 
                 MEMORY.values[n]=std_ount(&MEMORY.values[n],1);
+                add_ref(MEMORY.values[n]);
                 if(MEMORY.values[n].type==Obj_nil_t){
                     printf("ERROR in for cant convert loop var to ount");
                     exit(1);
@@ -439,8 +561,9 @@ int execute(Instruction*code,char*file_name,int len){
                     p++;
                     continue;
                 }
-                
+                remove_ref(MEMORY.values[n]);
                 MEMORY.values[n]=std_ount(&MEMORY.values[n],1);
+                add_ref(MEMORY.values[n]);
                 if(MEMORY.values[n].type==Obj_nil_t){
                     printf("ERROR in for cant convert loop var to ount");
                     exit(1);
@@ -461,7 +584,10 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_while_t){
             Object condition=eval_Ast(code[p].value.wh->condition);
-            if(*(std_bool(&condition,1).val.b)){
+            temp_ref(condition);
+            Object c=std_bool(&condition,1);
+            temp_ref(c);
+            if(*c.val.b){
                 p++;
                 continue;
             }
@@ -473,7 +599,10 @@ int execute(Instruction*code,char*file_name,int len){
         if(code[p].type==inst_endwhile_t){
             int while_p=code[p].value.endwhile;
             Object condition=eval_Ast(code[while_p].value.wh->condition);
-            if(*(std_bool(&condition,1).val.b)){
+            temp_ref(condition);
+            Object c=std_bool(&condition,1);
+            temp_ref(c);
+            if(*c.val.b){
                 p=code[p].value.endwhile+1;
                 continue;
             }
@@ -481,7 +610,10 @@ int execute(Instruction*code,char*file_name,int len){
                 p++;
             }
         }
+        
+        
     }
+    update_ref();
     
     return 0;
 }
