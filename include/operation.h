@@ -36,4 +36,6 @@ Object eq(Object a,Object b);
 
 Object negate(Object a);
 
+Object mod(Object a,Object b);
+
 #endif

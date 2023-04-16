@@ -11,6 +11,11 @@ typedef struct class{
     char*class_name;
 }class;
 
+typedef struct Module{
+    struct memory*MEM;
+    char*filename;
+}Module;
+
 /*every blt function should be definied like this but inn theory it's not important
 {
     ret_type: NULL
@@ -36,6 +41,7 @@ typedef struct Funcdef{
     char**arg_types;
     char**arg_names;
     int nbr_of_args;
+    int code_len;
     char is_builtin;
     struct Object (*func_p)(struct Object*,int);//pointer to the builtin function
     struct Instruction*code;
@@ -62,6 +68,8 @@ typedef union Obj_val{
     class*cl;//class
     Funcdef *funcid;//contain a function identifier
     char*typeid;//contain a type
+    Module*module;
+
     list*li;
 
 }Obj_val;
@@ -83,7 +91,8 @@ enum Obj_Type{
     Obj_end_t,// can be used to make list withput putting the len at index 0
     Obj_funcid_t,//contains addres of function not name
     Obj_typeid_t,
-    Obj_class_t
+    Obj_class_t,
+    obj_module_t
 };
 
 

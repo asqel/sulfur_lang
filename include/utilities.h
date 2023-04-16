@@ -66,5 +66,11 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size);
         mem=temp_mem_;\
     }\
 })
+/*
+typedef Object (*LoaderFunctionPtr)(void);
+
+LoaderFunctionPtr *get_module_loader(const char* filename);
+*///MODULE
+
 
 #endif

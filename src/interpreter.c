@@ -6,6 +6,10 @@
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../include/operation.h"
 #include "../include/utilities.h"
+#include "../include/token_class.h"
+
+
+#define NO_GARBAGE
 
 
 
@@ -41,6 +45,50 @@ long long int REF_COUNT_len;
 //        }
 //    }
 //}
+/*
+void import_func(Object*arg,int argc){
+    if (argc>2){
+        printf("ERROR in import maximum 2 arguments");
+        exit(1);
+    }   
+    for(int i=0;i<argc;i++){
+        if (arg[i].type != Obj_string_t){
+            printf("ERROR in import only string arguments accepted");
+            exit(1);
+        }
+    }
+    if( argc==1 ){
+        if (!id_acceptable(arg[0].val.s)){
+            printf("ERROR cannot import file with space in its name (%s)\n",arg[0].val.s);
+            printf("use second argument to import as");
+            exit(1);
+        }
+        LoaderFunctionPtr loader=get_module_loader(arg[0].val.s);
+        Object o=(*loader)();
+        if(o.type !=obj_module_t){
+            printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+            exit(1);
+        }
+        add_object(&MEMORY,arg[0].val.s,o);
+        
+    }
+    if (argc==2){
+        if (!id_acceptable(arg[1].val.s)){
+            printf("ERROR cannot import file as if alias contains space (%s)\n",arg[1].val.s);
+            exit(1);
+        }
+        LoaderFunctionPtr loader=get_module_loader(arg[0].val.s);
+        Object o=(*loader)();
+        if(o.type !=obj_module_t){
+            printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+            exit(1);
+        }
+        add_object(&MEMORY,arg[1].val.s,o);
+
+    }
+
+}
+*/// TODO MODULE
 
 
 void init_memory(){
@@ -77,6 +125,7 @@ void init_garbage_collect(){
 
 void init_libs(){
     MEMORY=init_std(MEMORY);
+    //add_func(&MEMORY,"import",&import_func,""); TODO MODULE
 }
 
 
@@ -204,6 +253,15 @@ Object eval_Ast(Ast*x){
                 return mul(a,b);
             }
         }
+        if(x->type==Ast_mod_t){
+            if(x->left!=NULL && x->right!=NULL){
+                Object a=eval_Ast(x->left);
+                Object b=eval_Ast(x->right);
+                add_ref(a);remove_ref(a);
+                add_ref(b);remove_ref(b);
+                return mod(a,b);
+            }
+        }
     }
 }
 
@@ -212,6 +270,9 @@ Object eval_Ast(Ast*x){
 //each object of a list will be add_red-ed automaticly even the first element wich is the size of the list
 //class are not supported yet
 int add_ref(Object o){
+    #ifdef NO_GARBAGE
+    return 0;
+    #endif 
     int find=-1;
     for(int i=0;i<REF_COUNT_len;i++){
         if(REF_COUNTS[i].pointer==get_obj_pointer(o)){
@@ -247,6 +308,9 @@ int add_ref(Object o){
     return 0;
 }
 int remove_ref(Object o){
+    #ifdef NO_GARBAGE
+    return 0;
+    #endif 
     int find=-1;
     for(int i=0;i<REF_COUNT_len;i++){
         if(REF_COUNTS[i].pointer==get_obj_pointer(o)){
@@ -259,13 +323,16 @@ int remove_ref(Object o){
             int len=*(o.val.li->elements[0].val.i);
             for(int i=0;i<=len;i++){
                 remove_ref(o.val.li->elements[i]);
-            }
+            } 
         }
         return 1;
     }
     return 0;
 }
 int update_ref(){
+    #ifdef NO_GARBAGE
+    return 0;
+    #endif 
     for(int i=0;i<REF_COUNT_len;i++){//faut support les funcid donc faut stocker le type
                                     //parceque dans les funcid faut free le nom et la desc
         if(REF_COUNTS[i].count<=0){
@@ -306,6 +373,9 @@ int update_ref(){
     }
 }
 int temp_ref(Object o){
+    #ifdef NO_GARBAGE
+    return 0;
+    #endif 
     add_ref(o);
     return remove_ref(o);
 }
@@ -319,18 +389,26 @@ int print_refs(ref_counter*r,int len){
 
 int execute(Instruction*code,char*file_name,int len){
     int p=0;
+    #ifndef NO_GARBAGE
+    
     int cycle=0;
     int cycle_number=1;//the garbage collector will be called every cycle_number instruction
     //check_libs();
-    for(int i=0;i<MEMORY.len;i++){printf("%d\n",i);
+
+    for(int i=0;i<MEMORY.len;i++){
         add_ref(MEMORY.values[i]);
     }
+    #endif 
+
     while(p<len){
+        #ifndef NO_GARBAGE
+        
         cycle++;
         if(cycle==cycle_number){
             cycle=0;
             update_ref();
         }
+        #endif
         if(code[p].type==inst_pass_t){
             p++;
             continue;
@@ -610,7 +688,42 @@ int execute(Instruction*code,char*file_name,int len){
                 p++;
             }
         }
-        
+        if(code[p].type==inst_funcdef_t){
+            int n=-1;
+            for(int i=0;i<MEMORY.len;i++){
+                if(!strcmp(MEMORY.keys[i],code[p].value.fo->var_name)){
+                    n=i;
+                    break;
+                }
+            }
+            if(n==-1){
+                MEMORY.len++;
+                MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
+                MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
+                MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fc->name)));
+                strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fc->name);
+                MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
+                MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
+                MEMORY.values[MEMORY.len-1].val.funcid->arg_names=code[p].value.fc->arg_names;
+                MEMORY.values[MEMORY.len-1].val.funcid->arg_types=code[p].value.fc->arg_types;
+                MEMORY.values[MEMORY.len-1].val.funcid->code=code[p].value.fc->code;
+                MEMORY.values[MEMORY.len-1].val.funcid->code_len=code[p].value.fc->code_len;
+                MEMORY.values[MEMORY.len-1].val.funcid->description=code[p].value.fc->description;
+                MEMORY.values[MEMORY.len-1].val.funcid->func_p=code[p].value.fc->func_p;
+                MEMORY.values[MEMORY.len-1].val.funcid->is_builtin=code[p].value.fc->is_builtin;
+                MEMORY.values[MEMORY.len-1].val.funcid->nbr_of_args=code[p].value.fc->nbr_of_args;
+                MEMORY.values[MEMORY.len-1].val.funcid->nbr_ret_type=code[p].value.fc->nbr_ret_type;
+                MEMORY.values[MEMORY.len-1].val.funcid->ret_type=code[p].value.fc->ret_type;
+                add_ref(MEMORY.values[MEMORY.len-1]);
+            }
+            else{
+                printf("ERROR function has same name as variable");
+                exit(1);
+
+            }
+            p++;
+        }
+
         
     }
     update_ref();

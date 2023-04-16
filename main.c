@@ -8,6 +8,7 @@
 
 
 int main(int argc,char **argv){
+    
     int show_mem=0;
     for(int i=1;i<argc;i++){
         if(!strcmp(argv[i],"-m")){
@@ -38,7 +39,6 @@ int main(int argc,char **argv){
     init_memory();
     init_stack(); 
     init_libs();  
-    
     execute(code,filepath,*instruction_len);
 
     if(show_mem){

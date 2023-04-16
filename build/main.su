@@ -1,4 +1,27 @@
 
-ount ad= -0;
-__path__=__path__+"h";
-println("");
+
+println("please enter a number");
+floap start=floap(input());
+
+println("please enter another number");
+floap end=floap(input());
+
+boolean isprime=1b;
+
+list prime_numbers=list(2);
+
+ount t=time();
+for(i from start to end+1.0){
+    isprime=1b;
+    for(k from 2 to ount(floap(i)^0.5)+1){
+        if(i%k==0){
+            isprime=0b;
+        }
+    }
+    if(isprime){
+        println(i,"is prime");
+        append(prime_numbers,i);
+    }
+}
+println((time()-t)/1000);
+println(prime_numbers);

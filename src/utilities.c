@@ -29,7 +29,7 @@ int str_contains_char(char *x,char v){
 }
 
 char*abs_path(){
-    char *path=malloc(sizeof(char)*PATH_MAX);
+    char *path=malloc(sizeof(char)*(PATH_MAX+1));
     #ifdef _WIN32
         if (GetModuleFileName(NULL, path, PATH_MAX) == 0) {
             perror("GetModuleFileName");
@@ -236,3 +236,53 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size){
         return NULL;
     }
 }
+/*
+#ifdef _WIN32
+    #include <windows.h>
+#elif __APPLE__ || __linux__
+    #include <dlfcn.h>  
+#endif
+#include "../include/memlib.h"
+
+
+LoaderFunctionPtr *get_module_loader(const char* filename) {
+    void* loader_function = NULL;
+    #ifdef _WIN32
+        HINSTANCE handle = LoadLibrary(filename);
+        if (handle != NULL) {
+            loader_function = GetProcAddress(handle, "__loader");
+        }
+        else{
+            filename=str_cat_new(filename,".dll");
+            HINSTANCE handle = LoadLibrary(filename);
+            if (handle != NULL) {
+                loader_function = GetProcAddress(handle, "__loader");
+            }
+            else{
+                printf("ERROR in loading library %s\n",filename);
+                exit(1);
+            }
+            free(filename);
+        }
+        
+    #elif __APPLE__ || __linux__
+        void* handle = dlopen(filename, RTLD_LAZY);
+        if (handle != NULL) {
+            loader_function = dlsym(handle, "__loader");
+        }
+        else{
+            filename=str_cat_new(filename,".so");
+            if (handle != NULL) {
+                loader_function = dlsym(handle, "__loader");
+            }
+            else{
+                printf("ERROR in loading library %s\n",filename);
+                exit(1);
+            }
+            free(filename);
+        }
+    #endif
+    
+    return loader_function;
+}
+*/// TODO MODULE

@@ -46,12 +46,25 @@ typedef struct Swap{
     int len;
 }Swap;
 
+typedef struct Funcdef_code{
+    char**ret_type;// list of types that can be returned by the function
+    int nbr_ret_type;//len of ret_type
+    char**arg_types;
+    char**arg_names;
+    int nbr_of_args;
+    int code_len;
+    char is_builtin;
+    struct Object (*func_p)(struct Object*,int);//pointer to the builtin function
+    struct Instruction*code;
+    char*description;//can be shown with help()
+    char*name;
+}Funcdef_code;
 
 typedef struct Instruction{
     short int type;
     union {
         varset*vs;
-        Funcdef*fc;
+        Funcdef_code*fc;
         If*i;
         For*fo;
         While*wh;
@@ -85,7 +98,8 @@ enum instruction_type{
     inst_swap_t,
     inst_section_t,
     inst_goto_t,
-    inst_pass_t
+    inst_pass_t,
+    inst_funcdef_t
 };
 
 //to acces an element

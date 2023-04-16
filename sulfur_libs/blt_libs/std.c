@@ -229,7 +229,82 @@ Object sleep(Object *obj,int n_arg){
     return nil_Obj;
 }
 
+Object get(Object *obj,int n_arg){
+    if (n_arg!=2){
+        printf("ERROR get only takes 2 arguments");
+        exit(1);
+    }
+    if(obj[0].type != Obj_string_t && obj[0].type != Obj_list_t){
+        printf("ERROR get only take list or string as first argument");
+        exit(1);
+    }
+    Object index=std_ount(&(obj[1]),1);
+    if (index.type == Obj_nil_t){
+        printf("ERROR get only take a ount-convetible as second argument");
+        exit(1);
+    }
+    int len=0;
+    if (obj[0].type == Obj_string_t){
+        len=strlen(obj[0].val.s);
+        if (*index.val.i==-1){
+            Object res;
+            res.type=Obj_ount_t;
+            res.val.s=malloc(sizeof(long long int));
+            *res.val.s=len;
+            return res;
+        }
+        if (*index.val.i >= len || *index.val.i<-1){
+            printf("ERROR get out of range");
+            exit(1);
+        }
+        Object res;
+        res.type=Obj_string_t;
+        res.val.s=malloc(sizeof(char)*2);
+        res.val.s[0]=obj[0].val.s[*index.val.i];
+        res.val.s[1]='\0';
+        return res;
+    }
+    len=*(obj[0].val.li->elements[0].val.i);
+    if (*index.val.i >= len || *index.val.i<-1){
+        printf("ERROR get out of range");
+        exit(1);
+    }
+    return obj[0].val.li->elements[*index.val.i+1];
 
+}
+
+Object set(Object *obj,int n_arg){
+    printf("ERROR set not implemented yet (j'ai la flemme de le faire)");
+    return nil_Obj;
+
+}
+
+Object append(Object*obj,int n_arg){
+    int len =*(obj[0].val.li->elements[0].val.i);
+    obj[0].val.li->elements=realloc(obj->val.li->elements,(len+n_arg)*sizeof(Object));
+    for(int i=1;i<n_arg;i++){
+        if(obj[i].type==Obj_ount_t){
+            obj[0].val.li->elements[len+i].type=Obj_ount_t;
+            obj[0].val.li->elements[len+i].val.i=malloc(sizeof(long long int));
+            *(obj[0].val.li->elements[len+i].val.i)=*obj[i].val.i;
+        }
+        else if(obj[i].type==Obj_floap_t){
+            obj[0].val.li->elements[len+i].type=Obj_floap_t;
+            obj[0].val.li->elements[len+i].val.f=malloc(sizeof(long double));
+            *(obj[0].val.li->elements[len+i].val.f)=*obj[i].val.f;
+        }
+        else if(obj[i].type==Obj_boolean_t){
+            obj[0].val.li->elements[len+i].type=Obj_boolean_t;
+            obj[0].val.li->elements[len+i].val.b=malloc(sizeof(short int));
+            *(obj[0].val.li->elements[len+i].val.b)=*obj[i].val.b;
+        }
+        else{
+            obj[0].val.li->elements[len+i]=obj[i];
+        }
+    }
+    *(obj[0].val.li->elements[0].val.i)+=n_arg-1;
+    return obj[0];
+}
 
 memory init_std(memory MEMORY){
     add_object(&MEMORY,"nil",nil_Obj);
@@ -242,6 +317,9 @@ memory init_std(memory MEMORY){
     add_func(&MEMORY,"list",&std_list,"");
     add_func(&MEMORY,"time",&current_timestamp,"");
     add_func(&MEMORY,"sleep",&sleep,"");
+    add_func(&MEMORY,"get",&get,"");
+    add_func(&MEMORY,"set",&set,"");
+    add_func(&MEMORY,"append",&append,"");
     char*path0=abs_path();
     back_slash_to_path(path0);
     char *d=dirname(path0);

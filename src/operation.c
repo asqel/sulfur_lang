@@ -38,6 +38,27 @@ Object add(Object a,Object b){
         return x;
 
     }
+    if(a.type==Obj_list_t && b.type==Obj_list_t){
+        Object x;
+        x.type=Obj_list_t;
+        int len=*a.val.li->elements[0].val.i+*b.val.li->elements[0].val.i;
+        x.val.li=malloc(sizeof(list));
+        x.val.li->elements=malloc(sizeof(Object)*(len+1));
+        x.val.li->elements[0].type=Obj_ount_t;
+        x.val.li->elements[0].val.i=malloc(sizeof(long long int));
+        *x.val.li->elements[0].val.i=len;
+        int len1=*(a.val.li->elements[0].val.i);
+        int len2=*(a.val.li->elements[0].val.i);
+        for(int i=0;i<len1;i++){
+            x.val.li->elements[i+1]=a.val.li->elements[i+1];
+        }
+        for(int i=0;i<len2;i++){
+            x.val.li->elements[i+1+len1]=b.val.li->elements[i+1];
+        }
+        return x;
+        
+
+    }
     
     printf("ERROR : operation(+) between 2 types not supported\n");
     exit(1);
@@ -257,4 +278,23 @@ Object negate(Object a){
     printf("ERROR : operation(-(unary)) between 2 types not supported\n");
     exit(1);
 
+}
+
+Object mod(Object a,Object b){
+    if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
+        Object x;
+        x.type=Obj_ount_t;
+        x.val.i=malloc(sizeof(long long int));
+        *x.val.i=(*a.val.i%*b.val.i);
+        return x;
+    }
+    if(a.type==Obj_floap_t && b.type==Obj_floap_t){
+        Object x;
+        x.type=Obj_ount_t;
+        x.val.i=malloc(sizeof(long long int));
+        *x.val.i=(long long int)(*a.val.f)%(long long int)(*b.val.f);
+        return x;
+    }
+    printf("ERROR : operation(^) between 2 types not supported\n");
+    exit(1);
 }

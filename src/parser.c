@@ -75,8 +75,6 @@ Ast*tok_to_Ast(Token*tok,int start,int end){
             case syntax:
                 e[i-start].type=Ast_syntax_t;
                 e[i-start].root.sy=*tok[i].value.t;
-                token_print(tok[i],"");
-                printf(" %d\n",i-start);
                 break;
             case identifier:
                 e[i-start].type=Ast_varcall_t;
@@ -144,7 +142,7 @@ int find_highest_op(Ast*e,int len){
             }
         }
     }
-    //search for &(and)
+    //search for |(or)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&&!e[i].isAst){
             if(e[i].root.op==OP_OR){
@@ -184,7 +182,7 @@ int count_comma(Ast*e,int len){
                 }
             }
             if(cl_par==-1){
-                printf("ERROR missing closing ')' in expression on function call");
+                printf("ERROR missing closing ')' in expression on function call\n");
                 exit(1);
             }
             i=cl_par+1;
@@ -232,9 +230,8 @@ Ast*make_ast(Ast*e,int len){
                         break;
                     }
                 }
-                
                 if(closing_par==-1){
-                    printf("ERROR missing closing ')' in function call");
+                    printf("ERROR missing closing ')' in function call\n");
                     exit(1);
                 }
                 if(closing_par==opening_par+1){//funccall without arg
@@ -312,7 +309,7 @@ Ast*make_ast(Ast*e,int len){
                                     }
                                 }
                                 if(cl_par==-1){
-                                    printf("ERROR missing closing ')' in expression on function call");
+                                    printf("ERROR missing closing ')' in expression on function call\n");
                                     exit(1);
                                 }
                                 int l=cl_par-op_par+2;
@@ -388,7 +385,7 @@ Ast*make_ast(Ast*e,int len){
                 }
             }
             if(cl_par==-1){
-                printf("ERROR missing closing ')' in expression");
+                printf("ERROR missing closing ')' in expression\n");
                 exit(1);
             }
             int to_parse_len=cl_par-op_par-1;
@@ -402,7 +399,7 @@ Ast*make_ast(Ast*e,int len){
             free(expr);
             e[op_par].isAst=1;
             for(int i=cl_par+1;i<len;i++){
-                e[i-(cl_par+1)+cl_par]=e[i];
+                e[i-(cl_par+1)+op_par+1]=e[i];
             }
             len-=(to_parse_len+1);
             e=realloc(e,sizeof(Ast)*len);
@@ -472,7 +469,7 @@ Ast*make_ast(Ast*e,int len){
     while(p<len){
         if(e[p].type==Ast_op_t && e[p].root.op==OP_NOT){// !
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '!' in expression");
+                printf("ERROR missing operand after '!' in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -488,7 +485,7 @@ Ast*make_ast(Ast*e,int len){
         }
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS&&p-1>=0&&e[p-1].type==Ast_op_t){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '+'(unary) in expression");
+                printf("ERROR missing operand after '+'(unary) in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -507,7 +504,7 @@ Ast*make_ast(Ast*e,int len){
         }
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS&&p-1>=0&&e[p-1].type==Ast_op_t){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '-'(unary) in expression");
+                printf("ERROR missing operand after '-'(unary) in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -526,7 +523,7 @@ Ast*make_ast(Ast*e,int len){
         }
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS && p==0){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '-'(unary) in expression");
+                printf("ERROR missing operand after '-'(unary) in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -554,23 +551,23 @@ Ast*make_ast(Ast*e,int len){
     while(len>1){
         int n=find_highest_op(e,len);
         if(n==-1){
-            printf("ERROR in expression #0");
+            printf("ERROR in expression #0\n");
             exit(1);
         }
         if(n-1<0){
-            printf("ERROR missing left operand in expression #1");
+            printf("ERROR missing left operand in expression #1\n");
             exit(1);
         }
         if(n+1>=len){
-            printf("ERROR missing right operand in expression #2");
+            printf("ERROR missing right operand in expression #2\n");
             exit(1);
         }
         if(!(e[n-1].isAst||e[n-1].type==Ast_object_t||e[n-1].type==Ast_varcall_t)){
-            printf("ERROR missing left operand in expression #3 %d\n",e[n-1].type);
+            printf("ERROR missing left operand in expression #3\n");
             exit(1);
         }
         if(!(e[n+1].isAst||e[n+1].type==Ast_object_t||e[n+1].type==Ast_varcall_t)){
-            printf("ERROR missing right operand in expression #4");
+            printf("ERROR missing right operand in expression #4\n");
             exit(1);
         }
         Ast op_ast;
@@ -1116,6 +1113,69 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             strcpy(inst[*n_inst-1].value.section,tok[p+1].value.s);
             p+=2;
             continue;
+        }
+        if(tok[p].type==keyword && *tok[p].value.t==def_t){
+            if(p+1<len && tok[p+1].type==identifier){
+                if(p+2<len && tok[p+2].type==syntax && *tok[p+2].value.t==par_L){
+                    char*name=tok[p+1].value.s;
+                    int op_par=p+2;
+                    int cl_par=search_rpar(tok,op_par);
+                    if(cl_par == -1){
+                        printf("ERROR missing closing ')' in function definition on line %d\n",tok[op_par].line);
+                        exit(1);
+                    }
+                    if(tok[cl_par+1].type == syntax && *tok[cl_par+1].value.t==r_brack_L){
+
+                    }
+                    else{
+                        printf("ERROR missing '{' after ')' in function definition on line %d\n",tok[cl_par].line);
+                        exit(1);
+                    }
+                    int op_rbrack=cl_par+1;
+                    int cl_rbrack=search_rrbrack(tok,op_rbrack);
+                    if(cl_rbrack == -1){
+                        printf("missing closing '}' in function definition on linee %d\n",tok[op_rbrack].line);
+                        exit(1);
+                    }
+                    if(op_par+1==cl_par){
+                        Funcdef_code f;
+                        f.arg_names=NULL;
+                        f.arg_types=NULL;
+                        int*v_len=malloc(sizeof(int));
+                        *v_len=0;
+                        Instruction *v=malloc(sizeof(Instruction));
+                        f.code=parse(tok,op_rbrack+1,cl_rbrack,v,v_len);
+                        f.description=NULL;
+                        f.func_p=NULL;
+                        f.is_builtin=0;
+                        f.nbr_of_args=0;
+                        f.nbr_ret_type=0;
+                        f.code_len=*v_len;
+                        free(v_len);
+                        f.ret_type=NULL;
+                        f.name=malloc(sizeof(char)*(1+strlen(name)));
+                        strcpy(f.name,name);
+                        (*n_inst)++;
+                        inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                        inst[*n_inst-1].type=inst_funcdef_t; 
+                        inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef)); 
+                        *inst[*n_inst-1].value.fc=f;
+                        p=cl_rbrack+1;
+                        continue;
+
+                    }
+
+                    
+                }
+                else{
+                    printf("Expected '(' after identifier in function definition on line %d",tok[p+1].line);
+                    exit(1);
+                }
+            }
+            else{
+                printf("Expected an identifier after def on line %d",tok[p].line);
+                exit(1);
+            }
         }
         else{
             int n=find_semicol(tok,p);
