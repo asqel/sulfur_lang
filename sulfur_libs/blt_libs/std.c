@@ -306,7 +306,7 @@ Object append(Object*obj,int n_arg){
     return obj[0];
 }
 
-memory init_std(memory MEMORY){
+memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
     add_func(&MEMORY,"print",&print_prompt,"");
     add_func(&MEMORY,"println",&println_prompt,"");
@@ -323,13 +323,11 @@ memory init_std(memory MEMORY){
     char*path0=abs_path();
     back_slash_to_path(path0);
     char *d=dirname(path0);
-    char *filepath=str_cat_new(d,"/main.su");
-    add_obj_str(&MEMORY,"__path__",filepath);
+    add_obj_str(&MEMORY,"__path__",path);
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
     add_obj_str(&MEMORY,"__dir_path__",d);
     free(d);
     free(path0);
-    free(filepath);
 
 
         

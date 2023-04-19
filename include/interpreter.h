@@ -43,7 +43,7 @@ void init_funcdefs();
 
 void init_classdefs();
 
-void init_libs();
+void init_libs(char*path);
 
 void init_garbage_collect();
 

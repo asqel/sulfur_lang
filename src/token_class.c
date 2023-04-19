@@ -237,3 +237,15 @@ int Token_count(Token*tok,int type,__value value){
     return x;
 
 }
+
+
+
+int id_acceptable_ptr(char*v){
+    int len=strlen(v);
+    for(int i=0;i<len;i++){
+        if(!id_acceptable(v[i])){
+            return 0;
+        }
+    }
+    return 1;
+}

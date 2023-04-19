@@ -45,8 +45,8 @@ long long int REF_COUNT_len;
 //        }
 //    }
 //}
-/*
-void import_func(Object*arg,int argc){
+
+Object import_func(Object*arg,int argc){
     if (argc>2){
         printf("ERROR in import maximum 2 arguments");
         exit(1);
@@ -58,12 +58,12 @@ void import_func(Object*arg,int argc){
         }
     }
     if( argc==1 ){
-        if (!id_acceptable(arg[0].val.s)){
+        if (!id_acceptable_ptr(arg[0].val.s)){
             printf("ERROR cannot import file with space in its name (%s)\n",arg[0].val.s);
             printf("use second argument to import as");
             exit(1);
         }
-        LoaderFunctionPtr loader=get_module_loader(arg[0].val.s);
+        Object (*loader)(void)=get_module_loader(arg[0].val.s);
         Object o=(*loader)();
         if(o.type !=obj_module_t){
             printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
@@ -73,22 +73,34 @@ void import_func(Object*arg,int argc){
         
     }
     if (argc==2){
-        if (!id_acceptable(arg[1].val.s)){
+        if (strcmp(arg[1].val.s,"") && !id_acceptable_ptr(arg[1].val.s)){
             printf("ERROR cannot import file as if alias contains space (%s)\n",arg[1].val.s);
             exit(1);
         }
-        LoaderFunctionPtr loader=get_module_loader(arg[0].val.s);
-        Object o=(*loader)();
-        if(o.type !=obj_module_t){
-            printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
-            exit(1);
+        if (strcmp(arg[1].val.s,"")){
+            Object (*loader)(void)=get_module_loader(arg[0].val.s);
+            Object o=(*loader)();
+            if(o.type !=obj_module_t){
+                printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+                exit(1);
+            }
+            add_object(&MEMORY,arg[1].val.s,o);
         }
-        add_object(&MEMORY,arg[1].val.s,o);
+        else{
+            Object (*loader)(void)=get_module_loader(arg[0].val.s);
+            Object o=(*loader)();
+            if(o.type !=obj_module_t){
+                printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+                exit(1);
+            }
+            for(int i=0;i<o.val.module->MEM->len;i++){
+                add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
+            }
+        }
 
     }
 
 }
-*/// TODO MODULE
 
 
 void init_memory(){
@@ -123,9 +135,9 @@ void init_garbage_collect(){
     REF_COUNTS=malloc(sizeof(ref_counter));
 }
 
-void init_libs(){
-    MEMORY=init_std(MEMORY);
-    //add_func(&MEMORY,"import",&import_func,""); TODO MODULE
+void init_libs(char*path){
+    MEMORY=init_std(MEMORY,path);
+    add_func(&MEMORY,"import",&import_func,""); 
 }
 
 
@@ -376,8 +388,38 @@ int temp_ref(Object o){
     #ifdef NO_GARBAGE
     return 0;
     #endif 
-    add_ref(o);
-    return remove_ref(o);
+    int find=-1;
+    for(int i=0;i<REF_COUNT_len;i++){
+        if(REF_COUNTS[i].pointer==get_obj_pointer(o)){
+            find=i;
+        }
+    }
+    if(find!=-1){
+        return 1;
+    }
+    if(o.type==Obj_class_t){
+        return 0;
+    }
+
+    if(o.type==Obj_list_t){
+        REF_COUNT_len++;
+        REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+        REF_COUNTS[REF_COUNT_len-1].count=0;
+        REF_COUNTS[REF_COUNT_len-1].type=Obj_list_t;
+        REF_COUNTS[REF_COUNT_len-1].pointer=get_obj_pointer(o);
+        int len=*o.val.li->elements[0].val.i;
+        for(int i=0;i<=len;i++){
+            temp_ref(o.val.li->elements[i]);
+        }
+        return 0;
+    }
+    
+    REF_COUNT_len++;
+    REF_COUNTS=realloc(REF_COUNTS,sizeof(ref_counter)*REF_COUNT_len);
+    REF_COUNTS[REF_COUNT_len-1].count=0;
+    REF_COUNTS[REF_COUNT_len-1].type=o.type;
+    REF_COUNTS[REF_COUNT_len-1].pointer=get_obj_pointer(o);
+    return 0;
 }
 
 int print_refs(ref_counter*r,int len){

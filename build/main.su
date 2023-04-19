@@ -1,40 +1,5 @@
-
-
-println("please enter a number");
-floap start=floap(input());
-
-println("please enter another number");
-floap end=floap(input());
-
-boolean isprime=1b;
-
-list prime_numbers=list();
-
-ount t=time();
-for(i from start to end+1.0){
-    isprime=1b;
-    for(k from 2 to ount(floap(i)^0.5)+1){
-        if(i%k==0){
-            isprime=0b;
-        }
-    }
-    if(isprime){
-        println(i,"is prime");
-        append(prime_numbers,i);
-    }
-}
-println("time taken:",(time()-t)/1000);
-
-list l=list();//to remove 1
-ount len=get(prime_numbers,-1);
-ount x=0;
-
-for(i from 1 to len){
-    x=get(prime_numbers,i);
-    append(l,x);
-}
-
-x=get(prime_numbers,-1);
-prime_numbers=l;
+import("math","");
+bool x=is_even(3);
+floap l=cos(22);
+println("x est ",x);
 println(l);
-

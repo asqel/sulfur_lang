@@ -1,0 +1,24 @@
+to create a module the source c source code 
+must contains a fonction __loader() definied 
+like this:
+    Object __loader();
+
+this function has to return a Object of type module
+
+to create a function that can interact with sulfur:
+
+    Object func_name(Object *values, int arg_count)
+
+
+if a function is supposed too return nothing it has to return nil_Obj
+
+you can use new_Module() to create a new Object of type module
+and add_func_module() to add a function to rou module
+and add_Object_module() to add an Object to your module
+
+to create an Object you can either create it yourself or
+use function like new_ount / new_floap / new_string
+
+
+and then you have to compile it to shared library 
+(.dll/nothing for windows | .so/nothing for linux )

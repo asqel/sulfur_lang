@@ -126,6 +126,7 @@ void tokens_print(Token*toks,char*e);
 int free_tok_val(Token x);
 
 int id_acceptable(char v);
+int id_acceptable_ptr(char*v);
 
 int Token_count(Token*tok,int type,__value value);//ca marche pas en fait 
 //faut faire token type value

@@ -236,7 +236,18 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size){
         return NULL;
     }
 }
-/*
+
+int is_letter(char v){
+    if('A'<=v && v<='Z'){
+        return 1;
+    }
+    if('a' <= v && v<='z'){
+        return 1;
+    }
+    return 0;
+}
+
+
 #ifdef _WIN32
     #include <windows.h>
 #elif __APPLE__ || __linux__
@@ -245,7 +256,16 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size){
 #include "../include/memlib.h"
 
 
-LoaderFunctionPtr *get_module_loader(const char* filename) {
+void *get_module_loader(char* filename) {
+    if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
+        char * interpreter =abs_path();
+        char* dir=dirname(interpreter);
+        free(interpreter);
+        char *lib_dir=str_cat_new(dir,"/libs/");
+        free(dir);
+        filename=str_cat_new(lib_dir,filename);
+        free(lib_dir);
+    }
     void* loader_function = NULL;
     #ifdef _WIN32
         HINSTANCE handle = LoadLibrary(filename);
@@ -272,6 +292,7 @@ LoaderFunctionPtr *get_module_loader(const char* filename) {
         }
         else{
             filename=str_cat_new(filename,".so");
+            handle = dlopen(filename, RTLD_LAZY);
             if (handle != NULL) {
                 loader_function = dlsym(handle, "__loader");
             }
@@ -282,7 +303,5 @@ LoaderFunctionPtr *get_module_loader(const char* filename) {
             free(filename);
         }
     #endif
-    
     return loader_function;
 }
-*/// TODO MODULE

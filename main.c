@@ -6,22 +6,53 @@
 #include "include/interpreter.h"
 #include "sulfur_libs/blt_libs/std.h"
 
-
+/*
+args:
+    [path]
+    [path] -m
+    -m
+    nothing
+*/
 int main(int argc,char **argv){
-    
+    back_slash_to_path(argv[0]);
     int show_mem=0;
-    for(int i=1;i<argc;i++){
-        if(!strcmp(argv[i],"-m")){
+    char*filepath=NULL;
+    if (argc==2){
+        if(!strcmp(argv[1],"-m")){
             show_mem=1;
         }
+        else{
+            filepath=argv[1];
+            back_slash_to_path(filepath);
+        }
     }
-    char*path0=abs_path();
-    back_slash_to_path(path0);
-    char *d=dirname(path0);
-    free(path0);
-    char *filepath=str_cat_new(d,"/main.su");
-    free(d);
-    char *text=read_file(filepath);
+    if (argc==3){
+        if(!strcmp(argv[1],"-m")){
+            show_mem=1;
+            filepath=argv[2];
+            back_slash_to_path(filepath);
+        }
+        else{
+            filepath=argv[1];
+            back_slash_to_path(filepath);
+            if(!strcmp(argv[2],"-m")){
+                show_mem=1;
+            }
+        }
+    }
+    if(argc>3){
+        printf("ERROR too many arguments");
+        exit(1);
+    }
+    if (!filepath){
+        char*d=dirname(argv[0]);
+        filepath=str_cat_new(d,"/main.su");
+        free(d);
+    }
+
+
+    char*text=read_file(filepath);
+    
     Token*l=lexe(text);
     int len=token_len(l); 
 
@@ -38,7 +69,7 @@ int main(int argc,char **argv){
     free(l);
     init_memory();
     init_stack(); 
-    init_libs();  
+    init_libs(filepath);  
     execute(code,filepath,*instruction_len);
 
     if(show_mem){
@@ -47,6 +78,10 @@ int main(int argc,char **argv){
             printf("    %s: ",MEMORY.keys[i]);
             println_prompt(&MEMORY.values[i],1);
         }
+        printf("Press enter to quit\n");
+        getchar();
+
     }
     return 0;
 }
+

@@ -1,6 +1,8 @@
 #ifndef SULFUR_MATH_H
 #define SULFUR_MATH_H
+#include "../../build/API/memlib.h"
 
-int iseven(int x);
+Object iseven(Object *argv,int argc);
+
 
 #endif 

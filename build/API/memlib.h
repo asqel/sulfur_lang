@@ -2,6 +2,8 @@
 #define MEMLIB_H
 #include <string.h>
 
+void*realloc_c(void*mem,long long int old_size,long long int new_size);
+
 struct Object;
 
 typedef struct class{
@@ -131,7 +133,6 @@ Object new_floap(long double value);
 
 //the string will be copied *
 Object new_string(char * value);
-
 
 Object new_boolean(int value);
 
