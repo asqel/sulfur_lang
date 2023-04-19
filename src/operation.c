@@ -11,31 +11,16 @@ boolean | boolean
 */
 Object add(Object a,Object b){
     if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
-        Object x;
-        x.type=Obj_ount_t;
-        x.val.i=malloc(sizeof(long long int));
-        *x.val.i=*a.val.i+*b.val.i;
-        return x;
+        return new_ount(*a.val.i + *b.val.i);
     }
     if(a.type==Obj_string_t&&b.type==Obj_string_t){
-        Object x;
-        x.type=Obj_string_t;
-        x.val.s=str_cat_new(a.val.s,b.val.s);
-        return x;
+        return new_string(str_cat_new(a.val.s, b.val.s));
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
-        Object x;
-        x.type=Obj_floap_t;
-        x.val.f=malloc(sizeof(long double));
-        *x.val.f=*a.val.f+*b.val.f;
-        return x;
+        return new_floap(*a.val.f + *b.val.f);
     }
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
-        Object x;
-        x.type=Obj_boolean_t;
-        x.val.b=malloc(sizeof(short int));
-        *x.val.b=*a.val.b+*b.val.b;
-        return x;
+        return new_boolean(*a.val.b + *b.val.b);
 
     }
     if(a.type==Obj_list_t && b.type==Obj_list_t){
