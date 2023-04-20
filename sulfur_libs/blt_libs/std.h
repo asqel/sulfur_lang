@@ -3,6 +3,8 @@
 
 #include "../../include/memlib.h"
 
+extern int precision;
+extern int base_precision;
 
 Object read_prompt(Object*o,int n_arg);
  

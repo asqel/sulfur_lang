@@ -257,3 +257,26 @@ Object new_boolean(int value){
     *o.val.b= value ? 1:0;
     return o;
 }
+
+Object Obj_cpy(Object o){
+    switch (o.type){
+        case Obj_ount_t:
+            return new_ount(*o.val.i);
+        case Obj_floap_t:
+            return new_floap(*o.val.f);
+        case Obj_string_t:
+            return new_string(o.val.s);
+        case Obj_boolean_t:
+            return new_boolean(*o.val.b);
+        case Obj_list_t:
+            Object res;
+            res.type=Obj_list_t;
+            res.val.li=o.val.li;
+            return res;
+        case Obj_funcid_t:
+            //Object res;
+            //res.val.funcid=malloc(sizeof(Funcdef));
+            // TODO copy every element of struct
+            return o;
+    }
+}

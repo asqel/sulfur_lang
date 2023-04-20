@@ -139,11 +139,29 @@ a programming language in c
     != : not equal
     
 
+## importation:
+    you can use the import function to import a file
+    it takes as arguments the path to the file
+    if the path is not absolute it will search in the interpreter libs
+    you can acces Object from file with dot operator
+    like this filename.func1()
+
+    you can change the name of the file in the program
+    if you import(filename,newname) you'll have to acces Objects like this
+    newnamme.func1()
+
+    if the newname is "" then you acces Object like if they were definined in the 
+    same file so 
+    import(filename,"")
+    func1()
+
 ## built-in functions:
     print(x,...) : print to stdout the value of each args separated with space
     println(x,...) : call print with the same arguments and print a new line 
     input() : read input from stdin until there is a new line return the input as a string
     time() : return the unix time in miliseconds as an ount
+    import(File,As) : import the file File as As (if As == "" Objects from file will be in stored in memory)
+    import(File) : import the file File as its name
 
     bool(x) : return the boolean value of x
     ount(x) : return the ount value of x  

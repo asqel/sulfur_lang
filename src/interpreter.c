@@ -50,8 +50,8 @@ Object import_func(Object*arg,int argc){
     if (argc>2){
         printf("ERROR in import maximum 2 arguments");
         exit(1);
-    }   
-    for(int i=0;i<argc;i++){
+    }  
+    for (int i = 0; i < argc; i++){
         if (arg[i].type != Obj_string_t){
             printf("ERROR in import only string arguments accepted");
             exit(1);
@@ -70,7 +70,6 @@ Object import_func(Object*arg,int argc){
             exit(1);
         }
         add_object(&MEMORY,arg[0].val.s,o);
-        
     }
     if (argc==2){
         if (strcmp(arg[1].val.s,"") && !id_acceptable_ptr(arg[1].val.s)){
@@ -182,7 +181,6 @@ Object eval_Ast(Ast*x){
             return *(x->root.obj);
         }
         else{
-            printf("type:%d:",x->type);
             printf("ERROR in Ast");
             exit(-1);
         }
@@ -192,8 +190,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return add(a,b);
             }
         }
@@ -201,8 +199,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return less(a,b);
             }
         }
@@ -210,8 +208,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return greater(a,b);
             }
         }
@@ -219,13 +217,13 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return sub(a,b);
             }
             if(x->left==NULL && x->right!=NULL){
                 Object b=eval_Ast(x->right);
-                add_ref(b);remove_ref(b);
+                temp_ref(b);
                 return negate(b);
             }
         }
@@ -233,8 +231,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return _pow(a,b);
             }
         }
@@ -242,8 +240,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return eq(a,b);
             }
         }
@@ -251,8 +249,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return _div(a,b);
             }
         }
@@ -260,8 +258,8 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return mul(a,b);
             }
         }
@@ -269,9 +267,31 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                add_ref(a);remove_ref(a);
-                add_ref(b);remove_ref(b);
+                temp_ref(a);
+                temp_ref(b);
                 return mod(a,b);
+            }
+        }
+        if(x->type == Ast_dot_t){
+            if(x->left != NULL && x->right != NULL){
+                Object a=eval_Ast(x->left);
+                temp_ref(a);
+                if(a.type != obj_module_t){
+                    printf("ERROR dot operator on non module Object");
+                    exit(1);
+                }
+                if (x->right->type == Ast_varcall_t || x->right->type == Ast_funccall_t){
+                    memory global=MEMORY;
+                    MEMORY=*a.val.module->MEM;
+                    Object o=eval_Ast(x->right);
+                    MEMORY=global;
+
+                    return o;
+                }
+                else{
+                    printf("ERROR on dot operator");
+                    exit(1);
+                }
             }
         }
     }
@@ -392,6 +412,7 @@ int temp_ref(Object o){
     for(int i=0;i<REF_COUNT_len;i++){
         if(REF_COUNTS[i].pointer==get_obj_pointer(o)){
             find=i;
+            break;
         }
     }
     if(find!=-1){
@@ -488,7 +509,9 @@ int execute(Instruction*code,char*file_name,int len){
             remove_ref(MEMORY.values[n]);
             MEMORY.values[n]=eval_Ast(code[p].value.vs->val);
             add_ref(MEMORY.values[n]);
-            p++;         
+
+            p++;  
+            continue;       
         }
         if(code[p].type==inst_if_t){
             Object condition=eval_Ast(code[p].value.i->condition);

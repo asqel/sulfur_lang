@@ -1,5 +1,6 @@
-import("math","");
-bool x=is_even(3);
-floap l=cos(22);
-println("x est ",x);
-println(l);
+import("math","mt");
+import("testlib","pl");
+set_precision(45);
+
+
+println("la valeur de pi est : ",mt.pi);

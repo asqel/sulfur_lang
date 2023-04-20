@@ -72,6 +72,7 @@ int main(int argc,char **argv){
     init_libs(filepath);  
     execute(code,filepath,*instruction_len);
 
+    precision =base_precision;
     if(show_mem){
         printf("\n \nMEMORY:%d\n",MEMORY.len);
         for(int i=0;i<MEMORY.len;i++){

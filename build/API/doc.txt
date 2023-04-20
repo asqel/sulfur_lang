@@ -22,3 +22,8 @@ use function like new_ount / new_floap / new_string
 
 and then you have to compile it to shared library 
 (.dll/nothing for windows | .so/nothing for linux )
+for windows: 
+	gcc -shared YOUR_MODULE_PATH PATH_TO_API -o OUTPUT_PATH -lm -fno-builtin-printf
+
+for linux:
+	gcc -shared -fPIC YOUR_MODULE_PATH PATH_TO_API -o OUTPUT_PATH -lm -fno-builtin-printf

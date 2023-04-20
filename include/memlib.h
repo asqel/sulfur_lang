@@ -135,4 +135,7 @@ Object new_string(char * value);
 
 Object new_boolean(int value);
 
+Object Obj_cpy(Object o);
+
+
 #endif

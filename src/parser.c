@@ -289,7 +289,7 @@ Ast*make_ast(Ast*e,int len){
                             continue;
 
                         }
-                        if(to_parse[i].type==Ast_funccall_t && i+1<to_parse_len){
+                        if(to_parse[i].type==Ast_varcall_t && i+1<to_parse_len){
                             if(to_parse[i+1].type==Ast_syntax_t && to_parse[i+1].root.sy==par_L){
                                 int op_par=i+1;
                                 int cl_par=-1;
@@ -315,8 +315,8 @@ Ast*make_ast(Ast*e,int len){
                                 int l=cl_par-op_par+2;
                                 a[k].l+=l;
                                 a[k].v=realloc(a[k].v,sizeof(Ast)*a[k].l);
-                                for(int j=op_par;j<=cl_par;j++){
-                                    a[k].v[j-op_par+a[k].l-l]=to_parse[j];
+                                for(int j=op_par-1;j<=cl_par;j++){
+                                    a[k].v[j-(op_par-1)+a[k].l-l]=to_parse[j];
                                 }
                                 i=cl_par;
                                 continue;
@@ -385,6 +385,7 @@ Ast*make_ast(Ast*e,int len){
                 }
             }
             if(cl_par==-1){
+
                 printf("ERROR missing closing ')' in expression\n");
                 exit(1);
             }
