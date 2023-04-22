@@ -95,7 +95,6 @@ void Obj_free_val(Object obj){
             free(obj.val.cl->values);
             free(obj.val.cl);
             break;
-
         default:
             break;
     }
@@ -259,6 +258,7 @@ Object new_boolean(int value){
 }
 
 Object Obj_cpy(Object o){
+        Object res;
     switch (o.type){
         case Obj_ount_t:
             return new_ount(*o.val.i);
@@ -269,14 +269,20 @@ Object Obj_cpy(Object o){
         case Obj_boolean_t:
             return new_boolean(*o.val.b);
         case Obj_list_t:
-            Object res;
             res.type=Obj_list_t;
             res.val.li=o.val.li;
             return res;
         case Obj_funcid_t:
-            //Object res;
-            //res.val.funcid=malloc(sizeof(Funcdef));
-            // TODO copy every element of struct
-            return o;
+            res.type=Obj_funcid_t;
+            res.val.funcid=malloc(sizeof(Funcdef));
+            *res.val.funcid = *o.val.funcid;
+            return res;
+        case obj_module_t:
+            res.type=obj_module_t;
+            res.val.module=malloc(sizeof(Module));
+            *res.val.module = *o.val.module;
+            return res;
+        default:
+            break;
     }
 }

@@ -25,5 +25,7 @@ and then you have to compile it to shared library
 for windows: 
 	gcc -shared YOUR_MODULE_PATH PATH_TO_API -o OUTPUT_PATH.dll -lm -fno-builtin-printf
 
+for macOS:
+    ??? i dont know but the file has to be a .so
 for linux:
 	gcc -shared -fPIC YOUR_MODULE_PATH PATH_TO_API -o OUTPUT_PATH.so -lm -fno-builtin-printf

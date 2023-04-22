@@ -99,6 +99,8 @@ enum Obj_Type{
 extern Object end_Obj;
 extern Object nil_Obj;
 
+void Obj_free_val(Object obj);
+
 void*get_obj_pointer(Object o);
 
 

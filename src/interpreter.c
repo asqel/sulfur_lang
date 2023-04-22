@@ -160,6 +160,7 @@ Object eval_Ast(Ast*x){
             Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
             for(int i=0;i<x->root.fun->nbr_arg;i++){
                 a[i]=eval_Ast(&x->root.fun->args[i]);
+
             }
             return (*MEMORY.values[n].val.funcid->func_p)(a,x->root.fun->nbr_arg);
         }
@@ -175,10 +176,10 @@ Object eval_Ast(Ast*x){
             if(n==-1){
                 printf("ERROR var '%s' doesnt exist",x->root.varcall);
             }
-            return MEMORY.values[n];
+            return Obj_cpy(MEMORY.values[n]);
         }
         if(x->type == Ast_object_t){
-            return *(x->root.obj);
+            return Obj_cpy(*(x->root.obj));
         }
         else{
             printf("ERROR in Ast");
@@ -190,88 +191,107 @@ Object eval_Ast(Ast*x){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return add(a,b);
+                Object o=add(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_le_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return less(a,b);
+                Object o=less(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_ge_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return greater(a,b);
+                Object o=greater(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_sub_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return sub(a,b);
+                Object o=sub(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
             if(x->left==NULL && x->right!=NULL){
                 Object b=eval_Ast(x->right);
-                temp_ref(b);
-                return negate(b);
+                Object o= negate(b);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_pow_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return _pow(a,b);
+                Object o=_pow(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_eq_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return eq(a,b);
+                Object o=eq(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_div_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return _div(a,b);
+                Object o=_div(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_mul_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return mul(a,b);
+                Object o=mul(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
         if(x->type==Ast_mod_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
                 Object b=eval_Ast(x->right);
-                temp_ref(a);
-                temp_ref(b);
-                return mod(a,b);
+                Object o=mod(a,b);
+                Obj_free_val(a);
+                Obj_free_val(b);
+                return o;
             }
         }
+        /*
+        if typ==assigne
+        left has to be either varcall or list gettting '[ ...]'
+        but if its varcall technicaly its not here but ok
+        oh and also with dot operator 
+        but the parser doesnt parse '[]' i think 
+        else no
+        and return nil_obj;
+        */
         if(x->type == Ast_dot_t){
             if(x->left != NULL && x->right != NULL){
                 Object a=eval_Ast(x->left);

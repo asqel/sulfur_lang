@@ -175,7 +175,7 @@ long long int str_to_llint(char*s){
     long long int x=0;
     int len=strlen(s);
     long long int pow_10=1;
-    for(int i=0;i<len;i++){
+    for(int i=len-1;i>-1;i--){
         x+=pow_10*(long long int)(s[i]-'0');
         pow_10*=10;
     }

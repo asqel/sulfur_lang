@@ -1,6 +1,18 @@
-import("math","mt");
-import("testlib","pl");
-set_precision(45);
+import("graphic","");
+
+init_graphic();
+
+show_window();
+floap x=0.0;
+
+for(i from 0 to 200){
+    fill_window(0,0,0);
+    fill_rect(ount(x)+i,0,10,10,255,0,0);
+    sleep(ount(1.0/60.0*1000.0));
+    
+}
 
 
-println("la valeur de pi est : ",mt.pi);
+
+
+input();

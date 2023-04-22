@@ -95,11 +95,7 @@ Object mul(Object a,Object b){
         return x;
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
-        Object x;
-        x.type=Obj_floap_t;
-        x.val.f=malloc(sizeof(long double));
-        *x.val.f=*a.val.f*(*b.val.f);
-        return x;
+        return new_floap((*a.val.f) * (*b.val.f));
     }
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
         Object x;
@@ -122,11 +118,7 @@ Object _div(Object a,Object b){
         return x;
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
-        Object x;
-        x.type=Obj_floap_t;
-        x.val.f=malloc(sizeof(long double));
-        *x.val.f=*a.val.f/ *b.val.f;
-        return x;
+        return new_floap((*a.val.f) / (*b.val.f));
     }
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
         Object x;

@@ -163,6 +163,7 @@ a programming language in c
     import(File,As) : import the file File as As (if As == "" Objects from file will be in stored in memory)
     import(File) : import the file File as its name
 
+    sleep(x) : poses the execution for x miliseconds
     bool(x) : return the boolean value of x
     ount(x) : return the ount value of x  
     list(x,...) : return a list composed of every argument passed if none the list is empty

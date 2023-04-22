@@ -49,7 +49,7 @@ int main(int argc,char **argv){
         filepath=str_cat_new(d,"/main.su");
         free(d);
     }
-
+    
 
     char*text=read_file(filepath);
     
