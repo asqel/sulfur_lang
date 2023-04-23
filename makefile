@@ -23,7 +23,7 @@ stdlibs_win:
 
 stdlibs_linux:
 	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.so -lm -fno-builtin-printf
-	gcc -shared -fPIC sulfur_libs/std_libs/graphic.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf
+	gcc -shared -fPIC sulfur_libs/std_libs/graphic.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
 	
 win_all:
 	make win

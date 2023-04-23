@@ -13,6 +13,10 @@ HWND hwndTitle;
 
 #elif __APPLE__
 #elif __linux__
+#include <X11/Xlib.h>
+Display *display;
+Window window;
+
 #else
 #endif
 
@@ -48,6 +52,23 @@ Object init_graphic(){
 
     #elif __APPLE__
     #elif __linux__
+    
+    // Ouvrir une connexion vers le serveur X
+    display = XOpenDisplay(NULL);
+    if (!display) {
+        fprintf(stderr, "Erreur : Impossible d'ouvrir la connexion X\n");
+        exit(1);
+    }
+
+    // Créer une fenêtre
+    window = XCreateSimpleWindow(display, DefaultRootWindow(display),
+                                 0, 0, width, height, 0, 0, WhitePixel(display, 0));
+
+    // Sélectionner les événements à surveiller
+    XSelectInput(display, window, ExposureMask | KeyPressMask);
+    XResizeWindow(display, window, 800, height);
+    XFlush(display);
+    XSync(display, False);
     #else
         printf("ERROR  your OS doesnt support an implentation of a graphic library\n");
         exit(1);
@@ -61,6 +82,9 @@ Object show_window(){
     ShowWindow(g_hWnd, SW_SHOW);
     UpdateWindow(g_hWnd);
     return nil_Obj;
+
+    #elif __linux__
+    XMapWindow(display, window);
     
     #endif
 }
@@ -69,6 +93,9 @@ Object update_window(){
     #ifdef _WIN32
 
     UpdateWindow(g_hWnd);
+    #elif __linux__
+        XFlush(display);
+    XSync(display, False);
     #endif
     return nil_Obj;
 
@@ -90,6 +117,9 @@ Object set_width(Object *args, int argc){
     RECT rect;
     GetWindowRect(g_hWnd, &rect);
     MoveWindow(g_hWnd, rect.left, rect.top, width, height, 0);
+    #elif __linux__
+    XResizeWindow(display, window, width, height);
+    XFlush(display); // Mettre à jour l'affichage
     #endif
     return nil_Obj;
 }
@@ -108,6 +138,9 @@ Object set_height(Object *args, int argc){
     RECT rect;
     GetWindowRect(g_hWnd, &rect);
     MoveWindow(g_hWnd, rect.left, rect.top, width, height, 0);
+    #elif __linux__
+    XResizeWindow(display, window, width, height);
+    XFlush(display); // Mettre à jour l'affichage
     #endif
     return nil_Obj;
 }
@@ -140,6 +173,9 @@ Object set_pixel(Object *args, int argc){
     HDC hdc = GetDC(g_hWnd);
     SetPixel(hdc, x, y, RGB(r,g,b));
     ReleaseDC(g_hWnd, hdc);
+    #elif __linux__
+    XSetForeground(display, DefaultGC(display, 0), r<<18 | g<<8 | b);
+    XDrawPoint(display, window, DefaultGC(display, 0), x, y);
     #endif 
     return nil_Obj;
 }  
