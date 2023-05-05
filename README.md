@@ -1,7 +1,11 @@
 # sulfur
 a programming language in c
 
-
+to compile and run on windows:
+    make win_all
+to compile and run on linux:
+    make linux_all
+    
 
 ## built-in types
     ount : signed integer   
