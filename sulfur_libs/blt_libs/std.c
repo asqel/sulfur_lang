@@ -18,6 +18,8 @@
     char* __os__="UNKNOWN";
 #endif
 
+extern memory MEMORY;
+
 int precision=5;
 int base_precision=6;
 
@@ -250,6 +252,32 @@ Object sleep(Object *obj,int n_arg){
     return nil_Obj;
 }
 
+Object var_exists(Object* args, int n_arg){
+    if(n_arg == 0){
+        printf("var_exists takes at least one arg");
+        exit(1);
+    }
+    for(int i=0; i<n_arg; i++){
+        if(args[i].type != Obj_string_t){
+            printf("var_exists takes only strings as arg");
+            exit(1);
+        }
+    }
+    for(int i=0; i<n_arg; i++){
+        int found=0;
+        for(int k=0; k<MEMORY.len; k++){
+            if(!strcmp(MEMORY.keys[k],args[i].val.s)){
+                found=1;
+                break;
+            }
+        }
+        if(! found){
+            return new_boolean(0);
+        }
+    }
+    return new_boolean(1);
+}
+
 Object get(Object *obj,int n_arg){
     if (n_arg!=2){
         printf("ERROR get only takes 2 arguments");
@@ -422,6 +450,7 @@ memory init_std(memory MEMORY,char*path){
     free(d);
     free(path0);
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
+    add_func(&MEMORY,"var_exists",&var_exists,"");
 
 
         

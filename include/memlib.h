@@ -58,6 +58,11 @@ typedef struct memory{
     int len;
 }memory;
 
+typedef struct stack{
+    memory* MEM;
+    int len;
+}stack;
+
 typedef union Obj_val{
     struct Object*o;
     char*s;//string {char,...}

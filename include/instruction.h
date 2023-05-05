@@ -12,32 +12,32 @@ struct Instruction;
 typedef struct varset{
     char*name;
     char*type;
-    Ast*val;
+    struct Ast*val;
 
 }varset;
 
 
 
 typedef struct  Elif{
-    Ast*condition;
+    struct Ast*condition;
     int endif_p;
 }Elif;
 
 typedef struct If{
-    Ast*condition;
+    struct Ast*condition;
     int endif_p;
 }If;
 
 
 typedef struct For{
     char*var_name;
-    Ast*start;
-    Ast*end;
+    struct Ast*start;
+    struct Ast*end;
     int endfor;
 }For;
 
 typedef struct While{
-    Ast*condition;
+    struct Ast*condition;
     int endwhile;
 }While;
 
@@ -70,8 +70,8 @@ typedef struct Instruction{
         While*wh;
         int endwhile;
         int endfor;
-        Ast*ret;
-        Ast*expr;
+        struct Ast*ret;
+        struct Ast*expr;
         int endif;
         int endifelse;
         Elif*el;

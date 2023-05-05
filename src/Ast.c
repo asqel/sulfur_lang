@@ -44,6 +44,7 @@ int op_tok_to_op_ast(int v,int type){
             case OP_GREATER_EQUAL: return Ast_geq_t;
             case OP_LESS: return Ast_le_t;
             case OP_GREATER: return Ast_ge_t;
+            case OP_ASSIGN : return Ast_assign_t;
         }
     }
     return -1;
@@ -67,13 +68,16 @@ int print_ast(Ast x){
         case Ast_geq_t:
         case Ast_le_t:
         case Ast_ge_t:
+        case Ast_assign_t:
         case Ast_dot_t:
             if(x.left!=NULL){
+                printf("{");
                 print_ast(*x.left);
             }
             printf("op[%d] ",x.type);
             if(x.right!=NULL){
                 print_ast(*x.right);
+                printf("}");
             }
             return 0;
         case Ast_keyword_t:

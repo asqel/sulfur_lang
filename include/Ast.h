@@ -3,6 +3,7 @@
 
 #include "memlib.h"
 #include "token_class.h"
+#include "instruction.h"
 
 
 struct Ast;
@@ -12,6 +13,11 @@ typedef struct funccall{
     struct Ast*args;
     int nbr_arg;
 }funccall;
+
+typedef struct anonym_func{
+    int code_len;
+    struct Instruction* code;
+}anonym_func;
 
 
 typedef struct tempexpr{
@@ -29,6 +35,7 @@ typedef struct Ast{
         short int op;
         short int sy;
         short int kw;
+        anonym_func* ano_func;
     }root;
     struct Ast*left;
     struct Ast*right;
@@ -63,7 +70,9 @@ enum Ast_types{
     Ast_dot_t,
     Ast_op_t,
     Ast_syntax_t,
-    Ast_keyword_t
+    Ast_keyword_t,
+    Ast_assign_t,
+    Ast_anonym_func_t
 
 };
 

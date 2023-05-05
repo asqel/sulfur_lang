@@ -15,18 +15,8 @@
 
 memory MEMORY;
 
+stack STACK;
 
-Object**STACK;//end with an ar
-char***STACK_KEY;//end with an
-
-long long int STACK_len;
-long long int*sub_STACK_len;//
-
-Funcdef*FUNCDEFS;
-long long int FUNCDEFS_len;
-
-CLASSDEF*CLASSDEFS;
-long long int CLASSDEF_len;
 
 ref_counter*REF_COUNTS;
 long long int REF_COUNT_len;
@@ -110,21 +100,8 @@ void init_memory(){
 
 
 void init_stack(){
-    STACK=malloc(sizeof(Object*));
-    STACK_KEY=malloc(sizeof(char**));
-    STACK_len=0;
-    sub_STACK_len=malloc(sizeof(int));
-    *sub_STACK_len=0;
-}
-
-void init_funcdefs(){
-    FUNCDEFS=malloc(sizeof(Funcdef));
-    FUNCDEFS_len=0;
-}
-
-void init_classdefs(){
-    CLASSDEF_len=0;
-    CLASSDEFS=malloc(sizeof(CLASSDEF));
+    STACK.len=0;
+    STACK.MEM=malloc(sizeof(memory));
 }
 
 
@@ -139,6 +116,20 @@ void init_libs(char*path){
     add_func(&MEMORY,"import",&import_func,""); 
 }
 
+
+Ast *eval_left_assign(Ast *x){
+    if(x->type == Ast_dot_t){
+        if (x->left->type == Ast_varcall_t){
+            if(x->right->type == Ast_varcall_t){
+            // TODO finish that i dont even know
+            }
+        }
+    }
+    else{
+        printf("ERROR cannot assign value");
+        exit(1);
+    }
+}
 
 
 Object eval_Ast(Ast*x){
@@ -164,6 +155,12 @@ Object eval_Ast(Ast*x){
             }
             return (*MEMORY.values[n].val.funcid->func_p)(a,x->root.fun->nbr_arg);
         }
+        else{
+            return execute(MEMORY.values[n].val.funcid->code,"",MEMORY.values[n].val.funcid->code_len);
+        }
+    }
+    if(x->type == Ast_anonym_func_t){
+        return execute(x->root.ano_func->code,"",x->root.ano_func->code_len);
     }
     if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type == Ast_varcall_t){
@@ -198,24 +195,22 @@ Object eval_Ast(Ast*x){
             }
         }
         if(x->type==Ast_le_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=less(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=less(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
         }
         if(x->type==Ast_ge_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=greater(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=greater(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
         }
         if(x->type==Ast_sub_t){
             if(x->left!=NULL && x->right!=NULL){
@@ -234,54 +229,48 @@ Object eval_Ast(Ast*x){
             }
         }
         if(x->type==Ast_pow_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=_pow(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=_pow(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
         }
         if(x->type==Ast_eq_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=eq(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
         }
         if(x->type==Ast_div_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=_div(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=_div(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
         }
         if(x->type==Ast_mul_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=mul(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=mul(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        
         }
         if(x->type==Ast_mod_t){
-            if(x->left!=NULL && x->right!=NULL){
-                Object a=eval_Ast(x->left);
-                Object b=eval_Ast(x->right);
-                Object o=mod(a,b);
-                Obj_free_val(a);
-                Obj_free_val(b);
-                return o;
-            }
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=mod(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
         }
         /*
         if typ==assigne
@@ -292,26 +281,27 @@ Object eval_Ast(Ast*x){
         else no
         and return nil_obj;
         */
+        if(x->type == Ast_assign_t){
+            Object val=eval_Ast(x->right);
+            Ast *left=eval_left_assign(x->left);
+        }
         if(x->type == Ast_dot_t){
-            if(x->left != NULL && x->right != NULL){
-                Object a=eval_Ast(x->left);
-                temp_ref(a);
-                if(a.type != obj_module_t){
-                    printf("ERROR dot operator on non module Object");
-                    exit(1);
-                }
-                if (x->right->type == Ast_varcall_t || x->right->type == Ast_funccall_t){
-                    memory global=MEMORY;
-                    MEMORY=*a.val.module->MEM;
-                    Object o=eval_Ast(x->right);
-                    MEMORY=global;
-
-                    return o;
-                }
-                else{
-                    printf("ERROR on dot operator");
-                    exit(1);
-                }
+            Object a=eval_Ast(x->left);
+            temp_ref(a);
+            if(a.type != obj_module_t){
+                printf("ERROR dot operator on non module Object");
+                exit(1);
+            }
+            if (x->right->type == Ast_varcall_t || x->right->type == Ast_funccall_t){
+                memory global=MEMORY;
+                MEMORY=*a.val.module->MEM;
+                Object o=eval_Ast(x->right);
+                MEMORY=global;
+                return o;
+            }
+            else{
+                printf("ERROR on dot operator");
+                exit(1);
             }
         }
     }
@@ -470,7 +460,7 @@ int print_refs(ref_counter*r,int len){
     }
 }
 
-int execute(Instruction*code,char*file_name,int len){
+Object execute(Instruction*code,char*file_name,int len){
     int p=0;
     #ifndef NO_GARBAGE
     
@@ -571,10 +561,7 @@ int execute(Instruction*code,char*file_name,int len){
             continue;
         }
         if(code[p].type==inst_return_t){
-            Object*x=malloc(sizeof(Object));
-            *x=eval_Ast(code[p].value.ret);
-            p++;
-            continue;
+            return eval_Ast(code[p].value.ret);
         }
 
         if(code[p].type==inst_expr_t){
@@ -775,34 +762,28 @@ int execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_funcdef_t){
             int n=-1;
+            printf("rrrr");
             for(int i=0;i<MEMORY.len;i++){
-                if(!strcmp(MEMORY.keys[i],code[p].value.fo->var_name)){
+                if(!strcmp(MEMORY.keys[i],code[p].value.fc->name)){
                     n=i;
                     break;
                 }
             }
             if(n==-1){
-                MEMORY.len++;
-                MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-                MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-                MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fc->name)));
-                strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fc->name);
-                MEMORY.values[MEMORY.len-1].type=Obj_funcid_t;
-                MEMORY.values[MEMORY.len-1].val.funcid=malloc(sizeof(Funcdef));
-                MEMORY.values[MEMORY.len-1].val.funcid->arg_names=code[p].value.fc->arg_names;
-                MEMORY.values[MEMORY.len-1].val.funcid->arg_types=code[p].value.fc->arg_types;
-                MEMORY.values[MEMORY.len-1].val.funcid->code=code[p].value.fc->code;
-                MEMORY.values[MEMORY.len-1].val.funcid->code_len=code[p].value.fc->code_len;
-                MEMORY.values[MEMORY.len-1].val.funcid->description=code[p].value.fc->description;
-                MEMORY.values[MEMORY.len-1].val.funcid->func_p=code[p].value.fc->func_p;
-                MEMORY.values[MEMORY.len-1].val.funcid->is_builtin=code[p].value.fc->is_builtin;
-                MEMORY.values[MEMORY.len-1].val.funcid->nbr_of_args=code[p].value.fc->nbr_of_args;
-                MEMORY.values[MEMORY.len-1].val.funcid->nbr_ret_type=code[p].value.fc->nbr_ret_type;
-                MEMORY.values[MEMORY.len-1].val.funcid->ret_type=code[p].value.fc->ret_type;
-                add_ref(MEMORY.values[MEMORY.len-1]);
+                Object f;
+                printf("ta crasgh ?");
+
+                f.type=Obj_funcid_t;
+                f.val.funcid=malloc(sizeof(Funcdef));
+                f.val.funcid->code=code[p].value.fc->code;
+                f.val.funcid->code_len=code[p].value.fc->code_len;
+                f.val.funcid->is_builtin=0;
+                add_object(&MEMORY,code[p].value.fc->name,f);
+                p++;
+                continue;
             }
             else{
-                printf("ERROR function has same name as variable");
+                printf("ERROR function has same name as variable or another function");
                 exit(1);
 
             }
@@ -813,5 +794,5 @@ int execute(Instruction*code,char*file_name,int len){
     }
     update_ref();
     
-    return 0;
+    return nil_Obj;
 }

@@ -58,18 +58,16 @@ int main(int argc,char **argv){
 
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
-
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
+
 
     //parser copy values of tokens so
     //you can free tokens after parsing 
-    for(int i=0;i<=len-1;i++){
-        free_tok_val(l[i]);
-    }
-    free(l);
+    
     init_memory();
     init_stack(); 
     init_libs(filepath);  
+    
     execute(code,filepath,*instruction_len);
 
     precision =base_precision;

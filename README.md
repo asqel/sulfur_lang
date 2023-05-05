@@ -100,6 +100,23 @@ a programming language in c
         instructions
     }
     
+### anonymous function:
+    {instructions}
+
+    it can be used in expresion
+    the instruction has to return a value else it will be considered nil
+    it uses the same scope as before entering it
+
+    ex:
+        ount k=0;
+        print(3 + {
+            for(i from 0 to 10){
+                k=k+i;
+            }
+            return k;
+        });
+        //here 48 will be printed
+
 
 ## keywords:
     if : used for conditions

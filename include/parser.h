@@ -12,7 +12,12 @@
 
 void check_syntax(Ast*x);
 
-Ast*tok_to_Ast(Token*tok,int start,int end);
+typedef struct ast_and_len{
+    Ast*value;
+    int len;
+}ast_and_len;
+
+ast_and_len tok_to_Ast(Token*tok,int start,int end);
 
 Ast*make_ast(Ast*e,int len);
 

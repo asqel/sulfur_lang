@@ -15,77 +15,113 @@ void check_syntax(Ast*x){
 
 }
 
-Ast*tok_to_Ast(Token*tok,int start,int end){
+
+ast_and_len tok_to_Ast(Token*tok,int start,int end){
     int len=end-start+1;
     Ast*e=malloc(sizeof(Ast)*(len));
+    int offset=0;
     for(int i=start;i<end;i++){
-        e[i-start].left=NULL;
-        e[i-start].right=NULL;
-        e[i-start].type=Ast_object_t;
-        e[i-start].isAst=0;
+        e[i-start-offset].left=NULL;
+        e[i-start-offset].right=NULL;
+        e[i-start-offset].type=Ast_object_t;
+        e[i-start-offset].isAst=0;
         switch(tok[i].type){//techniquement faudrait mettre aussi les token end
             case nil:
-                e[i-start].type=Ast_object_t;
-                e[i-start].root.obj->type=Obj_nil_t;
+                e[i-start-offset].type=Ast_object_t;
+                e[i-start-offset].root.obj->type=Obj_nil_t;
                 break;
             case ount:
-                e[i-start].root.obj=malloc(sizeof(Object));
-                e[i-start].type=Ast_object_t;
-                e[i-start].root.obj->type=Obj_ount_t;
-                e[i-start].root.obj->val.i=malloc(sizeof(long long int));
-                *e[i-start].root.obj->val.i=*tok[i].value.i;
+                e[i-start-offset].root.obj=malloc(sizeof(Object));
+                e[i-start-offset].type=Ast_object_t;
+                e[i-start-offset].root.obj->type=Obj_ount_t;
+                e[i-start-offset].root.obj->val.i=malloc(sizeof(long long int));
+                *e[i-start-offset].root.obj->val.i=*tok[i].value.i;
                 break;
             case str:
-                e[i-start].root.obj=malloc(sizeof(Object));
-                e[i-start].type=Ast_object_t;
-                e[i-start].root.obj->type=Obj_string_t;
-                e[i-start].root.obj->val.s=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
-                strcpy(e[i-start].root.obj->val.s,tok[i].value.s);
+                e[i-start-offset].root.obj=malloc(sizeof(Object));
+                e[i-start-offset].type=Ast_object_t;
+                e[i-start-offset].root.obj->type=Obj_string_t;
+                e[i-start-offset].root.obj->val.s=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
+                strcpy(e[i-start-offset].root.obj->val.s,tok[i].value.s);
                 break;
             case floap:
-                e[i-start].root.obj=malloc(sizeof(Object));
-                e[i-start].type=Ast_object_t;
-                e[i-start].root.obj->type=Obj_floap_t;
-                e[i-start].root.obj->val.f=malloc(sizeof(long double));
-                *e[i-start].root.obj->val.f=*tok[i].value.f;
+                e[i-start-offset].root.obj=malloc(sizeof(Object));
+                e[i-start-offset].type=Ast_object_t;
+                e[i-start-offset].root.obj->type=Obj_floap_t;
+                e[i-start-offset].root.obj->val.f=malloc(sizeof(long double));
+                *e[i-start-offset].root.obj->val.f=*tok[i].value.f;
                 break;
             case boolean_t:
-                e[i-start].root.obj=malloc(sizeof(Object));
-                e[i-start].type=Ast_object_t;
-                e[i-start].root.obj->type=Obj_boolean_t;
-                e[i-start].root.obj->val.b=malloc(sizeof(short int));
-                *e[i-start].root.obj->val.b=*tok[i].value.b;
+                e[i-start-offset].root.obj=malloc(sizeof(Object));
+                e[i-start-offset].type=Ast_object_t;
+                e[i-start-offset].root.obj->type=Obj_boolean_t;
+                e[i-start-offset].root.obj->val.b=malloc(sizeof(short int));
+                *e[i-start-offset].root.obj->val.b=*tok[i].value.b;
                 break;
             case comp:
-                e[i-start].root.obj=malloc(sizeof(Object));
-                e[i-start].type=Ast_object_t;
-                e[i-start].root.obj->type=Obj_complex_t;
-                e[i-start].root.obj->val.c=malloc(sizeof(long double)*2);
-                e[i-start].root.obj->val.c[0]=tok[i].value.c[0];
-                e[i-start].root.obj->val.c[1]=tok[i].value.c[1];
+                e[i-start-offset].root.obj=malloc(sizeof(Object));
+                e[i-start-offset].type=Ast_object_t;
+                e[i-start-offset].root.obj->type=Obj_complex_t;
+                e[i-start-offset].root.obj->val.c=malloc(sizeof(long double)*2);
+                e[i-start-offset].root.obj->val.c[0]=tok[i].value.c[0];
+                e[i-start-offset].root.obj->val.c[1]=tok[i].value.c[1];
                 break;
             case op:
-                e[i-start].type=Ast_op_t;
-                e[i-start].root.op=*tok[i].value.t;
+                e[i-start-offset].type=Ast_op_t;
+                e[i-start-offset].root.op=*tok[i].value.t;
                 break;
             case keyword:
-                e[i-start].type=Ast_keyword_t;
-                e[i-start].root.kw=*tok[i].value.t;
-                break;
+                    e[i-start-offset].type=Ast_keyword_t;
+                    e[i-start-offset].root.kw=*tok[i].value.t;
+                    break;
+                
             case syntax:
-                e[i-start].type=Ast_syntax_t;
-                e[i-start].root.sy=*tok[i].value.t;
-                break;
+                if(*tok[i].value.t != r_brack_L){
+                    e[i-start-offset].type=Ast_syntax_t;
+                    e[i-start-offset].root.sy=*tok[i].value.t;
+                    break;
+                }
+                else{
+                    int op_brac = i;
+                    int cl_brac = search_rrbrack(tok, i);
+                    if (cl_brac == -1){
+                        printf("ERROR missing closing '}' in expression on line %d\n",tok[i].line);
+                        exit(1);
+                    }
+                    Token* to_parse = malloc(sizeof(Token) * (cl_brac - op_brac -1 +1));
+                    for(int k = op_brac + 1; k < cl_brac; k++){
+                        to_parse[k-(op_brac	+ 1)] = tok[k];
+                    }
+                    to_parse[cl_brac - op_brac -1] = end_token;
+                    Instruction* code=malloc(sizeof(Instruction));
+                    int* code_len=malloc(sizeof(int));
+                    code=parse(to_parse,-1,-1,code,code_len);
+
+                    len-= (token_len(to_parse)+1);
+                    e=realloc(e,sizeof(Ast)*len);
+                    e[i - start-offset].type = Ast_anonym_func_t;
+                    e[i - start-offset].isAst=1;
+                    e[i - start-offset].root.ano_func = malloc(sizeof(anonym_func));
+                    e[i - start-offset].root.ano_func->code = code;
+                    e[i - start-offset].root.ano_func->code_len = *code_len;
+                    offset+=cl_brac-i;
+                    i=cl_brac;
+
+                    free(to_parse);
+
+                    break;
+                }
             case identifier:
-                e[i-start].type=Ast_varcall_t;
-                e[i-start].root.varcall=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
-                strcpy(e[i-start].root.varcall,tok[i].value.s);
+                e[i-start-offset].type=Ast_varcall_t;
+                e[i-start-offset].root.varcall=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
+                strcpy(e[i-start-offset].root.varcall,tok[i].value.s);
                 break;
             default:
                 break;
         }
     }
-    return e;
+
+    return (ast_and_len){.value = e , .len=len-1};
 }
 
 
@@ -146,6 +182,14 @@ int find_highest_op(Ast*e,int len){
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&&!e[i].isAst){
             if(e[i].root.op==OP_OR){
+                return i;
+            }
+        }
+    }
+    //search for =(assign)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_ASSIGN){
                 return i;
             }
         }
@@ -230,6 +274,7 @@ Ast*make_ast(Ast*e,int len){
                         break;
                     }
                 }
+
                 if(closing_par==-1){
                     printf("ERROR missing closing ')' in function call\n");
                     exit(1);
@@ -548,7 +593,6 @@ Ast*make_ast(Ast*e,int len){
 
     //make operators
     p=0;
-
     while(len>1){
         int n=find_highest_op(e,len);
         if(n==-1){
@@ -563,11 +607,11 @@ Ast*make_ast(Ast*e,int len){
             printf("ERROR missing right operand in expression #2\n");
             exit(1);
         }
-        if(!(e[n-1].isAst||e[n-1].type==Ast_object_t||e[n-1].type==Ast_varcall_t)){
+        if(!(e[n-1].isAst || e[n-1].type==Ast_object_t || e[n-1].type==Ast_varcall_t || e[n-1].type == Ast_anonym_func_t)){
             printf("ERROR missing left operand in expression #3\n");
             exit(1);
         }
-        if(!(e[n+1].isAst||e[n+1].type==Ast_object_t||e[n+1].type==Ast_varcall_t)){
+        if(!(e[n+1].isAst || e[n+1].type==Ast_object_t || e[n+1].type==Ast_varcall_t || e[n+1].type == Ast_anonym_func_t)){
             printf("ERROR missing right operand in expression #4\n");
             exit(1);
         }
@@ -604,6 +648,14 @@ Ast*make_ast(Ast*e,int len){
 int find_semicol(Token*tok,int p){
     int len=token_len(tok);
     for(int i=0;i+p<len;i++){
+        if(tok[i+p].type == syntax && *tok[i+p].value.t == r_brack_L){
+            int cl_brack = search_rrbrack(tok,i+p);
+            if (cl_brack == -1){
+                printf("missing closing '}' in expression on line %d \n",tok[i+p].line);
+                exit(1);
+            }
+            i=cl_brack-p;
+        }
         if(tok[i+p].type==syntax&&*tok[i+p].value.t==semicolon){
             return i+p;
         }
@@ -720,6 +772,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         Instruction*inst=malloc(sizeof(Instruction));
     }
     while(cond_parse(start,end,len,p)){
+        
         //les else et les elif sont gerer par la partie if make du parser
         if(tok[p].type==keyword&&(*tok[p].value.t==elif_t||*tok[p].value.t==else_t)){
             printf("ERROR expected if instruction above on line %d",tok[p].line);
@@ -746,8 +799,9 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_if_t;
                     inst[*n_inst-1].value.i=malloc(sizeof(If));
-                    
-                    inst[*n_inst-1].value.i->condition=make_ast(tok_to_Ast(tok,opening_par+1,closing_par),closing_par-(opening_par+1));
+
+                    ast_and_len val= tok_to_Ast(tok,opening_par+1,closing_par);
+                    inst[*n_inst-1].value.i->condition=make_ast(val.value, val.len);
                     int if_index=*n_inst-1;
                     
                     inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
@@ -781,7 +835,9 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                                 inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                                 inst[*n_inst-1].type=inst_elif_t;
                                 inst[*n_inst-1].value.el=malloc(sizeof(Elif));
-                                inst[*n_inst-1].value.el->condition=make_ast(tok_to_Ast(tok,opening_par+1,closing_par),closing_par-(opening_par+1));
+
+                                ast_and_len val= tok_to_Ast(tok,opening_par+1,closing_par);
+                                inst[*n_inst-1].value.el->condition=make_ast(val.value, val.len);
                                 int elif_index=*n_inst-1;
                                 
                                 inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
@@ -875,8 +931,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                         inst[*n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
                         strcpy(inst[*n_inst-1].value.vs->type,tok[p].value.s);//set type
                        
-                        Ast *a=tok_to_Ast(tok,p+3,n);
-                        Ast*v=make_ast(a,n-(p+3+1-1));
+                        ast_and_len a=tok_to_Ast(tok,p+3,n);
+                        Ast*v=make_ast(a.value, a.len);
                         inst[*n_inst-1].value.vs->val=v;//set val
                         p=n+1;
                         continue;
@@ -917,8 +973,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 inst[*n_inst-1].value.vs=malloc(sizeof(varset));
                 inst[*n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
                 strcpy(inst[*n_inst-1].value.vs->name,tok[p].value.s);//set name
-
-                Ast*v=make_ast(tok_to_Ast(tok,p+2,n),n-(p+2));
+                ast_and_len val=tok_to_Ast(tok,p+2,n);
+                Ast*v=make_ast(val.value, val.len);
                 inst[*n_inst-1].value.vs->val=v;//set val
                 p=n+1;
                 continue;
@@ -956,9 +1012,10 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                                 printf("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[n+1].line);
                                 exit(-1);
                             }
-
-                            Ast*x=make_ast(tok_to_Ast(tok,p+4,n2),n2-(p+4));
-                            Ast*x2=make_ast(tok_to_Ast(tok,n2+1,n),n-(n2+1));
+                            ast_and_len val = tok_to_Ast(tok,p+4,n2);
+                            Ast*x=make_ast(val.value, val.len);
+                            val=tok_to_Ast(tok,n2+1,n);
+                            Ast*x2=make_ast(val.value, val.len);
 
                             (*n_inst)++;
                             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
@@ -1020,7 +1077,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 continue;
             }
             else{
-                Ast*x=make_ast(tok_to_Ast(tok,p+1,n),n-(p+1));
+                ast_and_len val =tok_to_Ast(tok,p+1,n);
+                Ast*x=make_ast(val.value, val.len);
                 (*n_inst)++;
                 inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                 inst[*n_inst-1].type=inst_return_t;
@@ -1078,7 +1136,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                     inst[*n_inst-1].type=inst_while_t;
                     inst[*n_inst-1].value.wh=malloc(sizeof(While));
-                    inst[*n_inst-1].value.i->condition=make_ast(tok_to_Ast(tok,opening_par+1,closing_par),closing_par-(opening_par+1));
+                    ast_and_len val = tok_to_Ast(tok,opening_par+1,closing_par);
+                    inst[*n_inst-1].value.i->condition=make_ast(val.value, val.len);
                     int while_index=*n_inst-1;
                     
                     inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
@@ -1140,28 +1199,20 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     }
                     if(op_par+1==cl_par){
                         Funcdef_code f;
-                        f.arg_names=NULL;
-                        f.arg_types=NULL;
-                        int*v_len=malloc(sizeof(int));
-                        *v_len=0;
-                        Instruction *v=malloc(sizeof(Instruction));
-                        f.code=parse(tok,op_rbrack+1,cl_rbrack,v,v_len);
-                        f.description=NULL;
-                        f.func_p=NULL;
+                        f.code=malloc(sizeof(Instruction));
+                        f.code=parse(tok,op_rbrack+1,cl_rbrack,f.code,&f.code_len);
                         f.is_builtin=0;
-                        f.nbr_of_args=0;
-                        f.nbr_ret_type=0;
-                        f.code_len=*v_len;
-                        free(v_len);
-                        f.ret_type=NULL;
+
                         f.name=malloc(sizeof(char)*(1+strlen(name)));
                         strcpy(f.name,name);
                         (*n_inst)++;
                         inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                         inst[*n_inst-1].type=inst_funcdef_t; 
                         inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef)); 
-                        *inst[*n_inst-1].value.fc=f;
+                        *(inst[*n_inst-1].value.fc)=f;
                         p=cl_rbrack+1;
+                        printf("lme p :%d %d\n",p,len);
+                        
                         continue;
 
                     }
@@ -1181,10 +1232,16 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         else{
             int n=find_semicol(tok,p);
             if(n==-1){
+                token_print(tok[p],"n");
                 printf("ERROR unexpected token on line %d",tok[p].line);
                 exit(-1);
             }
-            Ast*x=make_ast(tok_to_Ast(tok,p,n),n-(p));
+            if(n==p){
+                p++;
+                continue;
+            }
+            ast_and_len val=tok_to_Ast(tok,p,n);
+            Ast*x=make_ast(val.value, val.len);
             (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type=inst_expr_t;
