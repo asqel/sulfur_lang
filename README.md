@@ -5,7 +5,8 @@ to compile and run on windows:
     make win_all
 to compile and run on linux:
     make linux_all
-    
+to compile and run on macos:
+    it isn't entirely supported mayber use make linux_all
 
 ## built-in types
     ount : signed integer   
