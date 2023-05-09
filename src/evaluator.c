@@ -2,6 +2,7 @@
 #include "../include/memlib.h"
 #include "../include/Ast.h"
 #include "../include/operation.h"
+#include "../sulfur_libs/blt_libs/std.h"
 
 extern Object execute(Instruction*code,char*file_name,int len);
 
@@ -52,6 +53,61 @@ Object eval_Ast(Ast*x){
     if(x->type == Ast_anonym_func_t){
         return execute(x->root.ano_func->code,"",x->root.ano_func->code_len);
     }
+    if(x->type == Ast_list_comprehension_t){
+        Object start = eval_Ast(x->root.li->start);
+        start = std_ount(&start, 1);
+        Object end = eval_Ast(x->root.li->end);
+        end = std_ount(&end, 1);
+
+        if(start.type == Obj_nil_t){
+            printf("ERROR in list comprehension cannot convert start to ount");
+            exit(1);
+        }
+        if(end.type == Obj_nil_t){
+            printf("ERROR in list comprehension cannot convert end to ount");
+            exit(1);
+        }
+        int n = -1;
+        for(int i = 0; i < MEMORY.len; i++){
+            if(!strcmp(MEMORY.keys[i], x->root.li->varname)){
+                n = i;
+                break;
+            }
+        }
+        if(n == -1){
+            MEMORY = *add_object(&MEMORY, x->root.li->varname, new_ount(*start.val.i));
+            n = MEMORY.len - 1;
+        }
+        else{
+            MEMORY.values[n].type = Obj_ount_t;
+            *MEMORY.values[n].val.i = *start.val.i;
+        }
+
+        if(*start.val.i < *end.val.i){
+            Object* objects = malloc(sizeof(Object));
+            int obj_len = 0;
+            while(*MEMORY.values[n].val.i < *end.val.i){
+                obj_len++;
+                objects = realloc(objects, sizeof(Object));
+                objects[obj_len -1] = eval_Ast(x->root.li->expr);
+
+                MEMORY.values[n] = std_ount(&MEMORY.values[n],1);
+                if(MEMORY.values[n].type == Obj_nil_t){
+                    printf("ERROR in for in list comprehension");
+                    exit(1);
+                }
+                (*MEMORY.values[n].val.i)++;
+            }
+            return std_list(objects, obj_len);
+        }
+        else if(*start.val.i > *end.val.i){
+
+        }
+        else{
+            return std_list(NULL, 0);
+        }
+
+    }
     if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type == Ast_varcall_t){
             int n=-1;
@@ -70,6 +126,7 @@ Object eval_Ast(Ast*x){
         }
         else{
             printf("ERROR in Ast");
+            printf(" %d ",x->type);
             exit(-1);
         }
     }

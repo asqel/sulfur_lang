@@ -248,6 +248,7 @@ Object sleep(Object *obj,int n_arg){
     }
     x=*o.val.i;
     long long start=*current_timestamp(NULL,0).val.i;
+    
     while(*current_timestamp(NULL,0).val.i<start+x){}
     return nil_Obj;
 }

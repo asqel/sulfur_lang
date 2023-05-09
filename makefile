@@ -20,10 +20,12 @@ run:
 stdlibs_win:
 	gcc -shared sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.dll -lm -fno-builtin-printf
 	gcc -shared sulfur_libs/std_libs/graphic.c build/API/memlib.c -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
+	gcc -shared sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.dll -lm -fno-builtin-printf
 
 stdlibs_linux:
 	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.so -lm -fno-builtin-printf
 	gcc -shared -fPIC sulfur_libs/std_libs/graphic.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
+	gcc -shared sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.dll -lm -fno-builtin-printf
 	
 win_all:
 	make win

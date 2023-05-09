@@ -19,6 +19,13 @@ typedef struct anonym_func{
     struct Instruction* code;
 }anonym_func;
 
+typedef struct list_comprehension{
+    struct Ast* expr;
+    struct Ast* start;
+    struct Ast* end;
+    char* varname;
+}list_comprehension;
+
 
 typedef struct tempexpr{
     struct Ast*val;
@@ -36,6 +43,7 @@ typedef struct Ast{
         short int sy;
         short int kw;
         anonym_func* ano_func;
+        list_comprehension* li;
     }root;
     struct Ast*left;
     struct Ast*right;
@@ -72,7 +80,8 @@ enum Ast_types{
     Ast_syntax_t,
     Ast_keyword_t,
     Ast_assign_t,
-    Ast_anonym_func_t
+    Ast_anonym_func_t,
+    Ast_list_comprehension_t
 
 };
 

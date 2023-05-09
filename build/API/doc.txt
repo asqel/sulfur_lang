@@ -13,13 +13,24 @@ to create a function that can interact with sulfur:
 if a function is supposed too return nothing it has to return nil_Obj
 
 you can use new_Module() to create a new Object of type module
-and add_func_module() to add a function to rou module
+and add_func_module() to add a function to your module
 and add_Object_module() to add an Object to your module
 
 to create an Object you can either create it yourself or
 use function like new_ount / new_floap / new_string
 
-
+values of object of type:
+    ount:
+        *(object.val.i)
+    floap:
+        *(object.val.f)
+    bool:
+        *(object.val.b)
+    string:
+        object.val.s
+    list:
+        *(object.val.li)
+        # first element of list in c is its length 
 and then you have to compile it to shared library 
 (.dll/nothing for windows | .so/nothing for linux )
 for windows: 
@@ -29,3 +40,5 @@ for macOS:
     ??? i dont know but the file has to be a .so
 for linux:
 	gcc -shared -fPIC YOUR_MODULE_PATH PATH_TO_API -o OUTPUT_PATH.so -lm -fno-builtin-printf
+
+

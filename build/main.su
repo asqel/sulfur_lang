@@ -1,8 +1,7 @@
+import("lilypad","");
 
-int k=0;
-print(3+ {
-    for(i from 0 to 10){
-        k = k + i;
-    }
-    return k;
-});
+int n=malloc(1);
+
+set_byte(n,15);
+
+println(get_byte(n));
