@@ -4,6 +4,8 @@
 
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../sulfur_libs/blt_libs/string_su.h"
+#include "../sulfur_libs/blt_libs/funccall_su.h"
+
 #include "../include/operation.h"
 #include "../include/utilities.h"
 #include "../include/token_class.h"
@@ -112,9 +114,10 @@ void init_garbage_collect(){
 }
 
 void init_libs(char*path){
-    MEMORY = init_std(MEMORY,path);
-    add_func(&MEMORY,"import",&import_func,""); 
-    MEMORY = init_string(MEMORY,path);
+    MEMORY = init_std(MEMORY, path);
+    add_func(&MEMORY, "import", &import_func, ""); 
+    MEMORY = init_string(MEMORY, path);
+    MEMORY = init_funccall(MEMORY, path);
 }
 
 

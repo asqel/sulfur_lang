@@ -14,6 +14,12 @@ typedef struct funccall{
     int nbr_arg;
 }funccall;
 
+typedef struct expr_funccall{
+    struct Ast* expr;
+    struct Ast*args;
+    int nbr_arg;
+}expr_funccall;
+
 typedef struct anonym_func{
     int code_len;
     struct Instruction* code;
@@ -44,6 +50,7 @@ typedef struct Ast{
         short int kw;
         anonym_func* ano_func;
         list_comprehension* li;
+        expr_funccall* ex;
     }root;
     struct Ast*left;
     struct Ast*right;
@@ -82,7 +89,8 @@ enum Ast_types{
     Ast_assign_t,
     Ast_anonym_func_t,
     Ast_list_comprehension_t,
-    Ast_colon_t
+    Ast_colon_t,
+    Ast_expr_funccall_t //function called like this : (...)(a,b)
 
 };
 
