@@ -28,11 +28,20 @@ to compile and run on macos:
 ## Syntax instructions
 ### Setting a var:
     Type Name = Value ;
-        ex: floap pi=3.141592;
+        ex:
+            floap pi=3.141592;
 
 ### Changing value of var:
     Name = Value ;
-        ex: pi=3.0 ;
+        ex: 
+            pi=3.0 ;
+
+    changing value of var return its old value
+        ex:
+            ount a=0;
+            ount b=1;
+            a = (b = a); //now a=1 and b=0 
+
 
 ### Conditions:
     if ( condition ){
@@ -176,6 +185,21 @@ to compile and run on macos:
     same file so 
     import(filename,"")
     func1()
+
+
+## lists and modules
+    to acces an element of a module or list use '.'
+    ex:
+        list l = list(3, 4, 7);
+        println(l.1); // "4"
+    ex:
+        ount a = 0;
+        list l = list(0, 1, 0b);
+        l.a = 7 // l = 7, 1, 0b
+        l.(a + 1) = -30 //l = 7, -30, 0b
+    ex:
+        import("math");
+        println(math.pi); // "3.14"
 
 ## built-in functions:
     print(x,...) : print to stdout the value of each args separated with space
