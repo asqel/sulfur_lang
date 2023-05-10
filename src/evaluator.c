@@ -3,6 +3,7 @@
 #include "../include/Ast.h"
 #include "../include/operation.h"
 #include "../sulfur_libs/blt_libs/std.h"
+#include "../sulfur_libs/blt_libs/string_su.h"
 
 extern Object execute(Instruction*code,char*file_name,int len);
 
@@ -219,15 +220,6 @@ Object eval_Ast(Ast*x){
             Obj_free_val(b);
             return o;
         }
-        /*
-        if typ==assigne
-        left has to be either varcall or list gettting '[ ...]'
-        but if its varcall technicaly its not here but ok
-        oh and also with dot operator 
-        but the parser doesnt parse '[]' i think 
-        else no
-        and return nil_obj;
-        */
         if(x->type == Ast_assign_t){
             Object right = eval_Ast(x->right);
             if(x->left->type == Ast_varcall_t){
@@ -241,14 +233,18 @@ Object eval_Ast(Ast*x){
                 add_object(&MEMORY, x->left->root.varcall, right);
                 return nil_Obj;
             }
-            if(x->left->type != Ast_dot_t){
-                printf("ERROR in expression cannot assign");
+            if(x->left->type != Ast_dot_t && x->left->type != Ast_colon_t){
+                printf("ERROR in expression cannot assign %d ",x->left->type);
                 exit(1);
             }
             Ast* left = x->left;
 
             Object in_what = eval_Ast(left->left);
             if(in_what.type == obj_module_t){
+                if(x->left->type != Ast_dot_t){
+                    printf("ERROR in assign with module");
+                    exit(1);
+                }
                 if(left->right->type == Ast_varcall_t){
                     char* name = left->right->root.varcall;
                     for(int i=0; i<in_what.val.module->MEM->len; i++){
@@ -266,6 +262,10 @@ Object eval_Ast(Ast*x){
                 }
             }
             if(in_what.type == Obj_list_t){
+                if(x->left->type != Ast_colon_t){
+                    printf("ERROR in assign with module");
+                    exit(1);
+                }
                 Object index_obj = eval_Ast(left->right);
                 index_obj = std_ount(&index_obj,1);
                 if(index_obj.type == Obj_nil_t){
@@ -290,6 +290,81 @@ Object eval_Ast(Ast*x){
         if(x->type == Ast_dot_t){
             Object a=eval_Ast(x->left);
             temp_ref(a);
+            if(a.type == obj_module_t){
+                if (x->right->type == Ast_varcall_t){
+                    for(int i=0; i<a.val.module->MEM->len; i++){
+                        if(!strcmp(x->right->root.varcall, a.val.module->MEM->keys[i])){
+                            return a.val.module->MEM->values[i];
+                        }
+                    }
+                    printf("ERROR var not exit in mmodule");
+                    exit(1);
+                }
+                else if (x->right->type == Ast_funccall_t){
+                    Object j = nil_Obj;
+                    for(int i=0; i<a.val.module->MEM->len; i++){
+                        if(!strcmp(x->right->root.fun->name, a.val.module->MEM->keys[i])){
+                            j = a.val.module->MEM->values[i];
+                        }
+                    }
+                    if (j.type == Obj_nil_t){
+                        printf("ERROR func not exist in module");
+                        exit(1);
+                    }
+                    if(j.val.funcid->is_builtin){
+                        if(x->right->root.fun->nbr_arg){
+                            Object*arg=malloc(sizeof(Object)*x->right->root.fun->nbr_arg);
+                            for(int i=0;i<x->right->root.fun->nbr_arg;i++){
+                                arg[i]=eval_Ast(&x->right->root.fun->args[i]);
+
+                            }
+                            return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg);
+                        }
+                        else{
+                            return (*j.val.funcid->func_p)(NULL,0);
+                        }
+                    }
+
+                }
+            }
+            if(a.type == Obj_string_t){
+                if (x->right->type == Ast_funccall_t){
+                    Object j = nil_Obj;
+                    for(int i=0; i < string_module.MEM->len; i++){
+                        if(!strcmp(x->right->root.fun->name, string_module.MEM->keys[i])){
+                            j = string_module.MEM->values[i];
+                        }
+                    }
+                    if (j.type == Obj_nil_t){
+                        printf("ERROR func not exist in methods of string");
+                        exit(1);
+                    }
+                    if(j.val.funcid->is_builtin){
+                        if(x->right->root.fun->nbr_arg){
+                            Object*arg=malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
+                            for(int i=1;i<x->right->root.fun->nbr_arg;i++){
+                                arg[i]=eval_Ast(&x->right->root.fun->args[i-1]);
+
+                            }
+                            arg[0] = a;
+                            return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg);
+                        }
+                        else{
+                            return (*j.val.funcid->func_p)(&a,1);
+                        }
+                    }
+
+                }
+                
+            }
+            else{
+                printf("ERROR on dot operator");
+                exit(1);
+            }
+        }
+        if(x->type == Ast_colon_t){
+            Object a=eval_Ast(x->left);
+            temp_ref(a);
             if (a.type == Obj_list_t){
                 Object b=eval_Ast(x->right);
                 if(b.type != Obj_ount_t){
@@ -298,50 +373,12 @@ Object eval_Ast(Ast*x){
                 }
                 return Obj_cpy(a.val.li->elements[1 + *b.val.i]);
             }
-            if(a.type != obj_module_t && a.type != Obj_list_t){
-                printf("ERROR dot operator on non module Object");
-                exit(1);
-            }
-            if (x->right->type == Ast_varcall_t){
-                for(int i=0; i<a.val.module->MEM->len; i++){
-                    if(!strcmp(x->right->root.varcall, a.val.module->MEM->keys[i])){
-                        return a.val.module->MEM->values[i];
-                    }
-                }
-                printf("ERROR var not exit in mmodule");
-                exit(1);
-            }
-            else if (x->right->type == Ast_funccall_t){
-                Object j = nil_Obj;
-                for(int i=0; i<a.val.module->MEM->len; i++){
-                    if(!strcmp(x->right->root.fun->name, a.val.module->MEM->keys[i])){
-                        j = a.val.module->MEM->values[i];
-                    }
-                }
-                if (j.type == Obj_nil_t){
-                    printf("ERROR func not exist in module");
-                    exit(1);
-                }
-                if(j.val.funcid->is_builtin){
-                    if(x->right->root.fun->nbr_arg){
-                        Object*arg=malloc(sizeof(Object)*x->right->root.fun->nbr_arg);
-                        for(int i=0;i<x->right->root.fun->nbr_arg;i++){
-                            arg[i]=eval_Ast(&x->right->root.fun->args[i]);
-
-                        }
-                        return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg);
-                    }
-                    else{
-                        return (*j.val.funcid->func_p)(NULL,0);
-                    }
-                }
-                
-            }
-
-            else{
-                printf("ERROR on dot operator");
-                exit(1);
-            }
         }
     }
 }
+
+
+/*
+
+
+*/

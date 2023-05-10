@@ -126,9 +126,12 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
 
 
 int find_highest_op(Ast*e,int len){
-    //search for .(dot)
+    //search for .(dot) / :(colon)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_syntax_t&&e[i].root.sy==dot&&!e[i].isAst){//en theorie ya pasa besoin de verifier isAst
+            return i;
+        }
+        if(e[i].type == Ast_syntax_t && e[i].root.sy == colon && !e[i].isAst){
             return i;
         }
     }
@@ -1298,14 +1301,18 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 }
             }
         }
-        if(tok[p].type==identifier&&p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==colon){
-            (*n_inst)++;
-            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-            inst[*n_inst-1].type=inst_section_t;
-            inst[*n_inst-1].value.section=malloc(sizeof(char)*(1+strlen(tok[p].value.s)));
-            strcpy(inst[*n_inst-1].value.section,tok[p].value.s);
-            p+=2;
-            continue;
+        if(tok[p].type==identifier && p+1<len){
+            if(tok[p+1].type==syntax && *tok[p+1].value.t==colon && p+2 < len){
+                if(tok[p+2].type==syntax && *tok[p+2].value.t==colon){
+                    (*n_inst)++;
+                    inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                    inst[*n_inst-1].type=inst_section_t;
+                    inst[*n_inst-1].value.section=malloc(sizeof(char)*(1+strlen(tok[p].value.s)));
+                    strcpy(inst[*n_inst-1].value.section,tok[p].value.s);
+                    p+=3;
+                    continue;
+                }
+            }
         }
         if(tok[p].type==keyword&&*tok[p].value.t==goto_t){
             if(!(p+1<len&&tok[p+1].type==identifier)){

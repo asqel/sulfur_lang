@@ -81,7 +81,8 @@ enum Ast_types{
     Ast_keyword_t,
     Ast_assign_t,
     Ast_anonym_func_t,
-    Ast_list_comprehension_t
+    Ast_list_comprehension_t,
+    Ast_colon_t
 
 };
 

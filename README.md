@@ -103,10 +103,10 @@ to compile and run on macos:
     -----------------------------------------------
     goto section_name
 
-    section_name:
+    section_name::
         ex: goto sec
             print("this will not be printed");
-            sec:
+            sec::
 
 
 ### function definition:
@@ -187,19 +187,22 @@ to compile and run on macos:
     func1()
 
 
-## lists and modules
-    to acces an element of a module or list use '.'
-    ex:
-        list l = list(3, 4, 7);
-        println(l.1); // "4"
-    ex:
-        ount a = 0;
-        list l = list(0, 1, 0b);
-        l.a = 7 // l = 7, 1, 0b
-        l.(a + 1) = -30 //l = 7, -30, 0b
+## acces modules
+    to acces an element of a module use '.'
     ex:
         import("math");
         println(math.pi); // "3.14"
+
+## acces lists
+    to acces an element of a list use ':'
+    ex:
+        list l = list(3, 4, 7);
+        println(l:1); // "4"
+    ex:
+        ount a = 0;
+        list l = list(0, 1, 0b);
+        l:a = 7 // l = 7, 1, 0b
+        l:(a + 1) = -30 //l = 7, -30, 0b
 
 ## built-in functions:
     print(x,...) : print to stdout the value of each args separated with space

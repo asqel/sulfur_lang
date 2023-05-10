@@ -25,6 +25,9 @@ int op_tok_to_op_ast(int v,int type){
         if(v==dot){
             return Ast_dot_t;
         }
+        if(v == colon){
+            return Ast_colon_t;
+        }
     }
     if(type==Ast_op_t){
         switch (v){
