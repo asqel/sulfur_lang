@@ -361,7 +361,8 @@ Object eval_Ast(Ast*x){
             }
             if(a.type == Obj_funcid_t){
                 if (x->right->type == Ast_funccall_t){
-                    Object j = nil_Obj;                    for(int i=0; i < funccall_module.MEM->len; i++){
+                    Object j = nil_Obj;
+                    for(int i=0; i < funccall_module.MEM->len; i++){
                         if(!strcmp(x->right->root.fun->name, funccall_module.MEM->keys[i])){
                             j = funccall_module.MEM->values[i];
                         }

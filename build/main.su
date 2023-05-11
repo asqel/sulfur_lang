@@ -1,3 +1,0 @@
-list l = list(print,type);
-
-print((l:1).call("s"));
