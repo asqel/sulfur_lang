@@ -361,8 +361,7 @@ Object eval_Ast(Ast*x){
             }
             if(a.type == Obj_funcid_t){
                 if (x->right->type == Ast_funccall_t){
-                    Object j = nil_Obj;
-                    for(int i=0; i < funccall_module.MEM->len; i++){
+                    Object j = nil_Obj;                    for(int i=0; i < funccall_module.MEM->len; i++){
                         if(!strcmp(x->right->root.fun->name, funccall_module.MEM->keys[i])){
                             j = funccall_module.MEM->values[i];
                         }
@@ -374,15 +373,15 @@ Object eval_Ast(Ast*x){
                     if(j.val.funcid->is_builtin){
                         if(x->right->root.fun->nbr_arg){
                             Object*arg=malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
-                            for(int i=1;i<x->right->root.fun->nbr_arg + 1;i++){
-                                arg[i]=eval_Ast(&x->right->root.fun->args[i-1]);
+                            for(int i=0; i < x->right->root.fun->nbr_arg;i++){
+                                arg[i+1]=eval_Ast(&x->right->root.fun->args[i]);
 
                             }
                             arg[0] = a;
-                            return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg);
+                            return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg + 1);
                         }
                         else{
-                            return (*j.val.funcid->func_p)(&a,1);
+                            return (*j.val.funcid->func_p)(&a, 1);
                         }
                     }
 
