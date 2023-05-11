@@ -233,6 +233,9 @@ Object eq(Object a,Object b){
         *x.val.b=*a.val.b==*b.val.b;
         return x;
     }
+    if(a.type == Obj_string_t && b.type == Obj_string_t){
+        return new_boolean(!strcmp(a.val.s, b.val.s));
+    }
     printf("ERROR : operation(==) between 2 types not supported\n");
     exit(1);
 }

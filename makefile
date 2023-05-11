@@ -1,7 +1,3 @@
-all:
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/main -lm -fno-builtin-printf
-	build/main
-
 win:
 	if not exist build mkdir build
 	if not exist "build/libs" mkdir "build/libs"
@@ -37,5 +33,8 @@ linux_all:
 	make linux
 	make run
 
-clean:
-	rm -f main.exe
+info:
+	make help
+help:
+	cat help.txt
+

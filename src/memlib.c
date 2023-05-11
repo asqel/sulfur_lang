@@ -252,7 +252,7 @@ Object new_string(char * value){
 Object new_boolean(int value){
     Object o;
     o.type=Obj_boolean_t;
-    o.val.b=malloc(sizeof(short int));
+    o.val.b=malloc(sizeof(char));
     *o.val.b= value ? 1:0;
     return o;
 }

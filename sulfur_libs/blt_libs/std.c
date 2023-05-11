@@ -127,6 +127,28 @@ Object println_prompt(Object*obj,int n_arg){
     return n;
 }
 
+Object std_chr(Object* argv, int argc){
+    if(argc == 1 && argv[0].type == Obj_list_t){
+        return std_chr(&argv->val.li->elements[1], *argv->val.li->elements[0].val.i);
+    }
+    if(argc <= 0){
+        printf("ERROR std_chr takes at least one arg");
+        exit(1);
+    }
+    for(int i=0; i < argc; i++){
+        if(argv[i].type != Obj_ount_t){
+            printf("ERROR std_chr only takes strings");
+            exit(1);
+        }
+    }
+    char* text = malloc(sizeof(char) * (1 + argc));
+    for(int i=0; i < argc; i++){ // sataan bouche un coin
+
+        text[i] = *argv[i].val.i;
+    }
+    text[argc] = '\0';
+    return new_string(text);
+}
 
 Object std_bool(Object*obj,int n_arg){
     if(n_arg!=1){
@@ -452,6 +474,7 @@ memory init_std(memory MEMORY,char*path){
     free(path0);
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
     add_func(&MEMORY,"var_exists",&var_exists,"");
+    add_func(&MEMORY,"chr",&std_chr,"");
 
 
         

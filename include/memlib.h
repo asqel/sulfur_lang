@@ -69,7 +69,7 @@ typedef union Obj_val{
     long long int*i;//ount 
     long double*f;//floap
     long double*c;//complex {re,im}
-    short int*b;//boolean 
+    char*b;//boolean 
     class*cl;//class
     Funcdef *funcid;//contain a function identifier
     char*typeid;//contain a type

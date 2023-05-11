@@ -120,6 +120,7 @@ Object eval_Ast(Ast*x){
             }
             if(n==-1){
                 printf("ERROR var '%s' doesnt exist",x->root.varcall);
+                exit(1);
             }
             return Obj_cpy(MEMORY.values[n]);
         }
@@ -343,12 +344,12 @@ Object eval_Ast(Ast*x){
                     if(j.val.funcid->is_builtin){
                         if(x->right->root.fun->nbr_arg){
                             Object*arg=malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
-                            for(int i=1;i<x->right->root.fun->nbr_arg + 1;i++){
-                                arg[i]=eval_Ast(&x->right->root.fun->args[i-1]);
+                            for(int i=0; i < x->right->root.fun->nbr_arg; i++){
+                                arg[i + 1] = eval_Ast(&x->right->root.fun->args[i]);
 
                             }
                             arg[0] = a;
-                            return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg);
+                            return (*j.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                         }
                         else{
                             return (*j.val.funcid->func_p)(&a,1);

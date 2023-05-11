@@ -1,3 +1,1 @@
-list l=list(print, println, ount);
-
-(l:0).call("salut");
+println("feur".contains("j"));
