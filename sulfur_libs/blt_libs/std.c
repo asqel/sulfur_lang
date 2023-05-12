@@ -149,10 +149,6 @@ Object std_chr(Object* argv, int argc){
     return new_string(text);
 }
 
-Object std_randint(Object* argv, int argc){
-    
-}
-
 Object std_bool(Object*obj,int n_arg){
     if(n_arg!=1){
         printf("ERROR %s only 1 argument needed in bool call",n_arg>1?"too many arguments":"too few arguments");

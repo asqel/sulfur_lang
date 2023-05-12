@@ -213,28 +213,25 @@ Object greater(Object a,Object b){
 
 Object eq(Object a,Object b){
     if(a.type==Obj_ount_t && b.type==Obj_ount_t){
-        Object x;
-        x.type=Obj_boolean_t;
-        x.val.b=malloc(sizeof(short int));
-        *x.val.b=*a.val.i==*b.val.i;
-        return x;
+        return new_boolean(*a.val.i==*b.val.i);
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
-        Object x;
-        x.type=Obj_boolean_t;
-        x.val.b=malloc(sizeof(short int));
-        *x.val.b=*a.val.f==*b.val.f;
-        return x;
+        return new_boolean(*a.val.f==*b.val.f);
     }
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
-        Object x;
-        x.type=Obj_boolean_t;
-        x.val.b=malloc(sizeof(short int));
-        *x.val.b=*a.val.b==*b.val.b;
-        return x;
+        return new_boolean(*a.val.b == *b.val.b);
     }
     if(a.type == Obj_string_t && b.type == Obj_string_t){
         return new_boolean(!strcmp(a.val.s, b.val.s));
+    }
+    if(a.type == Obj_nil_t && b.type != Obj_nil_t){
+        return new_boolean(0);
+    }
+    if(a.type != Obj_nil_t && b.type == Obj_nil_t){
+        return new_boolean(0);
+    }
+    if(a.type == Obj_nil_t && b.type == Obj_nil_t){
+        return new_boolean(1);
     }
     printf("ERROR : operation(==) between 2 types not supported\n");
     exit(1);

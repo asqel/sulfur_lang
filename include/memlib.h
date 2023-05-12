@@ -83,6 +83,7 @@ typedef struct Object{
 }Object;
 
 enum Obj_Type{
+    Obj_not_found_t,
     Obj_Obj_t,
     Obj_string_t,
     Obj_ount_t,
@@ -102,6 +103,7 @@ enum Obj_Type{
 
 extern Object end_Obj;
 extern Object nil_Obj;
+extern Object not_found_Obj;
 
 void Obj_free_val(Object obj);
 
@@ -143,5 +145,8 @@ Object new_boolean(int value);
 
 Object Obj_cpy(Object o);
 
+int is_muttable(Object o);
+
+Object get_Obj_mem(memory MEMORY, char* name);
 
 #endif

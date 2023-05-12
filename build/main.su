@@ -10,6 +10,3 @@ elif (f<30){
 else{
     println("Vous êtes majeur et vieux.");
 }
-while (1){
-
-}
