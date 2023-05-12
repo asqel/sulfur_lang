@@ -834,13 +834,13 @@ int search_rrbrack(Token*t,int start){
     int len=token_len(t);
     int k=0;
     for(int i=start+1;i<len;i++){
-        if(t[i].type==syntax&&*t[i].value.t==r_brack_L){
+        if(t[i].type == syntax && *t[i].value.t == r_brack_L){
             k++;
         }
-        else if(t[i].type==syntax&&*t[i].value.t==r_brack_R&&k>0){
+        else if(t[i].type == syntax&&*t[i].value.t == r_brack_R&&k>0){
             k--;
         }
-        else if(t[i].type==syntax&&*t[i].value.t==r_brack_R&&k==0){
+        else if(t[i].type == syntax && *t[i].value.t == r_brack_R && k == 0){
             return i;
         }
     }
@@ -889,11 +889,14 @@ int count_elseelif(Token*tok,int p){
             exit(-1);
         }
     }
-    if(p<len&&tok[p].type==keyword&&*tok[p].value.t==else_t){
-        if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==r_brack_L){
+    if(p < len&&tok[p].type == keyword && *tok[p].value.t == else_t){
+        if(p+1 < len && tok[p+1].type == syntax && *tok[p+1].value.t == r_brack_L){
             int opening_rbrack=p+1;
             int closing_rback=search_rrbrack(tok,opening_rbrack);
             if(closing_rback==-1){
+                for(int i= opening_rbrack;i<len;i++){
+                    token_print(tok[i],"\n");
+                }
                 printf("ERROR missing closing '}' on line %d after else",tok[p+1].line);
                 exit(-1);
             }

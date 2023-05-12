@@ -84,16 +84,6 @@ void Obj_free_val(Object obj){
             free(obj.val.typeid);
             break;
         case Obj_class_t:
-            for(int i=0;i<obj.val.cl->key_len;i++){
-                free(obj.val.cl->keys[i]);
-            }  
-            free(obj.val.cl->keys);
-            free(obj.val.cl->class_name);
-            for(int i=0;i<obj.val.cl->key_len;i++){
-                Obj_free_val(obj.val.cl->values[i]);
-            }
-            free(obj.val.cl->values);
-            free(obj.val.cl);
             break;
         default:
             break;

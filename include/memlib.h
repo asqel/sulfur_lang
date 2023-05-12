@@ -5,9 +5,7 @@
 struct Object;
 
 typedef struct class{
-    int key_len;
-    char**keys;
-    struct Object*values;
+    struct memory * MEM;
     char*class_name;
 }class;
 
@@ -71,10 +69,10 @@ typedef union Obj_val{
     long double*c;//complex {re,im}
     char*b;//boolean 
     class*cl;//class
+    class*cl_def;
     Funcdef *funcid;//contain a function identifier
     char*typeid;//contain a type
     Module*module;
-
     list*li;
 
 }Obj_val;
@@ -97,7 +95,8 @@ enum Obj_Type{
     Obj_funcid_t,//contains addres of function not name
     Obj_typeid_t,
     Obj_class_t,
-    obj_module_t
+    obj_module_t,
+    Obj_class_def_t
 };
 
 

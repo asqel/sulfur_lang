@@ -1,8 +1,28 @@
-#include "../include/memlib.h"
-#include "../include/utilities.h"
+#include "memlib.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+
+void*realloc_c(void*mem,long long int old_size,long long int new_size){
+    if(old_size==new_size){
+        return mem;
+    }
+    if(old_size<new_size){
+        void*x=malloc(new_size);
+        memcpy(x,mem,old_size);
+        return (void*)x;
+    }
+    if(old_size>new_size){
+        void*x=malloc(new_size);
+        memcpy(x,mem,new_size);
+        return (void*)x;
+    }
+    if(new_size==0){
+        return NULL;
+    }
+}
+
 
 Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
 Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};

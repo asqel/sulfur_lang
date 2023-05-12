@@ -61,10 +61,7 @@ Object print_prompt(Object*obj,int n_arg){
         return nil_Obj;
     }
     if(obj->type==Obj_class_t){
-        if(!str_ar_contains_str(obj->val.cl->keys,"__string__",obj->val.cl->key_len)){
-            printf("instance at :%x",obj);
-            return nil_Obj;
-        }
+        return nil_Obj;
         
     }
     if(obj->type==Obj_complex_t){
@@ -150,6 +147,10 @@ Object std_chr(Object* argv, int argc){
     }
     text[argc] = '\0';
     return new_string(text);
+}
+
+Object std_randint(Object* argv, int argc){
+    
 }
 
 Object std_bool(Object*obj,int n_arg){
