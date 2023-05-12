@@ -6,6 +6,13 @@
 
 Module string_module;
 
+char * string_methods = "upper() : return a new string by converting every letter to upper case\n"
+                        "UPPER() : same as upper\n"
+                        "lower() : return a new string by converting every letter to lower case\n"
+                        "contains(x) : check if x is in the string\n"
+                        "length() : return the length of the string\n"
+                        "starts_with(a,...) : check if the string starts with at least one the args\n" 
+;
 Object str_upper(Object*x, int argc){
     if(argc != 1){
         printf("upper only takes one arg %d were passed",argc);
@@ -50,6 +57,50 @@ Object str_contains(Object* argv, int argc){
     return new_boolean(strstr(argv[0].val.s, argv[1].val.s));
 }
 
+Object str_length(Object* argv, int argc){
+    if(argc > 1){
+        printf("ERROR str:length doesn't take any arg");
+        exit(1);
+    }
+    return new_ount(strlen(argv[0].val.s));
+}
+Object str_starts_with(Object* argv, int argc){
+    if(argc == 1){
+        printf("ERROR str:starts_with takes at least one arg");
+        exit(1);
+    }
+    for(int i=0; i<argc; i++){
+        if(argv[i].type != Obj_string_t){
+            printf("ERROR str:starts_with only takes strings as arg");
+            exit(1);
+        }
+    }
+    if(argc == 2){
+        if(strlen(argv[0].val.s) < strlen(argv[1].val.s)){
+            return new_boolean(0);
+        }
+        for(int i=0; i < strlen(argv[1].val.s); i++){
+            if(argv[0].val.s[i] != argv[1].val.s[i]){
+                return new_boolean(0);
+            }
+        }
+        return new_boolean(1);
+    }
+    int res = 0;
+    for(int i=1; i < argc; i++){
+        if(strlen(argv[0].val.s) < strlen(argv[i].val.s)){
+            continue;
+        }
+        for(int i=0; i < strlen(argv[i].val.s); i++){
+            if(argv[0].val.s[i] != argv[i].val.s[i]){
+                continue;
+            }
+        }
+        res ++;
+        return new_boolean(res);
+    }
+    return new_boolean(res);
+}
 
 //char* str_escape() {
 //    size_t len = strlen(str);
@@ -92,6 +143,9 @@ memory init_string(memory MEMORY,char*path){
     add_func_Module(mod,"UPPER",&str_upper,"");
     add_func_Module(mod,"lower",&str_lower,"");
     add_func_Module(mod,"contains",&str_contains,"");
+    add_func_Module(mod,"length",&str_length,"");
+    add_func_Module(mod,"len",&str_length,"");
+    add_func_Module(mod,"starts_with",&str_starts_with,"");
     //add_func_Module(mod,"escape",&str_escape,""); // transforme \t to ttabs \n to line feed
     //CamelCaseTo_snake_case
     //snake_case_toCamelCase

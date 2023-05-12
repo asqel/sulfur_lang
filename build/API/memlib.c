@@ -1,29 +1,11 @@
-#include "memlib.h"
+#include "../include/memlib.h"
+#include "../include/utilities.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-void*realloc_c(void*mem,long long int old_size,long long int new_size){
-    if(old_size==new_size){
-        return mem;
-    }
-    if(old_size<new_size){
-        void*x=malloc(new_size);
-        memcpy(x,mem,old_size);
-        return (void*)x;
-    }
-    if(old_size>new_size){
-        void*x=malloc(new_size);
-        memcpy(x,mem,new_size);
-        return (void*)x;
-    }
-    if(new_size==0){
-        return NULL;
-    }
-}
-
-Object end_Obj ={Obj_end_t,{.b=&(short int){-1}}};
-Object nil_Obj ={Obj_nil_t,{.b=&(short int){0}}};
+Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
+Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};
 
 //return 1 if they are the same
 //else 0
@@ -113,7 +95,6 @@ void Obj_free_val(Object obj){
             free(obj.val.cl->values);
             free(obj.val.cl);
             break;
-
         default:
             break;
     }
@@ -268,11 +249,40 @@ Object new_string(char * value){
     return o;
 }
 
-
 Object new_boolean(int value){
     Object o;
     o.type=Obj_boolean_t;
-    o.val.b=malloc(sizeof(short int));
+    o.val.b=malloc(sizeof(char));
     *o.val.b= value ? 1:0;
     return o;
+}
+
+Object Obj_cpy(Object o){
+        Object res;
+    switch (o.type){
+        case Obj_ount_t:
+            return new_ount(*o.val.i);
+        case Obj_floap_t:
+            return new_floap(*o.val.f);
+        case Obj_string_t:
+            return new_string(o.val.s);
+        case Obj_boolean_t:
+            return new_boolean(*o.val.b);
+        case Obj_list_t:
+            res.type=Obj_list_t;
+            res.val.li=o.val.li;
+            return res;
+        case Obj_funcid_t:
+            res.type=Obj_funcid_t;
+            res.val.funcid=malloc(sizeof(Funcdef));
+            *res.val.funcid = *o.val.funcid;
+            return res;
+        case obj_module_t:
+            res.type=obj_module_t;
+            res.val.module=malloc(sizeof(Module));
+            *res.val.module = *o.val.module;
+            return res;
+        default:
+            break;
+    }
 }

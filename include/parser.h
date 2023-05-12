@@ -21,6 +21,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end);
 
 Ast*make_ast(Ast*e,int len);
 
+int search_rrbrack(Token*t,int start);
 
 int cond_parse(int start,int end,int len,int p);
 

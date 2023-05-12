@@ -2,8 +2,6 @@
 #define MEMLIB_H
 #include <string.h>
 
-void*realloc_c(void*mem,long long int old_size,long long int new_size);
-
 struct Object;
 
 typedef struct class{
@@ -60,13 +58,18 @@ typedef struct memory{
     int len;
 }memory;
 
+typedef struct stack{
+    memory* MEM;
+    int len;
+}stack;
+
 typedef union Obj_val{
     struct Object*o;
     char*s;//string {char,...}
     long long int*i;//ount 
     long double*f;//floap
     long double*c;//complex {re,im}
-    short int*b;//boolean 
+    char*b;//boolean 
     class*cl;//class
     Funcdef *funcid;//contain a function identifier
     char*typeid;//contain a type
@@ -101,6 +104,8 @@ enum Obj_Type{
 extern Object end_Obj;
 extern Object nil_Obj;
 
+void Obj_free_val(Object obj);
+
 void*get_obj_pointer(Object o);
 
 
@@ -134,6 +139,10 @@ Object new_floap(long double value);
 //the string will be copied *
 Object new_string(char * value);
 
+
 Object new_boolean(int value);
+
+Object Obj_cpy(Object o);
+
 
 #endif

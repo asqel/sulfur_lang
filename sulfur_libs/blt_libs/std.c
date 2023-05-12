@@ -1,5 +1,7 @@
 #include "std.h"
 
+#include "string_su.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -446,6 +448,17 @@ Object get_precision(Object* args, int argc){
     return new_ount(precision);
 }
 
+Object get_methods(Object* argv, int argc){
+    if(argc != 1){
+        printf("ERROR methods only takes one  arg");
+        exit(1);
+    }
+    if(argv[0].type == Obj_string_t){
+        return new_string(string_methods);
+    }
+    return new_string("");
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
     add_func(&MEMORY,"print",&print_prompt,"");
@@ -475,6 +488,7 @@ memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
     add_func(&MEMORY,"var_exists",&var_exists,"");
     add_func(&MEMORY,"chr",&std_chr,"");
+    add_func(&MEMORY,"methods",&get_methods,"");
 
 
         

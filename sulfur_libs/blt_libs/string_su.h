@@ -3,6 +3,7 @@
 #include "../../include/memlib.h"
 
 extern Module string_module;
+extern char * string_methods;
 
 memory init_string(memory MEMORY,char*path);
 

@@ -13,7 +13,7 @@ Object std_malloc(Object* argv, int argc){
         printf("ERRRIR in malloc");
         exit(1);
     }
-    return new_ount(malloc(*argv[0].val.i));
+    return new_ount((long long int)malloc(*argv[0].val.i));
 }
 Object std_free(Object* argv, int argc){
     if(argc != 1){
@@ -24,7 +24,7 @@ Object std_free(Object* argv, int argc){
         printf("ERRRIR in malloc");
         exit(1);
     }
-    free(*argv[0].val.i);
+    free((void *)*argv[0].val.i);
     return nil_Obj;
 }
 
