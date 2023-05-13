@@ -1,12 +1,1 @@
-println("Veuillez rentrez votre âge:");
-ount f=ount(input());
-
-if (f<18){
-    println("Vous êtes mineur.");
-}
-elif (f<30){
-    println("Vous êtes majeur et jeune.");
-}
-else{
-    println("Vous êtes majeur et vieux.");
-}
+l =3;

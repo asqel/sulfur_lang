@@ -24,10 +24,7 @@ Object eval_Ast(Ast*x){
 
             }
             Object res = (*func.val.funcid->func_p)(a,x->root.fun->nbr_arg);
-            for(int i = 0; i < x->root.fun->nbr_arg; i++){
-                Obj_free_val(a[i]);
-            }
-            free(a);
+       
             return res;
         }
         else{
@@ -44,7 +41,8 @@ Object eval_Ast(Ast*x){
                 printf("ERROR var '%s' not found");
                 exit(1);
             }
-            return Obj_cpy(val);
+            Object res = Obj_cpy(val);
+            return res;
         }
         if(x->type == Ast_object_t){
             return Obj_cpy(*x->root.obj);

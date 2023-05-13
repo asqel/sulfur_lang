@@ -70,10 +70,8 @@ void Obj_free_val(Object obj){
             free(obj.val.i);
             break;
         case Obj_list_t:
-            free(obj.val.li);   
             break;
         case Obj_funcid_t:
-            free(obj.val.funcid);
             break;
         case Obj_typeid_t:
             free(obj.val.typeid);
@@ -241,7 +239,7 @@ Object new_boolean(int value){
     *o.val.b= value ? 1:0;
     return o;
 }
-
+#include "../sulfur_libs/blt_libs/std.h"
 Object Obj_cpy(Object o){
     Object res;
     switch (o.type){
@@ -255,8 +253,7 @@ Object Obj_cpy(Object o){
             return new_boolean(*o.val.b);
         case Obj_list_t:
             res.type = Obj_list_t;
-            res.val.li = malloc(sizeof(list));
-            *res.val.li = *o.val.li;
+            res.val.li = o.val.li;
             return res;
         case Obj_funcid_t:
             res.type=Obj_funcid_t;

@@ -8,8 +8,6 @@ extern memory MEMORY;
 
 void init_memory();
 
-void init_stack();
-
 void init_libs(char*path);
 
 void init_garbage_collect();

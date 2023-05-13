@@ -94,11 +94,9 @@ void Obj_free_val(Object obj){
         case Obj_end_t:
             free(obj.val.i);
             break;
-        case Obj_list_t:
-            free(obj.val.o);   
+        case Obj_list_t:  
             break;
         case Obj_funcid_t:
-            free(obj.val.funcid);
             break;
         case Obj_typeid_t:
             free(obj.val.typeid);

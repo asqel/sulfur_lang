@@ -368,7 +368,7 @@ Object set(Object *obj,int n_arg){
         printf("ERROR set out of range");
         exit(1);
     }
-    obj[0].val.li->elements[index]=Obj_cpy(obj[2]);
+    obj[0].val.li->elements[index] = Obj_cpy(obj[2]);
     return nil_Obj;
 
 }
