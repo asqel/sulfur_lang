@@ -77,17 +77,6 @@ void init_memory(){
     MEMORY.len=0;
 }
 
-
-void init_stack(){
-
-}
-
-
-
-void init_garbage_collect(){
-
-}
-
 void init_libs(char*path){
     MEMORY = init_std(MEMORY, path);
     add_func(&MEMORY, "import", &import_func, ""); 
@@ -355,7 +344,6 @@ Object execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_funcdef_t){
             int n=-1;
-            printf("rrrr");
             for(int i=0;i<MEMORY.len;i++){
                 if(!strcmp(MEMORY.keys[i],code[p].value.fc->name)){
                     n=i;
@@ -364,8 +352,6 @@ Object execute(Instruction*code,char*file_name,int len){
             }
             if(n==-1){
                 Object f;
-                printf("ta crasgh ?");
-
                 f.type=Obj_funcid_t;
                 f.val.funcid=malloc(sizeof(Funcdef));
                 f.val.funcid->code=code[p].value.fc->code;

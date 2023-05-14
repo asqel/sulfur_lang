@@ -20,9 +20,11 @@ void init_stack(){
     STACK.MEM = malloc(sizeof(memory));
 }
 
-Object func_execute(Instruction*code,char*file_name,int len){
-    STACK.len++;
-    STACK.MEM = realloc(STACK.MEM, sizeof(memory) * STACK.len);
+Object func_execute(Instruction*code,char*file_name,int len, int create_stack){
+    if(create_stack){
+        STACK.len++;
+        STACK.MEM = realloc(STACK.MEM, sizeof(memory) * STACK.len);
+    }
     int p=0;
     while(p<len){
         if(code[p].type==inst_pass_t){
@@ -141,9 +143,16 @@ Object func_execute(Instruction*code,char*file_name,int len){
         }
         if(code[p].type==inst_for_t){
             Object start=eval_Ast(code[p].value.fo->start);
+            Object old_start = start;
             start=std_ount(&start,1);
-            Object end=eval_Ast(code[p].value.fo->end);
+            Obj_free_val(old_start);
+
+            
+            Object end=eval_Ast(code[p].value.fo->end); 
+            Object old_end = end;
             end=std_ount(&end,1);
+            Obj_free_val(old_end);
+
             if(start.type==Obj_nil_t){
                 printf("ERROR cant convert the value of start to ount in for");
                 exit(1);
@@ -152,73 +161,81 @@ Object func_execute(Instruction*code,char*file_name,int len){
                 printf("ERROR cant convert the value of end to ount in for");
                 exit(1);
             }
-
-            int n=-1;
-            for(int i=0;i<MEMORY.len;i++){
-                if(!strcmp(MEMORY.keys[i],code[p].value.fo->var_name)){
-                    n=i;
+            int n = -1;
+            for(int i=0; i < STACK.MEM[STACK.len - 1].len; i++){
+                if(!strcmp(STACK.MEM[STACK.len - 1].keys[i], code[p].value.fo->var_name)){
+                    n = i;
                     break;
                 }
             }
-            if(n==-1){
-                MEMORY.len++;
-                MEMORY.values=realloc_c(MEMORY.values,sizeof(Object)*(MEMORY.len-1),sizeof(Object)*MEMORY.len);
-                MEMORY.keys=realloc_c(MEMORY.keys,sizeof(char*)*(MEMORY.len-1),sizeof(char*)*MEMORY.len);
-                MEMORY.keys[MEMORY.len-1]=malloc(sizeof(char)*(1+strlen(code[p].value.fo->var_name)));
-                strcpy(MEMORY.keys[MEMORY.len-1],code[p].value.fo->var_name);
-                MEMORY.values[MEMORY.len-1].type=Obj_ount_t;
-                MEMORY.values[MEMORY.len-1].val.i=malloc(sizeof(long long int));
-                *MEMORY.values[MEMORY.len-1].val.i=*start.val.i;
+            if(n == -1){
+                add_object(&STACK.MEM[STACK.len - 1], code[p].value.fo->var_name, start);
             }
             else{
-                MEMORY.values[n].type=Obj_ount_t;
-                MEMORY.values[n].val.i=malloc(sizeof(long long int));
-                *MEMORY.values[n].val.i=*start.val.i;
+                STACK.MEM[STACK.len - 1].values[n].type = Obj_ount_t;
+                STACK.MEM[STACK.len - 1].values[n].val.i = malloc(sizeof(long long int));
+                *STACK.MEM[STACK.len - 1].values[n].val.i = *start.val.i;
 
             }
 
-            if(*start.val.i==*end.val.i){
+            if(*start.val.i == *end.val.i){
                 p=code[p].value.fo->endfor+1;
+                Obj_free_val(start);
+                Obj_free_val(end);
                 continue;
             }
+            Obj_free_val(start);
+            Obj_free_val(end);
             p++;
         }
         if(code[p].type==inst_endfor_t){
             int for_p=code[p].value.endfor;
+
             Object start=eval_Ast(code[for_p].value.fo->start);
+            Object old_start = start;
             start=std_ount(&start,1);
+            Obj_free_val(old_start);
 
             Object end=eval_Ast(code[for_p].value.fo->end);
+            Object old_end = end;
             end=std_ount(&end,1);
+            Obj_free_val(old_end);
 
 
             //positive for 
             if(*start.val.i<*end.val.i){
                 int n=-1;
-                for(int i=0;i<MEMORY.len;i++){
-                    if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
-                        n=i;
+                for(int i=0; i < STACK.MEM[STACK.len - 1].len; i++){
+                    if(!strcmp(STACK.MEM[STACK.len - 1].keys[i],code[for_p].value.fo->var_name)){
+                        n = i;
                         break;
                     }
                 }
                 if(n==-1){
                     p++;
+                    Obj_free_val(start);
+                    Obj_free_val(end);
                     continue;
                 }
-                
-                MEMORY.values[n]=std_ount(&MEMORY.values[n],1);
+                Object old = MEMORY.values[n];
+                MEMORY.values[n] = std_ount(&MEMORY.values[n],1);
+                Obj_free_val(old);
+
                 if(MEMORY.values[n].type==Obj_nil_t){
                     printf("ERROR in for cant convert loop var to ount");
                     exit(1);
                 }
                 (*MEMORY.values[n].val.i)++;
 
-                if(*end.val.i>*MEMORY.values[n].val.i){
-
+                if(*end.val.i > *MEMORY.values[n].val.i){
+                    Obj_free_val(start);
+                    Obj_free_val(end);
                     p=for_p+1;
                     continue;
                 }
                 else{
+                    Obj_free_val(start);
+                    Obj_free_val(end);
                     p++;
                     continue;
                 }
@@ -235,19 +252,25 @@ Object func_execute(Instruction*code,char*file_name,int len){
                     p++;
                     continue;
                 }
+                Object old = MEMORY.values[n];
                 MEMORY.values[n]=std_ount(&MEMORY.values[n],1);
+                Obj_free_val(old);
+
                 if(MEMORY.values[n].type==Obj_nil_t){
                     printf("ERROR in for cant convert loop var to ount");
                     exit(1);
                 }
                 (*MEMORY.values[n].val.i)--;
 
-                if(*end.val.i<*MEMORY.values[n].val.i){
-
+                if(*end.val.i < *MEMORY.values[n].val.i){
+                    Obj_free_val(start);
+                    Obj_free_val(end);
                     p=for_p+1;
                     continue;
                 }
                 else{
+                    Obj_free_val(start);
+                    Obj_free_val(end);
                     p++;
                     continue;
                 }
@@ -258,10 +281,14 @@ Object func_execute(Instruction*code,char*file_name,int len){
             Object condition=eval_Ast(code[p].value.wh->condition);
             Object c=std_bool(&condition,1);
             if(*c.val.b){
+                Obj_free_val(condition);
+                Obj_free_val(c);
                 p++;
                 continue;
             }
             else{
+                Obj_free_val(condition);
+                Obj_free_val(c);
                 p=code[p].value.wh->endwhile+1;
                 continue;
             }
@@ -271,10 +298,14 @@ Object func_execute(Instruction*code,char*file_name,int len){
             Object condition=eval_Ast(code[while_p].value.wh->condition);
             Object c=std_bool(&condition,1);
             if(*c.val.b){
+                Obj_free_val(condition);
+                Obj_free_val(c);
                 p=code[p].value.endwhile+1;
                 continue;
             }
             else{
+                Obj_free_val(condition);
+                Obj_free_val(c);
                 p++;
             }
         }

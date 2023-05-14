@@ -1368,7 +1368,6 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                         inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef)); 
                         *(inst[*n_inst-1].value.fc)=f;
                         p=cl_rbrack+1;
-                        printf("lme p :%d %d\n",p,len);
                         
                         continue;
 

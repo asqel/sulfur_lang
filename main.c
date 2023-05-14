@@ -4,6 +4,7 @@
 #include "include/memlib.h"
 #include "include/parser.h"
 #include "include/interpreter.h"
+#include "include/func_interpreter.h"
 #include "sulfur_libs/blt_libs/std.h"
 
 /*

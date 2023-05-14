@@ -2,6 +2,7 @@
 #include "../include/memlib.h"
 #include "../include/Ast.h"
 #include "../include/operation.h"
+#include "../include/func_interpreter.h"
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../sulfur_libs/blt_libs/string_su.h"
 #include "../sulfur_libs/blt_libs/funccall_su.h"
@@ -28,7 +29,7 @@ Object eval_Ast(Ast*x){
             return res;
         }
         else{
-            return execute(func.val.funcid->code,"",func.val.funcid->code_len);
+            return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
         }
     }
     if(x->type == Ast_anonym_func_t){
@@ -242,7 +243,7 @@ Object eval_Ast(Ast*x){
                     return res;
                 }
                 else{
-                    return execute(func.val.funcid->code,"",func.val.funcid->code_len);
+                    return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
                 }
             }
             if(a.type == Obj_string_t){
