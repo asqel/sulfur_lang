@@ -23,6 +23,13 @@ Object add(Object a,Object b){
         return new_boolean(*a.val.b + *b.val.b);
 
     }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_floap(*a.val.f + *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_floap(*b.val.f + *a.val.i);
+    }
+
     if(a.type==Obj_list_t && b.type==Obj_list_t){
         Object x;
         x.type=Obj_list_t;
@@ -77,6 +84,12 @@ Object sub(Object a,Object b){
         return x;
 
     }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_floap(*a.val.f - *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_floap(*a.val.i - *b.val.f );
+    }
     printf("\n");
     Obj_print(a);
     Obj_print(b);
@@ -105,6 +118,13 @@ Object mul(Object a,Object b){
         return x;
 
     }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_floap(*a.val.f * *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_floap(*a.val.i * *b.val.f );
+    }
+    
     printf("ERROR : operation(*) between 2 types not supported\n");
     exit(1);
 }
@@ -127,6 +147,12 @@ Object _div(Object a,Object b){
         *x.val.b=*a.val.b/ *b.val.b;
         return x;
 
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_floap(*a.val.f / *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_floap(*a.val.i / *b.val.f );
     }
     printf("ERROR : operation(/) between 2 types not supported\n");
     exit(1);
@@ -155,6 +181,12 @@ Object _pow(Object a,Object b){
         return x;
 
     }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_floap(pow(*a.val.f, *b.val.i));
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_floap(pow(*a.val.i, *b.val.f));
+    }
     printf("ERROR : operation(^) between 2 types not supported\n");
     exit(1);
 }
@@ -180,6 +212,12 @@ Object less(Object a,Object b){
         x.val.b=malloc(sizeof(short int));
         *x.val.b=*a.val.b<*b.val.b;
         return x;
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_boolean(*a.val.f < *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_boolean(*a.val.i < *b.val.f );
     }
     printf("ERROR : operation(<) between 2 types not supported\n");
     exit(1);
@@ -207,6 +245,12 @@ Object greater(Object a,Object b){
         *x.val.b=*a.val.b>*b.val.b;
         return x;
     }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_boolean(*a.val.f > *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_boolean(*a.val.i > *b.val.f );
+    }
     printf("ERROR : operation(>) between 2 types not supported\n");
     exit(1);
 }
@@ -232,6 +276,12 @@ Object eq(Object a,Object b){
     }
     if(a.type == Obj_nil_t && b.type == Obj_nil_t){
         return new_boolean(1);
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_boolean(*a.val.f == *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_boolean(*a.val.i == *b.val.f );
     }
     printf("ERROR : operation(==) between 2 types not supported\n");
     exit(1);
@@ -271,6 +321,12 @@ Object mod(Object a,Object b){
         x.val.i=malloc(sizeof(long long int));
         *x.val.i=(long long int)(*a.val.f)%(long long int)(*b.val.f);
         return x;
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_ount((long long int)*a.val.f % *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_ount(*a.val.i % (long long int)*b.val.f);
     }
     printf("ERROR : operation(^) between 2 types not supported\n");
     exit(1);

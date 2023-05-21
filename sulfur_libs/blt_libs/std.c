@@ -458,6 +458,9 @@ Object get_methods(Object* argv, int argc){
 
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
+    add_object(&MEMORY,"_",nil_Obj);
+    add_object(&MEMORY,"__",nil_Obj);
+    add_object(&MEMORY,"___",nil_Obj);
     add_func(&MEMORY,"print",&print_prompt,"");
     add_func(&MEMORY,"println",&println_prompt,"");
     add_func(&MEMORY,"bool",&std_bool,"");
