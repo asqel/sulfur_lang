@@ -105,7 +105,7 @@ char*dirname(char*v){
     }
     char old=v[n];
     v[n]='\0';
-    char*s=malloc(sizeof(char)*strlen(v));
+    char*s=malloc(sizeof(char)*(1 + strlen(v)));
     strcpy(s,v);
     v[n]=old;
     

@@ -18,6 +18,7 @@ int main(int argc,char **argv){
     back_slash_to_path(argv[0]);
     int show_mem=0;
     char*filepath=NULL;
+    
     if (argc==2){
         if(!strcmp(argv[1],"-m")){
             show_mem=1;
@@ -60,7 +61,6 @@ int main(int argc,char **argv){
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
-    printf("ici 5");
 
     //parser copy values of tokens so
     //you can free tokens after parsing 
@@ -68,7 +68,7 @@ int main(int argc,char **argv){
     init_memory();
     init_stack(); 
     init_libs(filepath);  
-    
+
     execute(code,filepath,*instruction_len);
 
     precision =base_precision;

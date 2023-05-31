@@ -362,7 +362,6 @@ Object execute(Instruction*code,char*file_name,int len){
                 f.val.funcid->code_len=code[p].value.fc->code_len;
                 f.val.funcid->is_builtin=0;
                 add_object(&MEMORY,code[p].value.fc->name,f);
-                printf("ici 1\n");
                 p++;
                 continue;
             }
