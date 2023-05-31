@@ -225,14 +225,17 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size){
     if(old_size<new_size){
         void*x=malloc(new_size);
         memcpy(x,mem,old_size);
+        free(mem);
         return (void*)x;
     }
     if(old_size>new_size){
         void*x=malloc(new_size);
         memcpy(x,mem,new_size);
+        free(mem);
         return (void*)x;
     }
     if(new_size==0){
+        free(mem);
         return NULL;
     }
 }

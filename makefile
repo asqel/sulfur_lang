@@ -33,8 +33,22 @@ linux_all:
 	make linux
 	make run
 
-info:
-	make help
 help:
-	cat help.txt
-
+	@echo win: build the interpreter and the built-in libs for windows
+	@echo
+	@echo linux: build the interpreter and the built-in libs for windows
+	@echo 
+	@echo run: run the interpreter with no arg
+	@echo 
+	@echo stdlibs_win: build std libs in .dll for windows
+	@echo 
+	@echo stdlibs_linux: build std libs in .so for linux
+	@echo 	
+	@echo win_all: build interpreter and std libs and run for windows
+	@echo 
+	@echo linux_all: build interpreter and std libs and run for linux
+	@echo 
+	@echo info: show this message
+	@echo 
+	@echo help: show this message
+	

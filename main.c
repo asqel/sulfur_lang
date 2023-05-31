@@ -60,7 +60,7 @@ int main(int argc,char **argv){
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
-
+    printf("ici 5");
 
     //parser copy values of tokens so
     //you can free tokens after parsing 

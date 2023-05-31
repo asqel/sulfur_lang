@@ -1357,6 +1357,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                     if(op_par+1==cl_par){
                         Funcdef_code f;
                         f.code=malloc(sizeof(Instruction));
+                        f.code_len = 0;
                         f.code=parse(tok,op_rbrack+1,cl_rbrack,f.code,&f.code_len);
                         f.is_builtin=0;
 
@@ -1368,7 +1369,9 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                         inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef)); 
                         *(inst[*n_inst-1].value.fc)=f;
                         p=cl_rbrack+1;
-                        
+                        for(int i= cl_rbrack+1; i<len; i++){
+                            token_print(tok[i],"\n");
+                        }
                         continue;
 
                     }
@@ -1387,6 +1390,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         }
         else{
             int n=find_semicol(tok,p);
+            printf("ici 9");
             if(n==-1){
                 token_print(tok[p],"n");
                 printf("ERROR unexpected token on line %d",tok[p].line);
@@ -1396,13 +1400,21 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 p++;
                 continue;
             }
+            printf("ici 8");
+            for(int i = p; i<n;i++){
+                token_print(tok[i]," __ \n");
+            }
             ast_and_len val=tok_to_Ast(tok,p,n);
+            printf("ici7\n");
             Ast*x=make_ast(val.value, val.len);
+            printf("ici6.0\n");
             (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+            printf("ici5.5\n");
             inst[*n_inst-1].type=inst_expr_t;
             inst[*n_inst-1].value.expr=x;
             p=n+1;
+            printf("ici 3.3");
             continue;
             
         }

@@ -26,7 +26,7 @@ Object import_func(Object*arg,int argc){
             exit(1);
         }
     }
-    if( argc==1 ){
+    if(argc == 1){
         if (!id_acceptable_ptr(arg[0].val.s)){
             printf("ERROR cannot import file with space in its name (%s)\n",arg[0].val.s);
             printf("use second argument to import as");
@@ -34,6 +34,7 @@ Object import_func(Object*arg,int argc){
         }
         Object (*loader)(void)=get_module_loader(arg[0].val.s);
         Object o=(*loader)();
+            printf("type %d\n",o.type);
         if(o.type !=obj_module_t){
             printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
             exit(1);
@@ -48,6 +49,8 @@ Object import_func(Object*arg,int argc){
         if (strcmp(arg[1].val.s,"")){
             Object (*loader)(void)=get_module_loader(arg[0].val.s);
             Object o=(*loader)();
+                        printf("type %d\n",o.type);
+
             if(o.type !=obj_module_t){
                 printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
                 exit(1);
@@ -57,6 +60,7 @@ Object import_func(Object*arg,int argc){
         else{
             Object (*loader)(void)=get_module_loader(arg[0].val.s);
             Object o=(*loader)();
+            printf("type %d\n",o.type);
             if(o.type !=obj_module_t){
                 printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
                 exit(1);
@@ -358,6 +362,7 @@ Object execute(Instruction*code,char*file_name,int len){
                 f.val.funcid->code_len=code[p].value.fc->code_len;
                 f.val.funcid->is_builtin=0;
                 add_object(&MEMORY,code[p].value.fc->name,f);
+                printf("ici 1\n");
                 p++;
                 continue;
             }

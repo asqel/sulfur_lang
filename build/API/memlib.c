@@ -3,29 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
-void*realloc_c(void*mem,long long int old_size,long long int new_size){
-    if(old_size==new_size){
-        return mem;
-    }
-    if(old_size<new_size){
-        void*x=malloc(new_size);
-        memcpy(x,mem,old_size);
-        return (void*)x;
-    }
-    if(old_size>new_size){
-        void*x=malloc(new_size);
-        memcpy(x,mem,new_size);
-        return (void*)x;
-    }
-    if(new_size==0){
-        return NULL;
-    }
-}
-
-
 Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
 Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};
+Object not_found_Obj ={Obj_not_found_t,{.b=&(char){0}}};
 
 //return 1 if they are the same
 //else 0
@@ -67,17 +47,11 @@ int Obj_len(Object*obj){
 void Obj_free_val(Object obj){
     int len;
     switch (obj.type){
-        case Obj_Obj_t:
-            len=Obj_len(obj.val.o);
-            for(int i=0;i<len;i++){
-                Obj_free_val(obj.val.o[i]);
-            }
-            break;
         case Obj_string_t:
             free(obj.val.s);
             break;
         case Obj_ount_t:
-            free(obj.val.o);
+            free(obj.val.i);
             break;
         case Obj_floap_t:
             free(obj.val.f);
@@ -94,7 +68,7 @@ void Obj_free_val(Object obj){
         case Obj_end_t:
             free(obj.val.i);
             break;
-        case Obj_list_t:  
+        case Obj_list_t:
             break;
         case Obj_funcid_t:
             break;
@@ -102,16 +76,6 @@ void Obj_free_val(Object obj){
             free(obj.val.typeid);
             break;
         case Obj_class_t:
-            for(int i=0;i<obj.val.cl->key_len;i++){
-                free(obj.val.cl->keys[i]);
-            }  
-            free(obj.val.cl->keys);
-            free(obj.val.cl->class_name);
-            for(int i=0;i<obj.val.cl->key_len;i++){
-                Obj_free_val(obj.val.cl->values[i]);
-            }
-            free(obj.val.cl->values);
-            free(obj.val.cl);
             break;
         default:
             break;
@@ -276,7 +240,7 @@ Object new_boolean(int value){
 }
 
 Object Obj_cpy(Object o){
-        Object res;
+    Object res;
     switch (o.type){
         case Obj_ount_t:
             return new_ount(*o.val.i);
@@ -287,20 +251,66 @@ Object Obj_cpy(Object o){
         case Obj_boolean_t:
             return new_boolean(*o.val.b);
         case Obj_list_t:
-            res.type=Obj_list_t;
-            res.val.li=o.val.li;
+            res.type = Obj_list_t;
+            res.val.li = o.val.li;
             return res;
         case Obj_funcid_t:
             res.type=Obj_funcid_t;
-            res.val.funcid=malloc(sizeof(Funcdef));
+            res.val.funcid = malloc(sizeof(Funcdef));
             *res.val.funcid = *o.val.funcid;
             return res;
         case obj_module_t:
             res.type=obj_module_t;
-            res.val.module=malloc(sizeof(Module));
+            res.val.module = malloc(sizeof(Module));
             *res.val.module = *o.val.module;
             return res;
         default:
-            break;
+            return nil_Obj;
+    }
+}
+
+
+int is_muttable(Object o){
+    switch (o.type){
+        case Obj_list_t:
+        case Obj_funcid_t:
+        case obj_module_t:
+            return 1;
+
+        default:
+            return 0;
+    }
+}
+
+//return the object with the corresponding name in the memory MEM
+//if it isn't in the memory an Object of type Obj_not_found_t is returned
+Object get_Obj_mem(memory MEMORY, char* name){
+    for(int i = 0; i < MEMORY.len; i++){
+        if(!strcmp(MEMORY.keys[i], name)){
+            return MEMORY.values[i];
+        }
+    }
+    return not_found_Obj;
+}
+
+void*realloc_c(void*mem,long long int old_size,long long int new_size){
+    if(old_size==new_size){
+        return mem;
+    }
+    if(old_size<new_size){
+        void*x=malloc(new_size);
+        memcpy(x,mem,old_size);
+        free(mem);
+        return (void*)x;
+    }
+    if(old_size>new_size){
+        void*x=malloc(new_size);
+        memcpy(x,mem,new_size);
+        free(mem);
+        return (void*)x;
+    }
+    if(new_size==0){
+        free(mem);
+        return NULL;
     }
 }

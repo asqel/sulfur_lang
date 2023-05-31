@@ -5,9 +5,7 @@
 struct Object;
 
 typedef struct class{
-    int key_len;
-    char**keys;
-    struct Object*values;
+    struct memory * MEM;
     char*class_name;
 }class;
 
@@ -71,10 +69,10 @@ typedef union Obj_val{
     long double*c;//complex {re,im}
     char*b;//boolean 
     class*cl;//class
+    class*cl_def;
     Funcdef *funcid;//contain a function identifier
     char*typeid;//contain a type
     Module*module;
-
     list*li;
 
 }Obj_val;
@@ -85,6 +83,7 @@ typedef struct Object{
 }Object;
 
 enum Obj_Type{
+    Obj_not_found_t,
     Obj_Obj_t,
     Obj_string_t,
     Obj_ount_t,
@@ -97,12 +96,14 @@ enum Obj_Type{
     Obj_funcid_t,//contains addres of function not name
     Obj_typeid_t,
     Obj_class_t,
-    obj_module_t
+    obj_module_t,
+    Obj_class_def_t
 };
 
 
 extern Object end_Obj;
 extern Object nil_Obj;
+extern Object not_found_Obj;
 
 void Obj_free_val(Object obj);
 
@@ -144,5 +145,11 @@ Object new_boolean(int value);
 
 Object Obj_cpy(Object o);
 
+int is_muttable(Object o);
+
+Object get_Obj_mem(memory MEMORY, char* name);
+
+
+void*realloc_c(void*mem,long long int old_size,long long int new_size);
 
 #endif
