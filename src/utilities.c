@@ -93,21 +93,22 @@ void back_slash_to_path(char*v){
     }
 }
 char*dirname(char*v){
-    int n=-1;
-    int l=strlen(v);
-    for(int i=0;i<l;i++){
-        if(v[i]=='/'|| v[i]=='\\'){
-            n=i;
+    int n = -1;
+    int l = strlen(v);
+
+    for(int i = 0; i < l; i++){
+        if(v[i] == '/' || v[i] == '\\'){
+            n = i;
         }
     }
     if(n==-1){
         return NULL;
     }
-    char old=v[n];
-    v[n]='\0';
-    char*s=malloc(sizeof(char)*(1 + strlen(v)));
-    strcpy(s,v);
-    v[n]=old;
+    char old = v[n];
+    v[n] = '\0';
+    char* s = malloc(sizeof(char) * (1 + strlen(v)));
+    strcpy(s, v);
+    v[n] = old;
     
     return s;
 }

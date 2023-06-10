@@ -1,7 +1,11 @@
+ount b= 3;
+
 def a(){
-    return "acommenbt";
+    b = b + 5;
+    return b;
 }
 println("pourquoi");
+
 println(a());
 
 println("quandf");
