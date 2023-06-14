@@ -123,7 +123,7 @@ Object _floor(Object* argv, int argc) {
 }
 
 
-
+#ifndef ONE_FILE
 Object __loader() {
     Object mod = new_Module();
 
@@ -144,3 +144,25 @@ Object __loader() {
 
     return mod;
 }
+#else
+Object __load_math() {
+    Object mod = new_Module();
+
+    add_func_Module(mod, "is_even", &is_even, "");
+    add_func_Module(mod, "is_odd", &is_odd, "");
+    add_func_Module(mod, "cos", &_cos, "");
+    add_func_Module(mod, "sin", &_sin, "");
+    add_func_Module(mod, "tan", &_tan, "");
+    add_func_Module(mod, "ln", &_ln, "");
+    add_func_Module(mod, "log", &_log, "");
+    add_func_Module(mod, "sqrt", &_sqrt, "");
+    add_func_Module(mod, "ceil", &_ceil, "");
+    add_func_Module(mod, "floor", &_floor, "");
+
+    
+    add_Object_Module(mod, "pi", new_floap(M_PI));
+    add_Object_Module(mod, "e", new_floap(M_E));
+
+    return mod;
+}
+#endif

@@ -71,4 +71,9 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size);
 void*get_module_loader(char* filename);
 
 
+#ifdef ONE_FILE
+void* get_standard_module(char* filename);
+#endif
+
+
 #endif

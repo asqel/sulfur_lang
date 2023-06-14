@@ -165,8 +165,8 @@ Object std_bool(Object*obj,int n_arg){
         return res;
     }
     if(obj->type==Obj_string_t){
-        if(obj->val.s[0]==0){
-            *res.val.b=0;
+        if(!strlen(obj->val.s)){
+            *res.val.b = 0;
         }
         return res;
     }

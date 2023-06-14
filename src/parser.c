@@ -1365,7 +1365,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                         (*n_inst)++;
                         inst=realloc(inst,sizeof(Instruction)*(*n_inst));
                         inst[*n_inst-1].type=inst_funcdef_t; 
-                        inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef)); 
+                        inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef) + 1); 
                         *(inst[*n_inst-1].value.fc)=f;
                         p=cl_rbrack+1;
                         continue;

@@ -33,6 +33,12 @@ linux_all:
 	make linux
 	make run
 
+
+linux_one_file:
+	mkdir -p build
+	mkdir -p build/libs
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c -o build/sulfur -lm -fno-builtin-printf -D ONE_FILE
+
 help:
 	@echo win: build the interpreter and the built-in libs for windows
 	@echo
@@ -51,4 +57,6 @@ help:
 	@echo info: show this message
 	@echo 
 	@echo help: show this message
+	@echo
+	@echo linux_one_file : build sulfur with the std_libs in one file
 	

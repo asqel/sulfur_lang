@@ -34,7 +34,6 @@ Object import_func(Object*arg,int argc){
         }
         Object (*loader)(void)=get_module_loader(arg[0].val.s);
         Object o=(*loader)();
-            printf("type %d\n",o.type);
         if(o.type !=obj_module_t){
             printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
             exit(1);
@@ -49,7 +48,6 @@ Object import_func(Object*arg,int argc){
         if (strcmp(arg[1].val.s,"")){
             Object (*loader)(void)=get_module_loader(arg[0].val.s);
             Object o=(*loader)();
-                        printf("type %d\n",o.type);
 
             if(o.type !=obj_module_t){
                 printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
@@ -60,7 +58,6 @@ Object import_func(Object*arg,int argc){
         else{
             Object (*loader)(void)=get_module_loader(arg[0].val.s);
             Object o=(*loader)();
-            printf("type %d\n",o.type);
             if(o.type !=obj_module_t){
                 printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
                 exit(1);
