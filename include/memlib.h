@@ -101,9 +101,9 @@ enum Obj_Type{
 };
 
 
-extern Object end_Obj;
-extern Object nil_Obj;
-extern Object not_found_Obj;
+static Object end_Obj;
+static Object nil_Obj;
+static Object not_found_Obj;
 
 void Obj_free_val(Object obj);
 

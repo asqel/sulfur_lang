@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
-Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};
-Object not_found_Obj ={Obj_not_found_t,{.b=&(char){0}}};
+static Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
+static Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};
+static Object not_found_Obj ={Obj_not_found_t,{.b=&(char){0}}};
 
 //return 1 if they are the same
 //else 0
