@@ -191,7 +191,11 @@ long long int*str_to_llint_p(char*s){
     //    pow_10*=10;
     //}
     long long int*a=malloc(sizeof(long long int));
-    *a=atoll(s);
+    #ifndef __profanOS__
+        *a=atoll(s);
+    #else
+        *a=(long long int) atoi(s);
+    #endif
     return a;
 }
 
