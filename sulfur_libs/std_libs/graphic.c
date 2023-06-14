@@ -11,6 +11,7 @@ HWND g_hWnd = NULL;
 HWND hwndTitle;
 
 
+#elif __profanOS__
 #elif __APPLE__
 #elif __linux__
 #include <X11/Xlib.h>

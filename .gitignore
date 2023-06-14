@@ -3,6 +3,8 @@
 *.exe
 *.dll
 *.so
+*.o
+*.bin
 
 build/sulfur
 

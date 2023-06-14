@@ -10,12 +10,18 @@
 #include "../../include/memlib.h"
 #include "../../include/utilities.h"
 
+#ifdef __profanOS__
+#include <syscall.h>
+#endif
+
 #ifdef _WIN32
     char* __os__="windows";
 #elif __APPLE__
     char* __os__="APPLE";
 #elif __linux__
     char* __os__="linux";
+#elif __profanOS__
+    char* __os__="profanOS";
 #else 
     char* __os__="UNKNOWN";
 #endif
@@ -250,17 +256,24 @@ Object std_list(Object*obj,int n_arg){
     return x;
 }
 
-
 Object current_timestamp(Object *obj,int n_arg) {
-    struct timespec te;
-    clock_gettime(CLOCK_REALTIME, &te);
-    long long milliseconds = te.tv_sec*1000LL + te.tv_nsec/1000000LL;
     Object o;
     o.type=Obj_ount_t;
     o.val.i=malloc(sizeof(long long int));
+
+    #ifdef __profanOS__
+    *o.val.i = c_timer_get_ms();
+    #else
+
+    struct timespec te;
+    clock_gettime(CLOCK_REALTIME, &te);
+    long long milliseconds = te.tv_sec*1000LL + te.tv_nsec/1000000LL;
     *o.val.i=milliseconds;
+    #endif
+
     return o;
 }
+
 Object sleep(Object *obj,int n_arg){
     long long int x=0;
     Object o=std_ount(&obj[0],1);

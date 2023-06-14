@@ -251,22 +251,27 @@ int is_letter(char v){
     return 0;
 }
 
-
-#ifdef _WIN32
-    #include <windows.h>
-#elif __APPLE__ || __linux__
-    #include <dlfcn.h>  
+#ifndef ONE_FILE
+    #ifdef _WIN32
+        #include <windows.h>
+    #elif __APPLE__ || __linux__
+        #include <dlfcn.h>
+    #endif
 #endif
+
 #include "../include/memlib.h"
 
 
 void *get_module_loader(char* filename) {
     #ifdef ONE_FILE
     void* mod = get_standard_module(filename);
-    if(mod){
+    if (mod) {
         return mod;
     }
+    return NULL;
     #endif
+
+    #ifndef ONE_FILE
     if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
         char * interpreter =abs_path();
         char* dir=dirname(interpreter);
@@ -314,6 +319,7 @@ void *get_module_loader(char* filename) {
         }
     #endif
     return loader_function;
+    #endif
 }
 
 #ifdef ONE_FILE
