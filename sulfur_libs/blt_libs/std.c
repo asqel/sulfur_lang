@@ -478,7 +478,7 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"get_precision",&get_precision,"");
     char*path0=abs_path();
     back_slash_to_path(path0);
-    char *d=dirname(path0);
+    char *d= uti_dirname(path0);
     add_obj_str(&MEMORY,"__path__",path);
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
     add_obj_str(&MEMORY,"__dir_path__",d);

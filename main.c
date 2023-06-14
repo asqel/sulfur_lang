@@ -47,7 +47,7 @@ int main(int argc,char **argv){
         exit(1);
     }
     if (!filepath){
-        char*d=dirname(argv[0]);
+        char*d= uti_dirname(argv[0]);
         filepath=str_cat_new(d,"/main.su");
         free(d);
     }

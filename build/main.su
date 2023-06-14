@@ -1,1 +1,2 @@
-println(nil);
+
+println(string.starts_with("salut","s"));
