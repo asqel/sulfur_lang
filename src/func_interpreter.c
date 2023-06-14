@@ -53,14 +53,14 @@ Object func_execute(Instruction*code,char*file_name,int len, int create_stack){
             }
             if(n == -1){
                 for(int i = 0; i < MEMORY.len; i++){
-                if(!strcmp(MEMORY.keys[i], code[p].value.vs->name)){
-                    n = i;
-                    break;
-                }
+                    if(!strcmp(MEMORY.keys[i], code[p].value.vs->name)){
+                        n = i;
+                        break;
+                    }
+                }                
                 MEMORY.values[n]=eval_Ast(code[p].value.vs->val);
                 p++;
                 continue;
-            }
             }
             STACK.MEM[STACK.len - 1].values[n]=eval_Ast(code[p].value.vs->val);
 

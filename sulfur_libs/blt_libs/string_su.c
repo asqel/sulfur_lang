@@ -54,7 +54,7 @@ Object str_contains(Object* argv, int argc){
         printf("ERROR str:contains onlyt takes strings");
         exit(1);
     }
-    return new_boolean(strstr(argv[0].val.s, argv[1].val.s));
+    return new_boolean((long long int) strstr(argv[0].val.s, argv[1].val.s));
 }
 
 Object str_length(Object* argv, int argc){

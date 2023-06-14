@@ -93,21 +93,22 @@ void back_slash_to_path(char*v){
     }
 }
 char*dirname(char*v){
-    int n=-1;
-    int l=strlen(v);
-    for(int i=0;i<l;i++){
-        if(v[i]=='/'|| v[i]=='\\'){
-            n=i;
+    int n = -1;
+    int l = strlen(v);
+
+    for(int i = 0; i < l; i++){
+        if(v[i] == '/' || v[i] == '\\'){
+            n = i;
         }
     }
     if(n==-1){
         return NULL;
     }
-    char old=v[n];
-    v[n]='\0';
-    char*s=malloc(sizeof(char)*(1 + strlen(v)));
-    strcpy(s,v);
-    v[n]=old;
+    char old = v[n];
+    v[n] = '\0';
+    char* s = malloc(sizeof(char) * (1 + strlen(v)));
+    strcpy(s, v);
+    v[n] = old;
     
     return s;
 }
@@ -260,6 +261,12 @@ int is_letter(char v){
 
 
 void *get_module_loader(char* filename) {
+    #ifdef ONE_FILE
+    void* mod = get_standard_module(filename);
+    if(mod){
+        return mod;
+    }
+    #endif
     if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
         char * interpreter =abs_path();
         char* dir=dirname(interpreter);
@@ -308,3 +315,26 @@ void *get_module_loader(char* filename) {
     #endif
     return loader_function;
 }
+
+#ifdef ONE_FILE
+extern Object __load_math();
+extern Object __load_graphic();
+extern Object __load_poppy();
+extern Object __load_lilypad();
+
+void* get_standard_module(char* filename){
+    if(!strcmp(filename, "math")){
+        return &__load_math;
+    }
+    if(!strcmp(filename, "graphic")){
+        return &__load_graphic;
+    }
+    if(!strcmp(filename, "math")){
+        return &__load_poppy;
+    }
+    if(!strcmp(filename, "math")){
+        return &__load_lilypad;
+    }
+    return NULL;
+}
+#endif

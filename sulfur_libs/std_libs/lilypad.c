@@ -53,6 +53,7 @@ Object std_set_val_byte(Object* argv, int argc){
 }
 
 
+#ifndef ONE_FILE
 
 Object __loader() {
     Object mod = new_Module();
@@ -64,3 +65,15 @@ Object __loader() {
 
     return mod;
 }
+#else
+Object __load_lilypad() {
+    Object mod = new_Module();
+
+    add_func_Module(mod, "free", &std_free, "");
+    add_func_Module(mod, "malloc", &std_malloc, "");
+    add_func_Module(mod,"get_byte", &std_get_val_byte,"");
+    add_func_Module(mod,"set_byte", &std_set_val_byte,"");
+
+    return mod;
+}
+#endif
