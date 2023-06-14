@@ -15,6 +15,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef __profanOS__
+#include "syscall.h"
+#endif
+
 //check if a char is in a string
 //*x pointer to the string  |  v char to search
 int str_contains_char(char *x,char v){
@@ -25,8 +29,11 @@ int str_contains_char(char *x,char v){
         }
     }
     return 0;
-    
 }
+
+#ifdef __profanOS__
+char *profan_get_current_dir();
+#endif
 
 char*abs_path(){
     char *path=malloc(sizeof(char)*(PATH_MAX+1));
@@ -41,6 +48,8 @@ char*abs_path(){
             perror("_NSGetExecutablePath");
             exit(EXIT_FAILURE);
         }
+    #elif __profanOS__
+        strcpy(path, profan_get_current_dir());
     #else
         if (readlink("/proc/self/exe", path, PATH_MAX) == -1) {
             perror("readlink");
@@ -128,6 +137,19 @@ char*str_cat_new(char*s1,char*s2){
 }
 
 char*read_file(char*path){
+    #ifdef __profanOS__
+
+    if (!c_fs_does_path_exists(path)) {
+        printf("File %s does not exist\n", path);
+        return calloc(1, sizeof(char));
+    }
+
+    char *text = malloc(c_fs_get_file_size(path) + 1);
+    c_fs_read_file(path, text);
+    
+    return text;
+
+    #else       
     FILE*f=fopen(path,"r");
     char*text=malloc(sizeof(char));
     int n=1;
@@ -142,6 +164,7 @@ char*read_file(char*path){
     text[n-1]='\0';
     fclose(f);
     return text;
+    #endif
 }
 
 //return the max power of 10 that can fit into a number
