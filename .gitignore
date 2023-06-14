@@ -1,3 +1,9 @@
 .vscode
+
 *.exe
+*.dll
+*.so
+
+build/sulfur
+
 a.py
