@@ -71,7 +71,7 @@ int main(int argc,char **argv){
 
     execute(code,filepath,*instruction_len);
 
-    precision =base_precision;
+    precision = base_precision;
     if(show_mem){
         printf("\n \nMEMORY:%d\n",MEMORY.len);
         for(int i=0;i<MEMORY.len;i++){
@@ -82,6 +82,15 @@ int main(int argc,char **argv){
         getchar();
 
     }
+
+    for(int i=0; i<MEMORY.len; i++){
+        free(MEMORY.keys[i]);
+        MEMORY.values[i].type==Obj_boolean_t ? free(MEMORY.values[i].val.b) : 0;
+
+    }
+    free(MEMORY.keys);
+    free(MEMORY.values);
+
     return 0;
 }
 

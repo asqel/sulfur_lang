@@ -4,9 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
-static Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};
-static Object not_found_Obj ={Obj_not_found_t,{.b=&(char){0}}};
+
 
 //return 1 if they are the same
 //else 0
@@ -161,23 +159,23 @@ memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc){
 
 memory*add_object(memory*MEMORY,char*name,Object x){
     MEMORY->len++;
-    MEMORY->keys=realloc_c(MEMORY->keys,sizeof(char*)*(MEMORY->len-1),sizeof(char*)*MEMORY->len);
+    MEMORY->keys = realloc(MEMORY->keys, sizeof(char*) * (MEMORY->len));
 
-    MEMORY->keys[MEMORY->len-1]=malloc(sizeof(char)*(1+strlen(name)));
-    strcpy(MEMORY->keys[MEMORY->len-1],name);  
+    MEMORY->keys[MEMORY->len-1] = malloc(sizeof(char)*(1+strlen(name)));
+    strcpy(MEMORY->keys[MEMORY->len-1], name);  
 
-    MEMORY->values=realloc_c(MEMORY->values,sizeof(Object)*(MEMORY->len-1),sizeof(Object)*MEMORY->len);
-    MEMORY->values[MEMORY->len-1]=x;
+    MEMORY->values = realloc(MEMORY->values, sizeof(Object) * MEMORY->len);
+    MEMORY->values[MEMORY->len-1] = x;
     return MEMORY;
 
 }
 
 memory*add_obj_str(memory*MEMORY,char*name,char*val){
     Object x;
-    x.type=Obj_string_t;
-    x.val.s=malloc(sizeof(char)*(1+strlen(val)));
-    strcpy(x.val.s,val);
-    return add_object(MEMORY,name,x);
+    x.type = Obj_string_t;
+    x.val.s = malloc(sizeof(char)*(1+strlen(val)));
+    strcpy(x.val.s, val);
+    return add_object(MEMORY, name, x);
 
 }
 

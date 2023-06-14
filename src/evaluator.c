@@ -39,7 +39,7 @@ Object eval_Ast(Ast*x){
         if(x->type == Ast_varcall_t){
             Object val = get_Obj_mem(MEMORY, x->root.varcall);
             if(val.type == Obj_not_found_t){
-                printf("ERROR var '%s' not found");
+                printf("ERROR var '%s' not found", x->root.varcall);
                 exit(1);
             }
             Object res = Obj_cpy(val);
