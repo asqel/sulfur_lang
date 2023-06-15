@@ -21,7 +21,7 @@ args:
     -m *filepath* - show memory after execution
     -p *filepath* - show parse tree
 
-    order of flags doesn't matter    
+    order of flags doesn't matter
 */
 
 int show_mem=0;
