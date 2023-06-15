@@ -242,11 +242,12 @@ Object execute(Instruction* code, char* file_name, int len){
                 MEMORY.values[n] = start;
 
             }
-            Obj_free_val(end);
             if(*start.val.i == *end.val.i){
+                Obj_free_val(end);
                 p = code[p].value.fo->endfor + 1;
                 continue;
             }
+            Obj_free_val(end);
             p++;
         }
         if(code[p].type == inst_endfor_t){
