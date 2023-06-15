@@ -23,7 +23,7 @@ int str_count(char*x,char v);
 
 //turn a path with \ into a path with /
 void back_slash_to_path(char*v);
-char*dirname(char*v);
+char* uti_dirname(char*v);
 //return new str containing s1+s2
 char*str_cat_new(char*s1,char*s2);
 

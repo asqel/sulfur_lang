@@ -372,13 +372,7 @@ Object execute(Instruction*code,char*file_name,int len){
 
         
     }
-    for(int i=0; i<MEMORY.len; i++){
-        free(MEMORY.keys[i]);
-        MEMORY.values[i].type==Obj_boolean_t ? free(MEMORY.values[i].val.b) : 0;
-
-    }
-    free(MEMORY.keys);
-    free(MEMORY.values);
+    
     
     
     return nil_Obj;

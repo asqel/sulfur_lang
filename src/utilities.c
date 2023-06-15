@@ -101,7 +101,7 @@ void back_slash_to_path(char*v){
         }
     }
 }
-char*dirname(char*v){
+char* uti_dirname(char*v){
     int n = -1;
     int l = strlen(v);
 
@@ -301,7 +301,7 @@ void *get_module_loader(char* filename) {
     #ifndef ONE_FILE
     if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
         char * interpreter =abs_path();
-        char* dir=dirname(interpreter);
+        char* dir = uti_dirname(interpreter);
         free(interpreter);
         char *lib_dir=str_cat_new(dir,"/libs/");
         free(dir);

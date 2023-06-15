@@ -101,9 +101,9 @@ enum Obj_Type{
 };
 
 
-static Object end_Obj;
-static Object nil_Obj;
-static Object not_found_Obj;
+static Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
+static Object nil_Obj ={.type = Obj_nil_t, .val.b=&(char){0}};
+static Object not_found_Obj ={.type = Obj_not_found_t, .val.b=&(char){0}};
 
 void Obj_free_val(Object obj);
 

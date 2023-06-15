@@ -63,7 +63,7 @@ Object print_prompt(Object*obj,int n_arg){
         return nil_Obj;
     }
     if(obj->type==Obj_boolean_t){
-        printf(*obj->val.b==0?"0b":"1b");
+        printf(*obj->val.b == 0 ? "0b" : "1b");
         return nil_Obj;
     }
     if(obj->type==Obj_class_t){
@@ -95,7 +95,7 @@ Object print_prompt(Object*obj,int n_arg){
 
     }
     if(obj->type==Obj_funcid_t){
-        printf("function at :%x",obj->val.funcid);
+        printf("function at :%p",obj->val.funcid);
         return nil_Obj;
     }
     if(obj->type==Obj_nil_t){
@@ -491,7 +491,7 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"get_precision",&get_precision,"");
     char*path0=abs_path();
     back_slash_to_path(path0);
-    char *d=dirname(path0);
+    char *d= uti_dirname(path0);
     add_obj_str(&MEMORY,"__path__",path);
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
     add_obj_str(&MEMORY,"__dir_path__",d);

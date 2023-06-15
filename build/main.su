@@ -1,12 +1,2 @@
-ount b= 3;
-import("math");
 
-def a(){
-    b = b + 5;
-    return b;
-}
-println("pourquoi");
-
-println(a());
-
-println("quandf");
+println(string.starts_with("salut","s"));
