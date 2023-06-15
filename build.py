@@ -10,8 +10,8 @@ LDFLAGS = "-T link.ld"
 
 OBJDIR  = "build/profan_objects"
 
-def execute_command(cmd):
-    print(cmd)
+def execute_command(cmd, display = True):
+    if display: print(cmd)
     rcode = os.system(cmd)
     if rcode == 0: return
     print(f"Command failed with exit code {rcode}")
@@ -20,7 +20,8 @@ def execute_command(cmd):
 def compile_file(src, dir):
     obj = os.path.join(OBJDIR, f"{os.path.splitext(src)[0]}.o")
     cmd = f"{CC} -c {os.path.join(dir, src)} -o {obj} {CFLAGS}"
-    execute_command(cmd)
+    print(f"CC {src}")
+    execute_command(cmd, display = False)
     return obj
 
 def link_files(entry, objs, output = OUTPUT):
