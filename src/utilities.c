@@ -136,12 +136,11 @@ char*str_cat_new(char*s1,char*s2){
     return s;
 }
 
-char*read_file(char*path){
+char *read_file(char*path){
     #ifdef __profanOS__
 
     if (!c_fs_does_path_exists(path)) {
-        printf("File %s does not exist\n", path);
-        return calloc(1, sizeof(char));
+        return NULL;
     }
 
     char *text = malloc(c_fs_get_file_size(path) + 1);
@@ -149,8 +148,12 @@ char*read_file(char*path){
     
     return text;
 
-    #else       
-    FILE*f=fopen(path,"r");
+    #else
+
+    // check if file exists
+    FILE *f = fopen(path, "r");
+    if (f == NULL) return NULL;
+
     char*text=malloc(sizeof(char));
     int n=1;
     char c=fgetc(f);
