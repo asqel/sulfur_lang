@@ -3,10 +3,10 @@ import os
 CC      = "gcc"
 LD      = "ld"
 
-OUTPUT  = "sulfur"
+OUTPUT  = "build/sulfur"
 
-CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan_headers -D ONE_FILE -D __profanOS__"
-LDFLAGS = "-T link.ld"
+CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE -D __profanOS__"
+LDFLAGS = "-T build/profan/_link.ld"
 
 OBJDIR  = "build/profan_objects"
 
@@ -40,11 +40,11 @@ def main():
         )
 
     objs.append(compile_file("main.c", "."))
-    
-    entry = compile_file("entry.c", ".")
+
+    entry = compile_file("_entry.c", "build/profan")
     link_files(entry, objs)
 
-    execute_command("rm *.pe")
+    execute_command(f"rm {OUTPUT}.pe")
 
 if __name__ == "__main__":
     main()
