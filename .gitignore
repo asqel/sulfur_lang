@@ -10,6 +10,7 @@
 
 # build directories
 # build/profan_headers/
+build/profan_objects/
 build/libs/
 
 # main output file

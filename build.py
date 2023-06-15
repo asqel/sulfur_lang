@@ -5,10 +5,10 @@ LD      = "ld"
 
 OUTPUT  = "sulfur"
 
-CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./profan_libs -D ONE_FILE -D __profanOS__"
+CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan_headers -D ONE_FILE -D __profanOS__"
 LDFLAGS = "-T link.ld"
 
-OBJDIR  = "build"
+OBJDIR  = "build/profan_objects"
 
 def execute_command(cmd):
     print(cmd)
