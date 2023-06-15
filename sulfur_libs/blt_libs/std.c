@@ -160,49 +160,33 @@ Object std_bool(Object*obj,int n_arg){
         printf("ERROR %s only 1 argument needed in bool call",n_arg>1?"too many arguments":"too few arguments");
         exit(1);
     }
-    Object res;
-    res.type=Obj_boolean_t;
-    res.val.b=malloc(sizeof(short int));
-    *res.val.b=1;
     if(obj->type==Obj_ount_t){
-        if(*obj->val.i==0){
-            *res.val.b=0;
-        }
-        return res;
+        return new_boolean(*obj->val.i != 0);
     }
     if(obj->type==Obj_string_t){
-        if(!strlen(obj->val.s)){
-            *res.val.b = 0;
-        }
-        return res;
+        return new_boolean(strlen(obj->val.s));
     }
     if(obj->type==Obj_boolean_t){
-        *res.val.b=*obj->val.b;
-        return res;
+        return new_boolean(*obj->val.b);
     }
     return nil_Obj;
 }
 
 Object std_ount(Object*obj,int n_arg){
     if(obj->type==Obj_ount_t){
-        return *obj;
+        return new_ount(*obj->val.i);
     }
-    Object res;
-    res.type=Obj_ount_t;
-    res.val.i=malloc(sizeof(long long int));
 
     if(obj->type==Obj_floap_t){
-        *res.val.i=(int)*(obj->val.f);
-        return res;
+        return new_ount((long long int) *obj->val.f);
     }
 
     if(obj->type==Obj_boolean_t){
-        *res.val.i=(int)*(obj->val.b);
-        return res;
+        return new_ount((long long int) *obj->val.b);
+
     }
     if(obj->type==Obj_string_t){
-        *res.val.i=str_to_llint(obj->val.s);
-        return res;
+        return new_ount(str_to_llint(obj->val.s));
     }
     return nil_Obj;
 }

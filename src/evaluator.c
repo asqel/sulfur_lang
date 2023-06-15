@@ -14,27 +14,32 @@ extern memory MEMORY;
 Object eval_Ast(Ast*x){
     if(x->type==Ast_funccall_t){
         Object func = get_Obj_mem(MEMORY, x->root.fun->name);
+
         if(func.type == Obj_not_found_t){
-            printf("ERROR function '%s' not found",x->root.fun->name);
+            printf("ERROR function '%s' not found\n",x->root.fun->name);
             exit(1);
         }
+
         if(func.val.funcid->is_builtin){
             Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
-            for(int i=0;i<x->root.fun->nbr_arg;i++){
-                a[i]=eval_Ast(&x->root.fun->args[i]);
+
+            for(int i = 0; i < x->root.fun->nbr_arg; i++){
+                a[i] = eval_Ast(&x->root.fun->args[i]);
 
             }
-            Object res = (*func.val.funcid->func_p)(a,x->root.fun->nbr_arg);
-       
+            Object res = (*func.val.funcid->func_p)(a, x->root.fun->nbr_arg);
+            Obj_free_array(a, x->root.fun->nbr_arg);
             return res;
         }
         else{
             return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
         }
     }
+
     if(x->type == Ast_anonym_func_t){
         return execute(x->root.ano_func->code,"",x->root.ano_func->code_len);
     }
+
     if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type == Ast_varcall_t){
             Object val = get_Obj_mem(MEMORY, x->root.varcall);
@@ -164,7 +169,7 @@ Object eval_Ast(Ast*x){
 
             Object in_what = eval_Ast(left->left);
             if(in_what.type == obj_module_t){
-                if(x->left->type != Ast_dot_t){
+                if(x->left->type != Ast_dot_t){// check a.b = right
                     printf("ERROR in assign with module");
                     exit(1);
                 }
@@ -262,10 +267,7 @@ Object eval_Ast(Ast*x){
                             }
                             arg[0] = a;
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
-                            for(int i=0; i < 1 + x->right->root.fun->nbr_arg; i++){
-                                Obj_free_val(arg[i]);
-                            }
-                            free(arg);
+                            Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
                         }
                         else{
                             Object res = (*func.val.funcid->func_p)(&a,1);
@@ -293,10 +295,7 @@ Object eval_Ast(Ast*x){
                             }
                             arg[0] = a;
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
-                            for(int i=0; i < 1 + x->right->root.fun->nbr_arg; i++){
-                                Obj_free_val(arg[i]);
-                            }
-                            free(arg);
+                            Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
                         }
                         else{
                             Object res = (*func.val.funcid->func_p)(&a,1);
@@ -329,8 +328,9 @@ Object eval_Ast(Ast*x){
                     printf("ERROR list out of range on ':'");
                     exit(1);
                 }
-                Object res = Obj_cpy(a.val.li->elements[1 + *b.val.i]);
+                Object res = Obj_cpy(a.val.li->elements[1 + index]);
                 Obj_free_val(a);
+                Obj_free_val(b);
                 return res;
             }
             else{

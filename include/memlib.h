@@ -105,7 +105,7 @@ static Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
 static Object nil_Obj ={.type = Obj_nil_t, .val.b=&(char){0}};
 static Object not_found_Obj ={.type = Obj_not_found_t, .val.b=&(char){0}};
 
-void Obj_free_val(Object obj);
+int Obj_free_val(Object obj);
 
 void*get_obj_pointer(Object o);
 
@@ -148,5 +148,9 @@ Object Obj_cpy(Object o);
 int is_muttable(Object o);
 
 Object get_Obj_mem(memory MEMORY, char* name);
+
+
+void Obj_free_array(Object* objs, int len);
+
 
 #endif

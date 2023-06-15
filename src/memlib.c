@@ -43,7 +43,9 @@ int Obj_len(Object*obj){
     return x;
 }
 
-void Obj_free_val(Object obj){
+
+//return 1 if obj was a list else 0
+int Obj_free_val(Object obj){
     int len;
     switch (obj.type){
         case Obj_string_t:
@@ -62,13 +64,12 @@ void Obj_free_val(Object obj){
             free(obj.val.b);
             break;
         case Obj_nil_t:
-            free(obj.val.i);
             break;
         case Obj_end_t:
             free(obj.val.i);
             break;
         case Obj_list_t:
-            break;
+            return 1;
         case Obj_funcid_t:
             break;
         case Obj_typeid_t:
@@ -79,6 +80,7 @@ void Obj_free_val(Object obj){
         default:
             break;
     }
+    return 0;
 }
 
 void Objs_print(Object*obj,int len){
@@ -260,8 +262,7 @@ Object Obj_cpy(Object o){
             return res;
         case obj_module_t:
             res.type=obj_module_t;
-            res.val.module = malloc(sizeof(Module));
-            *res.val.module = *o.val.module;
+            res.val.module = o.val.module;
             return res;
         default:
             return nil_Obj;
@@ -290,4 +291,12 @@ Object get_Obj_mem(memory MEMORY, char* name){
         }
     }
     return not_found_Obj;
+}
+
+
+void Obj_free_array(Object* objs, int len){
+    for(int i = 0; i < len; i++){
+        Obj_free_val(objs[i]);
+    }
+    free(objs);
 }

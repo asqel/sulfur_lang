@@ -1,1 +1,3 @@
-println("Hello, world!");
+for(i from 10 to 0){
+    println("i :",i);
+}
