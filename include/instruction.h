@@ -79,6 +79,7 @@ typedef struct Instruction{
         char*section;
         char*goto_sec;
     }value;
+    int line;
 }Instruction;
 
 enum instruction_type{

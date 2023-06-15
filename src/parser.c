@@ -1003,6 +1003,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 ast_and_len val=tok_to_Ast(tok,p+2,n);
                 Ast*v=make_ast(val.value, val.len);
                 inst[*n_inst-1].value.vs->val=v;//set val
+                inst[*n_inst - 1].line = tok[p].line;
                 p=n+1;
                 continue;
             }

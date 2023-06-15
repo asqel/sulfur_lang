@@ -454,6 +454,15 @@ Object get_methods(Object* argv, int argc){
     return new_string("");
 }
 
+Object pop(Object* argv, int argc){
+    int idx = *argv[1].val.i;
+    for(int i= idx + 1; i < *argv[0].val.li->elements[0].val.i; i++){
+        argv[0].val.li->elements[i - 1] = argv[0].val.li->elements[i];
+    }
+    argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * *argv[0].val.li->elements[0].val.i);
+    *(argv[0].val.li->elements[0].val.i) --;
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
     add_object(&MEMORY,"_",nil_Obj);
@@ -488,6 +497,7 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"var_exists",&var_exists,"");
     add_func(&MEMORY,"chr",&std_chr,"");
     add_func(&MEMORY,"methods",&get_methods,"");
+    add_func(&MEMORY, "pop",&pop,"");
 
 
         
