@@ -1,3 +1,7 @@
-for(i from 10 to 0){
-    println("i :",i);
+ount a = 0;
+
+
+while(a < 1000){
+    println(a);
+    a = a + 1;
 }

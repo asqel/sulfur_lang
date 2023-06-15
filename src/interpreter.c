@@ -117,8 +117,9 @@ Object execute(Instruction* code, char* file_name, int len){
                 printf("ERROR cannot change value of var that doesn't exists");
                 exit(1);
             }
+            Object o = eval_Ast(code[p].value.vs->val);
             Obj_free_val(MEMORY.values[n]);
-            MEMORY.values[n] = eval_Ast(code[p].value.vs->val);
+            MEMORY.values[n] = o;
 
             p++;  
             continue;       
