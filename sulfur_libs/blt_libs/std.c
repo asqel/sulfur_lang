@@ -481,7 +481,7 @@ memory init_std(memory MEMORY,char*path){
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
     add_obj_str(&MEMORY,"__dir_path__",d);
     add_obj_str(&MEMORY,"__os__",__os__);
-    add_obj_str(&MEMORY,VERSION,__os__);
+    add_obj_str(&MEMORY,"__version__",VERSION);
     free(d);
     free(path0);
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
