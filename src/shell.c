@@ -10,6 +10,7 @@
 
 extern int show_parse;
 extern int show_mem;
+extern char* VERSION;
 
 
 extern void instructions_print(Instruction* code, int code_len);
@@ -58,7 +59,7 @@ int does_code_is_good(char *code) {
 }
 
 int interactive_shell() {
-    printf("Welcome to sulfur v%s interactive shell!\n", "01.xx");
+    printf("Welcome to sulfur v%s interactive shell!\n", VERSION);
     printf("Type 'q' or destroy your computer to exit\n");
 
     // init
