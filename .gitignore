@@ -1,11 +1,18 @@
+# vscode settings
 .vscode
 
+# build files
 *.exe
 *.dll
 *.so
 *.o
 *.bin
 
+# build directories
+build/libs/
+
+# main output file
 build/sulfur
 
+# python things
 a.py
