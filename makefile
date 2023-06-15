@@ -10,6 +10,9 @@ linux:
 	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -fno-builtin-printf
 	make stdlibs_linux
 
+profan:
+	python3 profan_build.py
+
 run:
 	build/sulfur
 

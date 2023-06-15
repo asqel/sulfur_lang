@@ -11,3 +11,6 @@ macOS:
     mach-o/dyld.h
 unix:
     unistd.h
+profanOS:
+    profan.h
+    syscall.h

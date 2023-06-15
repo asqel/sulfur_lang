@@ -15,6 +15,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef __profanOS__
+#include "syscall.h"
+#endif
+
 //check if a char is in a string
 //*x pointer to the string  |  v char to search
 int str_contains_char(char *x,char v){
@@ -25,8 +29,11 @@ int str_contains_char(char *x,char v){
         }
     }
     return 0;
-    
 }
+
+#ifdef __profanOS__
+char *profan_get_current_dir();
+#endif
 
 char*abs_path(){
     char *path=malloc(sizeof(char)*(PATH_MAX+1));
@@ -41,6 +48,8 @@ char*abs_path(){
             perror("_NSGetExecutablePath");
             exit(EXIT_FAILURE);
         }
+    #elif __profanOS__
+        strcpy(path, profan_get_current_dir());
     #else
         if (readlink("/proc/self/exe", path, PATH_MAX) == -1) {
             perror("readlink");
@@ -128,6 +137,19 @@ char*str_cat_new(char*s1,char*s2){
 }
 
 char*read_file(char*path){
+    #ifdef __profanOS__
+
+    if (!c_fs_does_path_exists(path)) {
+        printf("File %s does not exist\n", path);
+        return calloc(1, sizeof(char));
+    }
+
+    char *text = malloc(c_fs_get_file_size(path) + 1);
+    c_fs_read_file(path, text);
+    
+    return text;
+
+    #else       
     FILE*f=fopen(path,"r");
     char*text=malloc(sizeof(char));
     int n=1;
@@ -142,6 +164,7 @@ char*read_file(char*path){
     text[n-1]='\0';
     fclose(f);
     return text;
+    #endif
 }
 
 //return the max power of 10 that can fit into a number
@@ -168,7 +191,11 @@ long long int*str_to_llint_p(char*s){
     //    pow_10*=10;
     //}
     long long int*a=malloc(sizeof(long long int));
-    *a=atoll(s);
+    #ifndef __profanOS__
+        *a=atoll(s);
+    #else
+        *a=(long long int) atoi(s);
+    #endif
     return a;
 }
 
@@ -251,22 +278,27 @@ int is_letter(char v){
     return 0;
 }
 
-
-#ifdef _WIN32
-    #include <windows.h>
-#elif __APPLE__ || __linux__
-    #include <dlfcn.h>  
+#ifndef ONE_FILE
+    #ifdef _WIN32
+        #include <windows.h>
+    #elif __APPLE__ || __linux__
+        #include <dlfcn.h>
+    #endif
 #endif
+
 #include "../include/memlib.h"
 
 
 void *get_module_loader(char* filename) {
     #ifdef ONE_FILE
     void* mod = get_standard_module(filename);
-    if(mod){
+    if (mod) {
         return mod;
     }
+    return NULL;
     #endif
+
+    #ifndef ONE_FILE
     if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
         char * interpreter =abs_path();
         char* dir = uti_dirname(interpreter);
@@ -314,6 +346,7 @@ void *get_module_loader(char* filename) {
         }
     #endif
     return loader_function;
+    #endif
 }
 
 #ifdef ONE_FILE

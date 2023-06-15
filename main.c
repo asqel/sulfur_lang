@@ -7,6 +7,11 @@
 #include "include/func_interpreter.h"
 #include "sulfur_libs/blt_libs/std.h"
 
+#ifdef __profanOS__
+#include <profan.h>
+char *profan_get_current_dir();
+#endif
+
 /*
 args:
     [path]
@@ -46,12 +51,28 @@ int main(int argc,char **argv){
         printf("ERROR too many arguments");
         exit(1);
     }
+
+
+    #ifdef __profanOS__
+
+    if (!filepath){
+        filepath = "/user/test.su";
+    } else {
+        char *loc = profan_get_current_dir();
+        char *new_file = malloc(strlen(filepath) + strlen(loc) + 2);
+        assemble_path(loc, filepath, new_file);
+        filepath = new_file;
+    }
+
+    #else
+
     if (!filepath){
         char*d= uti_dirname(argv[0]);
         filepath=str_cat_new(d,"/main.su");
         free(d);
     }
-    
+
+    #endif
 
     char*text=read_file(filepath);
     

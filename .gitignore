@@ -1,3 +1,20 @@
+# vscode settings
 .vscode
+
+# build files
 *.exe
+*.dll
+*.so
+*.o
+*.bin
+
+# build directories
+# build/profan_headers/
+build/profan_objects/
+build/libs/
+
+# main output file
+build/sulfur
+
+# python things
 a.py
