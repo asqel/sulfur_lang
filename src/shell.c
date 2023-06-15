@@ -27,6 +27,8 @@ int does_code_is_good(char *code) {
         len--;
     }
 
+    if (len == 0) return 1;
+
     // check if all '(' are closed
     for (int i = 0; i < len; i++) {
         if (code[i] == '(') nub++;
@@ -52,7 +54,6 @@ int does_code_is_good(char *code) {
 
     // check if the line ends with ';', '}'
     if (code[len - 1] != ';' && code[len - 1] != '}') {
-        printf("last char is '%c'\n", code[len - 1]);
         return 0;
     }
     return 1;
