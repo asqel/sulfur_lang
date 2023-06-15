@@ -1,7 +1,7 @@
 ount a = 0;
 
 
-while(a < 1000){
+while(a < 10){
     println(a);
     a = a + 1;
 }

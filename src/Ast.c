@@ -53,6 +53,48 @@ int op_tok_to_op_ast(int v,int type){
     return -1;
 }
 
+char* get_op_as_str(int type){
+    switch (type){
+        case Ast_add_t:
+            return "+";
+        case Ast_mul_t:
+            return "*";
+        case Ast_sub_t:
+            return "-";
+        case Ast_div_t:
+            return "/";
+        case Ast_pow_t:
+            return "^";
+        case Ast_mod_t:
+            return "%";
+        case Ast_fldiv_t:
+            return "\\";
+        case Ast_or_t:
+            return "|";
+        case Ast_and_t:
+            return "&";
+        case Ast_not_t:
+            return "!";
+        case Ast_eq_t:
+            return "==";
+        case Ast_noteq_t:
+            return "!=";
+        case Ast_leq_t:
+            return "<=";
+        case Ast_geq_t:
+            return ">=";
+        case Ast_le_t:
+            return "<";
+        case Ast_ge_t:
+            return ">";
+        case Ast_assign_t:
+            return "=";
+        case Ast_dot_t:
+            return ".";
+            
+    }
+}
+
 int print_ast(Ast x){
     switch (x.type){
         case Ast_add_t:
@@ -77,7 +119,7 @@ int print_ast(Ast x){
                 printf("{");
                 print_ast(*x.left);
             }
-            printf("op[%d] ",x.type);
+            printf("op[%s] ",get_op_as_str(x.type));
             if(x.right!=NULL){
                 print_ast(*x.right);
                 printf("}");

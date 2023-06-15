@@ -15,43 +15,26 @@ char *profan_get_current_dir();
 /*
 args:
     [path]
-    [path] -m
     -m
+    [path] -m
+    -m -p
+    [path] -p -m
     nothing
+
+    path always has to be first argument
+    order of -p and -m doesnt matter
 */
+
+int show_mem=0;
+int show_parse = 0;
+char*filepath=NULL;
+
+extern void parse_main_args(int argc, char** argv);
+extern void instructions_print(Instruction* code, int code_len);
+
 int main(int argc,char **argv){
     back_slash_to_path(argv[0]);
-    int show_mem=0;
-    char*filepath=NULL;
-    
-    if (argc==2){
-        if(!strcmp(argv[1],"-m")){
-            show_mem=1;
-        }
-        else{
-            filepath=argv[1];
-            back_slash_to_path(filepath);
-        }
-    }
-    if (argc==3){
-        if(!strcmp(argv[1],"-m")){
-            show_mem=1;
-            filepath=argv[2];
-            back_slash_to_path(filepath);
-        }
-        else{
-            filepath=argv[1];
-            back_slash_to_path(filepath);
-            if(!strcmp(argv[2],"-m")){
-                show_mem=1;
-            }
-        }
-    }
-    if(argc>3){
-        printf("ERROR too many arguments");
-        exit(1);
-    }
-
+    parse_main_args(argc, argv);
 
     #ifdef __profanOS__
 
@@ -82,6 +65,10 @@ int main(int argc,char **argv){
     int*instruction_len=malloc(sizeof(int));
     *instruction_len=0;
     Instruction*code=parse(l,-1,-1,NULL,instruction_len);
+
+    if(show_parse){
+        instructions_print(code, *instruction_len);
+    }
 
     //parser copy values of tokens so
     //you can free tokens after parsing 
