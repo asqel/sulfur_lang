@@ -10,6 +10,12 @@ LDFLAGS = "-T build/profan/_link.ld"
 
 OBJDIR  = "build/profan_objects"
 
+ENDNOTE = """
+    The  file  "sulfur.bin"  was  successfully
+     generated from the output folder "build/"
+    please move it to the profanOS file system!
+"""
+
 def execute_command(cmd, display = True):
     if display: print(cmd)
     rcode = os.system(cmd)
@@ -45,6 +51,8 @@ def main():
     link_files(entry, objs)
 
     execute_command(f"rm {OUTPUT}.pe")
+
+    print(ENDNOTE)
 
 if __name__ == "__main__":
     main()
