@@ -49,11 +49,11 @@ void instruction_print(Instruction code){
        printf("ENDWHILE %d\n", code.value.endwhile);
     }
     if(code.type == inst_for_t){
-        printf("IF %d{start\n    ", code.value.fo->endfor);
+        printf("FOR %d{start\n    ", code.value.fo->endfor);
         print_ast(*code.value.fo->start);
         printf("\nend \n    ");
         print_ast(*code.value.fo->end);
-        printf("\nname : %s",*code.value.fo->var_name);
+        printf("\nname : %s",code.value.fo->var_name);
         printf("\n}");
     }
     if(code.type == inst_while_t){
