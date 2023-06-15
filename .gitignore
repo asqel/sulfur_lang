@@ -9,6 +9,7 @@
 *.bin
 
 # build directories
+# build/profan_headers/
 build/libs/
 
 # main output file
