@@ -3,12 +3,11 @@
 
 #include <type.h>
 
-#define EXIT_FAILURE 1
-#define RAND_MAX 0x7fffffff
-
 #define get_func_addr ((int (*)(int, int)) *(int *) 0x1ffffb)
 
-#define srand(seed) ((void) seed)
+#define EXIT_FAILURE 1
+#define RAND_MAX 0x7fffffff
+#define srand(seed) srand48(seed)
 
 /*
 int main();
