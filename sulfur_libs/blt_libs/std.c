@@ -447,6 +447,9 @@ Object std_asc_val(Object* argv, int argc){
     return new_ount((long long int)argv[0].val.s[0]);
 }
 
+Object std_rand(Object* argv, int argc){
+    return new_floap((long double)rand()/RAND_MAX);
+}
 
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
@@ -484,6 +487,11 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"asc_val",&std_asc_val,"");
     add_func(&MEMORY,"methods",&get_methods,"");
     add_func(&MEMORY, "pop",&pop,"");
+
+
+
+    srand(*current_timestamp(NULL,0).val.i);
+    add_func(&MEMORY, "rand",&std_rand,"");
 
 
         
