@@ -8,6 +8,8 @@
 
 #define get_func_addr ((int (*)(int, int)) *(int *) 0x1ffffb)
 
+#define srand(seed) ((void) seed)
+
 /*
 int main();
 void *calloc(uint32_t nmemb, uint32_t lsize);
