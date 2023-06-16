@@ -157,6 +157,20 @@ Object eval_Ast(Ast*x){
             Obj_free_val(b);
             return o;
         }
+        if(x->type==Ast_and_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=and(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        }
+        if(x->type==Ast_not_t){
+            Object b=eval_Ast(x->right);
+            Object o=not(b);
+            Obj_free_val(b);
+            return o;
+        }
         if(x->type == Ast_assign_t){
             Object right = eval_Ast(x->right);
             if(x->left->type == Ast_varcall_t){

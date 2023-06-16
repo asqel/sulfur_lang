@@ -287,6 +287,14 @@ Object eq(Object a,Object b){
     exit(1);
 }
 
+Object and(Object a,Object b){
+    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
+        return new_boolean(*a.val.b && *b.val.b);
+    }
+    printf("ERROR : operation(&&) between 2 types not supported\n");
+    exit(1);
+}
+
 Object negate(Object a){
     if(a.type==Obj_ount_t){
         Object x;
@@ -302,10 +310,22 @@ Object negate(Object a){
         *x.val.i=-*a.val.f;
         return x;
     }
+    if(a.type == Obj_boolean_t){
+        return new_boolean(0 == *a.val.b);
+    }
     printf("ERROR : operation(-(unary)) between 2 types not supported\n");
     exit(1);
 
 }
+Object not(Object a){
+    if(a.type == Obj_boolean_t){
+        return new_boolean(0 == *a.val.b);
+    }
+    printf("ERROR : operation(!(unary)) between 2 types not supported\n");
+    exit(1);
+
+}
+
 
 Object mod(Object a,Object b){
     if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
