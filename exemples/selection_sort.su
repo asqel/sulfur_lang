@@ -1,0 +1,27 @@
+list l = list();
+
+ount n = 1000;
+
+for(i from 0 to n){
+    append(l,ount(rand()*n));
+}
+
+ount len = l:(-1);
+ount min_idx = 0;
+
+ount t0 = time();
+
+for(i from 0 to len){
+    min_idx = i;
+    for(k from i + 1 to len){
+        if(l:k < l:min_idx){
+            min_idx = k;
+        }
+    }
+    l:min_idx = (l:i = l:min_idx);// inverse the values because (a = b) return the old value of a
+}
+
+ount t1 = time();
+
+println(l);
+println("time taken :",(t1 -t0)/1000);

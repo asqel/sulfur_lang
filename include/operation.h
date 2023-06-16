@@ -42,4 +42,6 @@ Object mod(Object a,Object b);
 
 Object greater_eq(Object a,Object b);
 
+Object less_eq(Object a,Object b);
+
 #endif

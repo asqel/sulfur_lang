@@ -300,3 +300,11 @@ void Obj_free_array(Object* objs, int len){
     }
     free(objs);
 }
+
+
+int get_list_len(Object l){
+    if(l.type == Obj_list_t){
+        return *l.val.li->elements[0].val.i;
+    }
+    return 0;
+}

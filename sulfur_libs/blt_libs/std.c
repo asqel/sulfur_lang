@@ -170,7 +170,10 @@ Object std_bool(Object*obj,int n_arg){
     if(obj->type==Obj_boolean_t){
         return new_boolean(*obj->val.b);
     }
-    return nil_Obj;
+    if(obj->type == Obj_list_t){
+        return new_boolean(*obj->val.li->elements[0].val.i);
+    }
+    return new_boolean(0);
 }
 
 Object std_ount(Object*obj,int n_arg){
@@ -436,12 +439,14 @@ Object get_methods(Object* argv, int argc){
 }
 
 Object pop(Object* argv, int argc){
-    int idx = *argv[1].val.i;
-    for(int i= idx + 1; i < *argv[0].val.li->elements[0].val.i; i++){
-        argv[0].val.li->elements[i - 1] = argv[0].val.li->elements[i];
+    if(*argv[0].val.li->elements[0].val.i == 0){
+        printf("ERROR cannot pop on empty list");
+        exit(1);
     }
-    argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * *argv[0].val.li->elements[0].val.i);
-    *(argv[0].val.li->elements[0].val.i) --;
+    int len = get_list_len(argv[0]);
+    Obj_free_val(argv[0].val.li->elements[len]);
+    (*argv[0].val.li->elements[0].val.i)--;
+    argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * len);
 }
 
 Object std_asc_val(Object* argv, int argc){

@@ -152,5 +152,6 @@ Object get_Obj_mem(memory MEMORY, char* name);
 
 void Obj_free_array(Object* objs, int len);
 
+int get_list_len(Object l);
 
 #endif

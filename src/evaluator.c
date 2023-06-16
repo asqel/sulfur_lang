@@ -88,6 +88,15 @@ Object eval_Ast(Ast*x){
             return o;
             
         }
+        if(x->type==Ast_leq_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=less_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
         if(x->type==Ast_sub_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=eval_Ast(x->left);
