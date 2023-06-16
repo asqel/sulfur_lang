@@ -7,7 +7,7 @@
 
 #define EXIT_FAILURE 1
 #define RAND_MAX 0x7fffffff
-#define srand(seed) srand48(seed)
+#define srand(seed) ((void) seed)
 
 /*
 int main();
