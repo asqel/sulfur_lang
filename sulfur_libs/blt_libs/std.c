@@ -372,9 +372,10 @@ Object set(Object *obj,int n_arg){
 }
 
 Object append(Object*obj,int n_arg){
-    int len =*(obj[0].val.li->elements[0].val.i);
-    obj[0].val.li->elements=realloc(obj->val.li->elements,(len+2)*sizeof(Object));
+    int len = *(obj[0].val.li->elements[0].val.i);
+    obj[0].val.li->elements = realloc(obj->val.li->elements,(len+2)*sizeof(Object));
     obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
+    (*obj[0].val.li->elements[0].val.i)++;
     return obj[0];
 }
 
