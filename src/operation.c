@@ -261,6 +261,13 @@ Object and(Object a,Object b){
     return and(std_bool(&a, 1), std_bool(&b, 1));
 }
 
+Object or(Object a,Object b){
+    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
+        return new_boolean(*a.val.b || *b.val.b);
+    }
+    return or(std_bool(&a, 1), std_bool(&b, 1));
+}
+
 Object negate(Object a){
     if(a.type==Obj_ount_t){
         return new_ount(- *a.val.i);

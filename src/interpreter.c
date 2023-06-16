@@ -5,6 +5,7 @@
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../sulfur_libs/blt_libs/string_su.h"
 #include "../sulfur_libs/blt_libs/funccall_su.h"
+#include "../sulfur_libs/blt_libs/list_su.h"
 
 #include "../include/operation.h"
 #include "../include/utilities.h"
@@ -83,6 +84,7 @@ void init_libs(char*path){
     add_func(&MEMORY, "import", &import_func, ""); 
     MEMORY = init_string(MEMORY, path);
     MEMORY = init_funccall(MEMORY, path);
+    MEMORY = init_list(MEMORY, path);
 }
 
 Object execute(Instruction* code, char* file_name, int len){

@@ -1,6 +1,8 @@
 #include "std.h"
 
 #include "string_su.h"
+#include "list_su.h"
+#include "funccall_su.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -374,13 +376,7 @@ Object set(Object *obj,int n_arg){
 
 }
 
-Object append(Object*obj,int n_arg){
-    int len = *(obj[0].val.li->elements[0].val.i);
-    obj[0].val.li->elements = realloc(obj->val.li->elements,(len+2)*sizeof(Object));
-    obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
-    (*obj[0].val.li->elements[0].val.i)++;
-    return obj[0];
-}
+
 
 Object type(Object* obj, int n_arg) {
     if (n_arg!=1){
@@ -435,6 +431,12 @@ Object get_methods(Object* argv, int argc){
     if(argv[0].type == Obj_string_t){
         return new_string(string_methods);
     }
+    if(argv[0].type == Obj_funcid_t){
+        return new_string(funccall_methods);
+    }
+    if(argv[0].type == Obj_list_t){
+        return new_string(list_methods);
+    }
     return new_string("");
 }
 
@@ -473,7 +475,6 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"sleep",&sleep,"");
     add_func(&MEMORY,"get",&get,"");
     add_func(&MEMORY,"set",&set,"");
-    add_func(&MEMORY,"append",&append,"");
     add_func(&MEMORY,"type",&type,"");
     add_func(&MEMORY,"set_precision",&set_precision,"");
     add_func(&MEMORY,"get_precision",&get_precision,"");
