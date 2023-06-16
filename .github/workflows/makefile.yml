@@ -24,7 +24,10 @@ jobs:
 
         make linux
         mv build/sulfur sulfur-linux-x86_64.elf
-        zip -r libs-linux-x86_64.zip build/libs
+
+        cd build/
+        zip -r ../libs-linux-x86_64.zip libs/
+        cd ..
 
         make profan
         mv build/sulfur.bin sulfur-profanOS-i386.bin
