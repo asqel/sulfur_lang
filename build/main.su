@@ -1,3 +1,19 @@
-for(i from 0 to 10){
-    println(i);
+li l = list();
+for(i from 0 to 1000){
+    append(l, rand()*1000);
 }
+ount len = l:(-1);
+
+ount min_idx = 0;
+
+ount t0= time();
+for(i from 0 to len){
+    min_idx = i;
+    for(k from i + 1 to len){
+        if( l:k < l:min_idx){
+            min_idx = k;
+        }
+    }
+    l:min_idx = (l:i = l:min_idx);
+}
+println((time() - t0)/1000);

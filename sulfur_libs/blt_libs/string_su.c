@@ -130,6 +130,33 @@ Object str_starts_with(Object* argv, int argc){
 //    return realloc(result, sizeof(char) * j);
 //}
 
+Object str_get(Object* argv, int argc){
+    Object index = argv[1];
+    int len=strlen(argv[0].val.s);
+    if (*index.val.i==-1){
+        Object res;
+        res.type=Obj_ount_t;
+        res.val.s=malloc(sizeof(long long int));
+        *res.val.s=len;
+        return res;
+    }
+    if (*index.val.i >= len || *index.val.i<-1){
+        printf("ERROR get out of range");
+        exit(1);
+    }
+    Object res;
+    res.type=Obj_string_t;
+    res.val.s=malloc(sizeof(char)*2);
+    res.val.s[0]=argv[0].val.s[*index.val.i];
+    res.val.s[1]='\0';
+    return res;
+}
+
+Object str_set(Object* argv, int argc){
+    argv[0].val.s[*argv[1].val.i] = argv[2].val.s[0];
+    return new_string(argv[0].val.s);
+}
+
 memory init_string(memory MEMORY,char*path){
     char* module_name = "string";
 
@@ -146,6 +173,8 @@ memory init_string(memory MEMORY,char*path){
     add_func_Module(mod,"length",&str_length,"");
     add_func_Module(mod,"len",&str_length,"");
     add_func_Module(mod,"starts_with",&str_starts_with,"");
+    add_func_Module(mod,"get",&str_get,"");
+    add_func_Module(mod,"set",&str_set,"");
     //add_func_Module(mod,"escape",&str_escape,""); // transforme \t to ttabs \n to line feed
     //CamelCaseTo_snake_case
     //snake_case_toCamelCase

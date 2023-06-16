@@ -140,6 +140,15 @@ Object eval_Ast(Ast*x){
             return o;
         
         }
+        if(x->type==Ast_geq_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=greater_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        
+        }
         if(x->type==Ast_mod_t){
             Object a=eval_Ast(x->left);
             Object b=eval_Ast(x->right);
@@ -226,7 +235,6 @@ Object eval_Ast(Ast*x){
         }
         if(x->type == Ast_dot_t){
             Object a = eval_Ast(x->left);
-
             if(a.type == obj_module_t){
                 Object func = get_Obj_mem(*a.val.module->MEM, x->root.fun->name);
                 if(func.type == Obj_not_found_t){
@@ -268,6 +276,8 @@ Object eval_Ast(Ast*x){
                             arg[0] = a;
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
+
+                            return res;
                         }
                         else{
                             Object res = (*func.val.funcid->func_p)(&a,1);
@@ -296,6 +306,7 @@ Object eval_Ast(Ast*x){
                             arg[0] = a;
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
+                            return res;
                         }
                         else{
                             Object res = (*func.val.funcid->func_p)(&a,1);

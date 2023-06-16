@@ -331,3 +331,37 @@ Object mod(Object a,Object b){
     printf("ERROR : operation(^) between 2 types not supported\n");
     exit(1);
 }
+
+
+
+Object greater_eq(Object a,Object b){
+    if(a.type==Obj_ount_t && b.type==Obj_ount_t){
+        Object x;
+        x.type=Obj_boolean_t;
+        x.val.b=malloc(sizeof(short int));
+        *x.val.b=*a.val.i>=*b.val.i;
+        return x;
+    }
+    if(a.type==Obj_floap_t && b.type==Obj_floap_t){
+        Object x;
+        x.type=Obj_boolean_t;
+        x.val.b=malloc(sizeof(short int));
+        *x.val.b=*a.val.f>=*b.val.f;
+        return x;
+    }
+    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
+        Object x;
+        x.type=Obj_boolean_t;
+        x.val.b=malloc(sizeof(short int));
+        *x.val.b=*a.val.b>=*b.val.b;
+        return x;
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_boolean(*a.val.f >= *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_boolean(*a.val.i >= *b.val.f );
+    }
+    printf("ERROR : operation(>) between 2 types not supported\n");
+    exit(1);
+}

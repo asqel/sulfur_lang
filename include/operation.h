@@ -38,4 +38,6 @@ Object negate(Object a);
 
 Object mod(Object a,Object b);
 
+Object greater_eq(Object a,Object b);
+
 #endif
