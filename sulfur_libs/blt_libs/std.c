@@ -193,7 +193,7 @@ Object std_ount(Object*obj,int n_arg){
 }
 Object std_floap(Object*obj,int n_arg){
     if(obj->type==Obj_floap_t){
-        return *obj;
+        return new_floap(*obj->val.f);
     }
     Object res;
     res.type=Obj_floap_t;
@@ -235,7 +235,7 @@ Object std_list(Object*obj,int n_arg){
     x.val.li->elements[0].val.i=malloc(sizeof(long long int));
     *x.val.li->elements[0].val.i=n_arg;
     for(int i=1;i<=n_arg;i++){
-        x.val.li->elements[i]=obj[i-1];
+        x.val.li->elements[i]=Obj_cpy(obj[i-1]);
     }
 
     return x;
@@ -373,28 +373,8 @@ Object set(Object *obj,int n_arg){
 
 Object append(Object*obj,int n_arg){
     int len =*(obj[0].val.li->elements[0].val.i);
-    obj[0].val.li->elements=realloc(obj->val.li->elements,(len+n_arg)*sizeof(Object));
-    for(int i=1;i<n_arg;i++){
-        if(obj[i].type==Obj_ount_t){
-            obj[0].val.li->elements[len+i].type=Obj_ount_t;
-            obj[0].val.li->elements[len+i].val.i=malloc(sizeof(long long int));
-            *(obj[0].val.li->elements[len+i].val.i)=*obj[i].val.i;
-        }
-        else if(obj[i].type==Obj_floap_t){
-            obj[0].val.li->elements[len+i].type=Obj_floap_t;
-            obj[0].val.li->elements[len+i].val.f=malloc(sizeof(long double));
-            *(obj[0].val.li->elements[len+i].val.f)=*obj[i].val.f;
-        }
-        else if(obj[i].type==Obj_boolean_t){
-            obj[0].val.li->elements[len+i].type=Obj_boolean_t;
-            obj[0].val.li->elements[len+i].val.b=malloc(sizeof(short int));
-            *(obj[0].val.li->elements[len+i].val.b)=*obj[i].val.b;
-        }
-        else{
-            obj[0].val.li->elements[len+i]=obj[i];
-        }
-    }
-    *(obj[0].val.li->elements[0].val.i)+=n_arg-1;
+    obj[0].val.li->elements=realloc(obj->val.li->elements,(len+2)*sizeof(Object));
+    obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
     return obj[0];
 }
 
@@ -463,6 +443,11 @@ Object pop(Object* argv, int argc){
     *(argv[0].val.li->elements[0].val.i) --;
 }
 
+Object std_asc_val(Object* argv, int argc){
+    return new_ount((long long int)argv[0].val.s[0]);
+}
+
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
     add_object(&MEMORY,"_",nil_Obj);
@@ -496,6 +481,7 @@ memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
     add_func(&MEMORY,"var_exists",&var_exists,"");
     add_func(&MEMORY,"chr",&std_chr,"");
+    add_func(&MEMORY,"asc_val",&std_asc_val,"");
     add_func(&MEMORY,"methods",&get_methods,"");
     add_func(&MEMORY, "pop",&pop,"");
 
