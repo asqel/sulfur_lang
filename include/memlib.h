@@ -154,4 +154,12 @@ void Obj_free_array(Object* objs, int len);
 
 int get_list_len(Object l);
 
+typedef struct ref_count{
+    int count;
+    void* address;
+    int type;
+}ref_count;
+
+//void add_count();
+
 #endif

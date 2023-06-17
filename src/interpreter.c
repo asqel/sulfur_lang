@@ -16,6 +16,9 @@
 
 memory MEMORY;
 
+ref_count* REFS;
+int REFS_len;
+
 Object import_func(Object*arg,int argc){
     if (argc>2){
         printf("ERROR in import maximum 2 arguments");
@@ -95,37 +98,6 @@ Object execute(Instruction* code, char* file_name, int len){
             continue;
         }
         
-        if(code[p].type == inst_varset_t){
-            for(int i=0; i < MEMORY.len; i++){
-                if(!strcmp(MEMORY.keys[i],code[p].value.vs->name)){
-                    printf("error redefinition of var please delete var befor");
-                    exit(1);
-                }
-            }
-            add_object(&MEMORY, code[p].value.vs->name, eval_Ast(code[p].value.vs->val));
-            p++;
-            continue;       
-
-        }
-        if(code[p].type == inst_new_varset_t){
-            int n = -1;
-            for(int i = 0; i < MEMORY.len; i++){
-                if(!strcmp(MEMORY.keys[i],code[p].value.vs->name)){
-                    n = i;
-                    break;
-                }
-            }
-            if(n == -1){
-                printf("ERROR cannot change value of var that doesn't exists");
-                exit(1);
-            }
-            Object o = eval_Ast(code[p].value.vs->val);
-            Obj_free_val(MEMORY.values[n]);
-            MEMORY.values[n] = o;
-
-            p++;  
-            continue;       
-        }
         if(code[p].type == inst_if_t){
             Object condition = eval_Ast(code[p].value.i->condition);
             Object old_cond = condition;

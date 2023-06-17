@@ -1,2 +1,1 @@
-string s = "salut";
-println(s:-1);
+a = 3;
