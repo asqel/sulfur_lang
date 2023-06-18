@@ -230,6 +230,7 @@ Object std_list(Object*obj,int n_arg){
         x.val.li->elements[0].type=Obj_ount_t;
         x.val.li->elements[0].val.i=malloc(sizeof(long long int));
         *x.val.li->elements[0].val.i=0;
+        add_count(x.val.li,Obj_list_t);
         return x;
     }
     Object x;
@@ -242,6 +243,7 @@ Object std_list(Object*obj,int n_arg){
     for(int i=1;i<=n_arg;i++){
         x.val.li->elements[i]=Obj_cpy(obj[i-1]);
     }
+    add_count(x.val.li,Obj_list_t);
 
     return x;
 }

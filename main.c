@@ -28,6 +28,9 @@ int show_mem=0;
 int show_parse = 0;
 char *filepath = NULL;
 
+extern ref_count* REFS;
+extern int REFS_len;
+
 extern void parse_main_args(int argc, char** argv);
 extern void instructions_print(Instruction* code, int code_len);
 extern int interactive_shell();
@@ -77,6 +80,7 @@ int execute_file() {
 
     free(MEMORY.keys);
     free(MEMORY.values);
+    free(REFS);
 
     return 0;
 }

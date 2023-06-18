@@ -160,6 +160,8 @@ typedef struct ref_count{
     int type;
 }ref_count;
 
-//void add_count();
+void add_count();
+
+void remove_count();
 
 #endif

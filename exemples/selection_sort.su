@@ -1,15 +1,14 @@
-list l = list();
+l = list();
 
-ount n = 1000;
+n = 1000;
 
 for(i from 0 to n){
-    append(l,ount(rand()*n));
+    l.append(ount(rand()*n));
 }
 
-ount len = l:(-1);
-ount min_idx = 0;
+len = l:-1;
 
-ount t0 = time();
+t0 = time();
 
 for(i from 0 to len){
     min_idx = i;
@@ -21,7 +20,7 @@ for(i from 0 to len){
     l:min_idx = (l:i = l:min_idx);// inverse the values because (a = b) return the old value of a
 }
 
-ount t1 = time();
+t1 = time();
 
 println(l);
 println("time taken :",(t1 -t0)/1000);

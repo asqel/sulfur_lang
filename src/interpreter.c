@@ -80,6 +80,9 @@ void init_memory(){
     MEMORY.values=malloc(sizeof(Object));
     MEMORY.keys=malloc(sizeof(char *));
     MEMORY.len=0;
+
+    REFS = malloc(sizeof(ref_count));
+    REFS_len = 1; // set to one to avoid realloc(x,0) when there is no lists
 }
 
 void init_libs(char*path){
@@ -374,8 +377,5 @@ Object execute(Instruction* code, char* file_name, int len){
 
         
     }
-    
-    
-    
     return nil_Obj;
 }

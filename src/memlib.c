@@ -46,7 +46,6 @@ int Obj_len(Object*obj){
 
 //return 1 if obj was a list else 0
 int Obj_free_val(Object obj){
-    int len;
     switch (obj.type){
         case Obj_string_t:
             free(obj.val.s);
@@ -69,8 +68,10 @@ int Obj_free_val(Object obj){
             free(obj.val.i);
             break;
         case Obj_list_t:
+            remove_count(obj.val.li, Obj_list_t);
             return 1;
         case Obj_funcid_t:
+            remove_count(obj.val.funcid, Obj_funcid_t);
             break;
         case Obj_typeid_t:
             free(obj.val.typeid);
@@ -145,7 +146,6 @@ Funcdef new_blt_func(Object (*func)(Object*,int),char*desc){
 }
 
 memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc){
-    //add print
     MEMORY->len+=1;
     MEMORY->keys=realloc_c(MEMORY->keys,sizeof(char*)*(MEMORY->len-1),sizeof(char*)*MEMORY->len);
 
@@ -254,11 +254,12 @@ Object Obj_cpy(Object o){
         case Obj_list_t:
             res.type = Obj_list_t;
             res.val.li = o.val.li;
+            add_count(o.val.li,Obj_list_t);
             return res;
         case Obj_funcid_t:
-            res.type=Obj_funcid_t;
-            res.val.funcid = malloc(sizeof(Funcdef));
-            *res.val.funcid = *o.val.funcid;
+            res.type = Obj_funcid_t;
+            res.val.funcid = o.val.funcid;
+            add_count(o.val.funcid, Obj_funcid_t);
             return res;
         case obj_module_t:
             res.type=obj_module_t;
@@ -307,4 +308,50 @@ int get_list_len(Object l){
         return *l.val.li->elements[0].val.i;
     }
     return 0;
+}
+
+
+
+extern ref_count* REFS;
+extern int REFS_len;
+
+void add_count(void* address, int type){
+    for(int i = 0; i < REFS_len; i++){
+        if(REFS[i].address == address){
+            REFS[i].count += 1;
+            return ;
+        }
+    }
+    REFS_len++;
+    REFS = realloc(REFS, sizeof(ref_count) * REFS_len);
+    REFS[REFS_len-1].address = address;
+    REFS[REFS_len-1].count = 1;
+    REFS[REFS_len-1].type = type;
+}
+
+void remove_count(void* address, int type){
+    for(int i = 0; i < REFS_len; i++){
+        if(REFS[i].address == address){
+            REFS[i].count -= 1;
+            if(REFS[i].count == 0){
+                if(type == Obj_list_t){
+                    Obj_free_array(((list*)address)->elements, *((list*)address)->elements[0].val.i);
+                    free(address);
+                }
+                if(type == Obj_funcid_t){
+                    Funcdef* f = ((Funcdef*)address);
+                    if(f->is_builtin){
+                        free(f->description);
+                        free(f);
+                    }
+                }
+                for(int k = i + 1; k < REFS_len; k++){
+                    REFS[k - 1] = REFS[k];
+                }
+                REFS_len--;
+                REFS = realloc(REFS, sizeof(ref_count)*REFS_len);
+            }
+            return ;
+        }
+    }
 }

@@ -282,22 +282,20 @@ Object eval_Ast(Ast*x){
         if(x->type == Ast_dot_t){
             Object a = eval_Ast(x->left);
             if(a.type == obj_module_t){
-                Object func = get_Obj_mem(*a.val.module->MEM, x->root.fun->name);
+                Object func = get_Obj_mem(*a.val.module->MEM, x->right->root.fun->name);
                 if(func.type == Obj_not_found_t){
                     printf("ERROR function '%s' not found in module '%s'", x->root.fun->name, *a.val.module->filename);
                     exit(1);
                 }
                 if(func.val.funcid->is_builtin){
-                    Object*arg = malloc(sizeof(Object) * x->root.fun->nbr_arg);
-                    for(int i=0;i<x->root.fun->nbr_arg;i++){
-                        arg[i]=eval_Ast(&x->root.fun->args[i]);
+                    Object*arg = malloc(sizeof(Object) * x->right->root.fun->nbr_arg);
+                    printf("%d \n",x->right->root.fun->nbr_arg);
+                    for(int i=0;i<x->right->root.fun->nbr_arg;i++){
+                        arg[i]=eval_Ast(&x->right->root.fun->args[i]);
 
                     }
-                    Object res = (*func.val.funcid->func_p)(arg, x->root.fun->nbr_arg);
-                    for(int i = 0; i < x->root.fun->nbr_arg; i++){
-                        Obj_free_val(arg[i]);
-                    }
-                    free(arg);
+                    Object res = (*func.val.funcid->func_p)(arg, x->right->root.fun->nbr_arg);
+                    Obj_free_array(arg, x->right->root.fun->nbr_arg);
                     Obj_free_val(a);
                     return res;
                 }
@@ -319,7 +317,7 @@ Object eval_Ast(Ast*x){
                                 arg[i + 1] = eval_Ast(&x->right->root.fun->args[i]);
 
                             }
-                            arg[0] = a;
+                            arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
 
@@ -349,7 +347,7 @@ Object eval_Ast(Ast*x){
                                 arg[i + 1] = eval_Ast(&x->right->root.fun->args[i]);
 
                             }
-                            arg[0] = a;
+                            arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
                             return res;
@@ -377,7 +375,7 @@ Object eval_Ast(Ast*x){
                                 arg[i + 1] = eval_Ast(&x->right->root.fun->args[i]);
 
                             }
-                            arg[0] = a;
+                            arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
                             return res;
