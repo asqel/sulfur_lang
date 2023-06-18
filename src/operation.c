@@ -242,12 +242,15 @@ Object eq(Object a,Object b){
         }
         int is_eq = 1;
         for(int i = 1; i <= len_a; i++){
-            if(*eq(a.val.li->elements[i], b.val.li->elements[i]).val.b == 0){
+            Object o = eq(a.val.li->elements[i], b.val.li->elements[i]);
+            if(*o.val.b == 0){
+                Obj_free_val(o);
                 return new_boolean(0);
             }
         }
         return new_boolean(1);
     }
+    return new_boolean(0);
     printf("ERROR : operation(==) between 2 types not supported\n");
     exit(1);
 }
@@ -258,14 +261,36 @@ Object and(Object a,Object b){
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
         return new_boolean(*a.val.b && *b.val.b);
     }
-    return and(std_bool(&a, 1), std_bool(&b, 1));
+    Object old_a = a;
+    Object old_b = b;
+
+    a = std_bool(&a, 1);
+    b = std_bool(&b, 1);
+    
+    Obj_free_val(old_a);
+    Obj_free_val(old_b);
+    Object o = or(a, b);
+    Obj_free_val(a);
+    Obj_free_val(b);
+    return o;
 }
 
 Object or(Object a,Object b){
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
         return new_boolean(*a.val.b || *b.val.b);
     }
-    return or(std_bool(&a, 1), std_bool(&b, 1));
+    Object old_a = a;
+    Object old_b = b;
+
+    a = std_bool(&a, 1);
+    b = std_bool(&b, 1);
+    
+    Obj_free_val(old_a);
+    Obj_free_val(old_b);
+    Object o = or(a, b);
+    Obj_free_val(a);
+    Obj_free_val(b);
+    return o;
 }
 
 Object negate(Object a){
@@ -285,7 +310,11 @@ Object not(Object a){
     if(a.type == Obj_boolean_t){
         return new_boolean(0 == *a.val.b);
     }
-    return not(std_bool(&a, 1));
+    Object o = std_bool(&a, 1);
+    Object old_o = o;
+    o = not(o);
+    Obj_free_val(old_o);
+    return o;
 }
 
 
@@ -362,5 +391,57 @@ Object less_eq(Object a,Object b){
         return new_boolean(*a.val.i <= *b.val.f );
     }
     printf("ERROR : operation(>) between 2 types not supported\n");
+    exit(1);
+}
+
+
+Object not_eq(Object a,Object b){
+    if(a.type == Obj_ount_t && b.type == Obj_ount_t){
+        return new_boolean(*a.val.i != *b.val.i);
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_floap_t){
+        return new_boolean(*a.val.f != *b.val.f);
+    }
+    if(a.type == Obj_boolean_t && b.type == Obj_boolean_t){
+        return new_boolean(*a.val.b != *b.val.b);
+    }
+    if(a.type == Obj_string_t && b.type == Obj_string_t){
+        return new_boolean(strcmp(a.val.s, b.val.s));
+    }
+    if(a.type == Obj_nil_t && b.type != Obj_nil_t){
+        return new_boolean(1);
+    }
+    if(a.type != Obj_nil_t && b.type == Obj_nil_t){
+        return new_boolean(1);
+    }
+    if(a.type == Obj_nil_t && b.type == Obj_nil_t){
+        return new_boolean(0);
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        return new_boolean(*a.val.f != *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        return new_boolean(*a.val.i != *b.val.f );
+    }
+    if(a.type == Obj_list_t && b.type == Obj_list_t){
+        if(a.val.li == b.val.li){
+            return new_boolean(0);
+        }
+        int len_a = get_list_len(a);
+        if(len_a != get_list_len(b)){
+            return new_boolean(1);
+        }
+        int is_eq = 1;
+        for(int i = 1; i <= len_a; i++){
+            Object o = eq(a.val.li->elements[i], b.val.li->elements[i]);
+            if(*o.val.b != 0){
+                Obj_free_val(o);
+                return new_boolean(1);
+            }
+        }
+        return new_boolean(0);
+    }
+    return new_boolean(0);
+    printf("ERROR : operation(!=) between 2 types not supported\n");
     exit(1);
 }

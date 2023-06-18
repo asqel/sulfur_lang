@@ -154,6 +154,15 @@ Object eval_Ast(Ast*x){
             return o;
             
         }
+        if(x->type==Ast_noteq_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o = not_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
         if(x->type==Ast_div_t){
             Object a=eval_Ast(x->left);
             Object b=eval_Ast(x->right);

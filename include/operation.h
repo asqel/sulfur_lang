@@ -33,6 +33,9 @@ Object less(Object a,Object b);
 Object greater(Object a,Object b);
 
 Object eq(Object a,Object b);
+
+Object not_eq(Object a,Object b);
+
 Object and(Object a,Object b);
 
 Object negate(Object a);
