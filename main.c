@@ -13,7 +13,7 @@ char *profan_get_current_dir();
 #endif
 
 
-char* VERSION = "2.0";
+char* VERSION = "2.1";
 /*
 args:
     *nothing*     - interactive shell
