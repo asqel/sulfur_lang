@@ -22,14 +22,14 @@ to compile and run on macos:
     list : a non typed list 
         ex : list(3,4,"salut",1b,list(0,-1));
     nil_type : any variable type can be set to a nil_type
-        ex : ount a=nil;
+        ex : a=nil;
 
 
 ## Syntax instructions
 ### Setting a var:
-    Type Name = Value ;
+    Name = Value ;
         ex:
-            floap pi=3.141592;
+            pi=3.141592;
 
 ### Changing value of var:
     Name = Value ;
@@ -38,8 +38,8 @@ to compile and run on macos:
 
     changing value of var return its old value
         ex:
-            ount a=0;
-            ount b=1;
+            a=0;
+            b=1;
             a = (b = a); //now a=1 and b=0 
 
 
@@ -122,7 +122,7 @@ to compile and run on macos:
     it uses the same scope as before entering it
 
     ex:
-        ount k=0;
+        k=0;
         print(3 + {
             for(i from 0 to 10){
                 k=k+i;
@@ -144,10 +144,6 @@ to compile and run on macos:
     def : used to declare a function
     from : used in for-loop to declare the starting value
     to : used in for-loop to declare the ending value
-    swap : used to swap to value
-        ex: ount a=3;
-            ount b=4;
-            swap a b;//now b=3 and a =4
     goto : used to go to a section
 
 ## operators:
@@ -196,11 +192,11 @@ to compile and run on macos:
 ## acces lists
     to acces an element of a list use ':'
     ex:
-        list l = list(3, 4, 7);
+        l = list(3, 4, 7);
         println(l:1); // "4"
     ex:
-        ount a = 0;
-        list l = list(0, 1, 0b);
+        a = 0;
+        l = list(0, 1, 0b);
         l:a = 7 // l = 7, 1, 0b
         l:(a + 1) = -30 //l = 7, -30, 0b
 

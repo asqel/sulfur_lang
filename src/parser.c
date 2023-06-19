@@ -189,13 +189,16 @@ int find_highest_op(Ast*e,int len){
             }
         }
     }
-    //search for =(assign)
+    //search for =(assign) +=(plus_assign) -=(minus_assign)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&&!e[i].isAst){
             if(e[i].root.op==OP_ASSIGN){
                 return i;
             }
             if(e[i].root.op==OP_PLUS_ASSIGN){
+                return i;
+            }
+            if(e[i].root.op==OP_MINUS_ASSIGN){
                 return i;
             }
         }
@@ -908,33 +911,6 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 continue;
             }
 
-        }
-        //swap
-        if(tok[p].type==keyword && *tok[p].value.t==swap_t){
-            int n=find_semicol(tok,p);
-            if(n==-1){
-                printf("ERROR missing ';' after swap on line %d",tok[p].line);
-            }
-            if(n!=p+3){
-                printf("ERROR on swap only 2 identifier expected after swap on line %d",tok[p].line);
-                exit(1);
-            }
-            if(tok[p+1].type!=identifier||tok[p+2].type!=identifier){
-                printf("ERROR on swap only 2 identifier expected after swap on line %d",tok[p].line);
-                exit(1);
-            }
-            (*n_inst)++;
-            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-            inst[*n_inst-1].type=inst_swap_t;
-            inst[*n_inst-1].value.sw=malloc(sizeof(Swap));
-            inst[*n_inst-1].value.sw->len=2;
-            inst[*n_inst-1].value.sw->ids=malloc(sizeof(char*));
-            inst[*n_inst-1].value.sw->ids[0]=malloc(sizeof(char)*(1+strlen(tok[p+1].value.s)));
-            inst[*n_inst-1].value.sw->ids[1]=malloc(sizeof(char)*(1+strlen(tok[p+2].value.s)));
-            strcpy(inst[*n_inst-1].value.sw->ids[0],tok[p+1].value.s);
-            strcpy(inst[*n_inst-1].value.sw->ids[1],tok[p+2].value.s);
-            p=n+1;
-            continue;
         }
         if(tok[p].type==keyword&&*tok[p].value.t==while_t){
             if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){

@@ -9,7 +9,7 @@ Object append_list(Object*obj,int n_arg){
     obj[0].val.li->elements = realloc(obj->val.li->elements,(len+2)*sizeof(Object));
     obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
     (*obj[0].val.li->elements[0].val.i)++;
-    return obj[0];
+    return Obj_cpy(obj[0]);
 }
 
 

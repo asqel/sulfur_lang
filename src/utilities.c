@@ -284,6 +284,8 @@ int is_letter(char v){
 #ifndef ONE_FILE
     #ifdef _WIN32
         #include <windows.h>
+    #elif __profanOS__
+        //nothing dont import dlfcn
     #elif __APPLE__ || __linux__
         #include <dlfcn.h>
     #endif
@@ -329,7 +331,8 @@ void *get_module_loader(char* filename) {
             }
             free(filename);
         }
-        
+    #elif __profanOS__
+        //nothing        
     #elif __APPLE__ || __linux__
         void* handle = dlopen(filename, RTLD_LAZY);
         if (handle != NULL) {

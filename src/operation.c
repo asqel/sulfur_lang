@@ -269,7 +269,7 @@ Object and(Object a,Object b){
     
     Obj_free_val(old_a);
     Obj_free_val(old_b);
-    Object o = or(a, b);
+    Object o = and(a, b);
     Obj_free_val(a);
     Obj_free_val(b);
     return o;
@@ -444,4 +444,39 @@ Object not_eq(Object a,Object b){
     return new_boolean(0);
     printf("ERROR : operation(!=) between 2 types not supported\n");
     exit(1);
+}
+
+
+Object fl_div(Object a,Object b){
+    if(a.type == Obj_ount_t && b.type == Obj_ount_t){
+        if(*b.val.i == 0){
+            printf("ERROR floor division by zero (ount)\n");
+            exit(1);
+        }
+        return new_ount(*a.val.i / *b.val.i);
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_floap_t){
+        if(*b.val.f == 0){
+            printf("ERROR floor division by zero (floap)\n");
+            exit(1);
+        }
+        return new_ount((*a.val.f) / (*b.val.f));
+    }
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+        if(*b.val.i == 0){
+            printf("ERROR floor division by zero (ount)\n");
+            exit(1);
+        }
+        return new_ount(*a.val.f / *b.val.i);
+    }
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+        if(*b.val.f == 0){
+            printf("ERROR floor division by zero (floap)\n");
+            exit(1);
+        }
+        return new_ount(*a.val.i / *b.val.f );
+    }
+    printf("ERROR : operation(\\) between 2 types not supported\n");
+    exit(1);
+
 }
