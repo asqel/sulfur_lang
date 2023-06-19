@@ -57,3 +57,7 @@ char *profan_get_current_dir() {
 long long __moddi3(long long a, long long b) {
     return a % b;
 }
+
+long long __divdi3(long long a, long long b) {
+    return a / b;
+}
