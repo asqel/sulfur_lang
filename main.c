@@ -13,7 +13,7 @@ char *profan_get_current_dir();
 #endif
 
 
-char* VERSION = "1.1";
+char* VERSION = "2.2";
 /*
 args:
     *nothing*     - interactive shell
@@ -27,6 +27,9 @@ args:
 int show_mem=0;
 int show_parse = 0;
 char *filepath = NULL;
+
+extern ref_count* REFS;
+extern int REFS_len;
 
 extern void parse_main_args(int argc, char** argv);
 extern void instructions_print(Instruction* code, int code_len);
@@ -77,6 +80,7 @@ int execute_file() {
 
     free(MEMORY.keys);
     free(MEMORY.values);
+    free(REFS);
 
     return 0;
 }

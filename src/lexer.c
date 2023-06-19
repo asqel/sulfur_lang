@@ -91,6 +91,7 @@ Token*lexe(char*text){
                 toks[n_tok-1].value.i=str_to_llint_p(s);
                 toks[n_tok-1].type=ount;
                 p+=longeur;
+                free(s);
                 continue;
             }
             if(n>1){
@@ -121,6 +122,7 @@ Token*lexe(char*text){
             toks[n_tok-1].type=floap;
             toks[n_tok-1].line=line;
             p+=longeur;
+            free(s);
             continue;
         }
         if(p+1<len){//ops 2 char
@@ -219,6 +221,7 @@ Token*lexe(char*text){
             toks[n_tok-1].value.t=malloc(sizeof(short int));
             *toks[n_tok-1].value.t=kw_to_enum(m);
             p=e+1;
+            free(m);
             continue;
         }
         n_tok++;

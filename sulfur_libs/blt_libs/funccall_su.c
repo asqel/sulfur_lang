@@ -6,6 +6,8 @@
 
 Module funccall_module;
 
+char* funccall_methods ="";
+
 
 Object funccall_call(Object* argv, int argc){
     if(argv[0].val.funcid->is_builtin){

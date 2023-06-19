@@ -195,7 +195,11 @@ int find_highest_op(Ast*e,int len){
             if(e[i].root.op==OP_ASSIGN){
                 return i;
             }
+            if(e[i].root.op==OP_PLUS_ASSIGN){
+                return i;
+            }
         }
+        
     }
     return -1;
 
@@ -410,146 +414,6 @@ Ast*make_ast(Ast*e,int len){
 
 
     }
-    
-    //make list comprehension
-    p=0;
-    while(p < len){
-        if(e[p].type == Ast_syntax_t && e[p].root.sy == brack_L){
-            int op_brack = p;
-            int cl_brack = -1;
-
-            //search closing ']'
-            int count = 0;
-            for(int i = 1 + op_brack; i < len; i++){
-                if(e[i].type == Ast_syntax_t && e[i].root.sy == brack_L){
-                    count++;
-                }
-                else if(e[i].type == Ast_syntax_t && e[i].root.sy == brack_R && count > 0){
-                    count--;
-                }
-                else if(e[i].type == Ast_syntax_t && e[i].root.sy == brack_R && count == 0){
-                    cl_brack = i;
-                    break;
-                }
-            }
-            if(cl_brack == -1){
-                printf("ERROR missing closing ']' in expression");
-                exit(1);
-            }
-
-            //search from and to
-            int from = -1;
-            int to = -1;
-            int for_idx = -1;
-            for(int i = op_brack + 1; i < cl_brack; i++){
-                if(e[i].type == Ast_keyword_t && e[i].root.kw == from_t && from != -1){
-                    printf("ERROR several 'from' in list comprehension in expression");
-                    exit(1);
-                }
-                if(e[i].type == Ast_keyword_t && e[i].root.kw == from_t && from == -1){
-                    from = i;
-                    continue;
-                }
-                if(e[i].type == Ast_keyword_t && e[i].root.kw == to_t && to != -1){
-                    printf("ERROR several 'to' in list comprehension in expression");
-                    exit(1);
-                }
-                if(e[i].type == Ast_keyword_t && e[i].root.kw == to_t && to == -1){
-                    to = i;
-                    continue;
-                }
-                if(e[i].type == Ast_keyword_t && e[i].root.kw == for_t && for_idx != -1){
-                    printf("ERROR several 'for' in list comprehension in expression");
-                    exit(1);
-                }
-                if(e[i].type == Ast_keyword_t && e[i].root.kw == for_t && for_idx == -1){
-                    for_idx = i;
-                    continue;
-                }
-                if(e[i].type == Ast_syntax_t && e[i].root.sy == brack_L){
-                    int count = 0;
-                    //search coresponding bracket
-                    cl_brack = -1;
-                    for(int k = 1 + i; k < len; k++){
-                        if(e[k].type == Ast_syntax_t && e[k].root.sy == brack_L){
-                            count++;
-                        }
-                        else if(e[k].type == Ast_syntax_t && e[k].root.sy == brack_R && count > 0){
-                            count--;
-                        }
-                        else if(e[k].type == Ast_syntax_t && e[k].root.sy == brack_R && count == 0){
-                            cl_brack = k;
-                            break;
-                        }
-                    }
-                    if(cl_brack == -1){
-                        printf("ERROR missing closing ']' in list comprehension in expression");
-                        exit(1);
-                    }
-                    i = cl_brack;
-                    continue;
-                }
-
-            }
-            if(from == -1){
-                printf("ERROR missing 'from' in list comprehension in expression");
-                exit(1);
-            }
-            if(to == -1){
-                printf("ERROR missing 'to' in list comprehension in expression");
-                exit(1);
-            }
-            if(for_idx == -1){
-                printf("ERROR missing 'for' in list comprehension in expression");
-                exit(1);
-            }
-            if(for_idx + 2 != from){
-                printf("ERROR in list comprehension too many token between 'for' and 'from'");
-                exit(1);
-            }
-            if(e[for_idx + 1].type != Ast_varcall_t){
-                printf("ERROR in list comprehension expected only an identifier between 'for' and 'from'");
-                exit(1);
-            }
-            Ast* to_parse_expr = malloc(sizeof(Ast) * (for_idx - op_brack - 1));
-            for(int  i = op_brack + 1; i < for_idx; i++){
-                to_parse_expr[i - op_brack] = e[i];
-            }
-            Ast* to_parse_start = malloc(sizeof(Ast) * (to - from - 1));
-            for(int  i = from + 1; i < to; i++){
-                to_parse_expr[i - from] = e[i];
-            }
-            Ast* to_parse_end = malloc(sizeof(Ast) * (cl_brack - to - 1));
-            for(int  i = to + 1; i < cl_brack; i++){
-                to_parse_expr[i-to] = e[i];
-            }
-            char* name = e[for_idx + 1].root.varcall;
-
-            Ast li;
-            li.isAst = 1;
-            li.left = NULL;
-            li.right = NULL;
-            li.type = Ast_list_comprehension_t;
-            li.root.li = malloc(sizeof(list_comprehension));
-            li.root.li->expr = make_ast(to_parse_expr, for_idx - op_brack - 1);
-            li.root.li->start = make_ast(to_parse_start, to - from - 1);
-            li.root.li->end = make_ast(to_parse_end, cl_brack - to - 1);
-            li.root.li->varname = malloc(sizeof(char) * (1 + strlen(name)));
-            strcpy(li.root.li->varname, name);
-
-            for(int i=cl_brack; i<len; i++){
-                e[i - cl_brack + op_brack +1] = e[i];
-            }
-
-            len -= cl_brack - op_brack;
-            e[op_brack] = li;
-            e = realloc(e,sizeof(Ast) * len);
-            continue;
-        }
-        else{
-            p++;
-        }
-    }
 
     //make expr '(...)'
     p=0;
@@ -672,7 +536,7 @@ Ast*make_ast(Ast*e,int len){
             e=realloc(e,sizeof(Ast)*len);
             p++;
         }
-        else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS&&p-1>=0&&e[p-1].type==Ast_op_t){
+        else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS&&p-1>=0&&(e[p-1].type==Ast_op_t || (e[p-1].type == Ast_syntax_t && e[p-1].root.sy == colon))){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
                 printf("ERROR missing operand after '+'(unary) in expression\n");
                 exit(1);
@@ -691,7 +555,7 @@ Ast*make_ast(Ast*e,int len){
 
 
         }
-        else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS&&p-1>=0&&e[p-1].type==Ast_op_t){
+        else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS&&p-1>=0&&(e[p-1].type==Ast_op_t || (e[p-1].type == Ast_syntax_t && e[p-1].root.sy == colon))){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
                 printf("ERROR missing operand after '-'(unary) in expression\n");
                 exit(1);
@@ -937,77 +801,6 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         }
         old_n_inst = *n_inst;
 
-        //var set
-        if(tok[p].type==identifier){
-            if(p+2<len){
-                if(tok[p+1].type==identifier) {
-                    int n=find_semicol(tok,p);
-                    if(tok[p+2].type==op&&*tok[p+2].value.t==OP_ASSIGN&&n!=-1){
-                        if(n==p+3){
-                            printf("ERROR missing expression after '=' on line %d",tok[p+2].line);
-                            exit(-1);
-                        }
-                        (*n_inst)++;
-                        inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                        inst[*n_inst-1].type=inst_varset_t;
-
-                        inst[*n_inst-1].value.vs=malloc(sizeof(varset));
-                        inst[*n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p+1].value.s))+1);
-                        strcpy(inst[*n_inst-1].value.vs->name,tok[p+1].value.s);//set name
-           
-                        inst[*n_inst-1].value.vs->type=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
-                        strcpy(inst[*n_inst-1].value.vs->type,tok[p].value.s);//set type
-                       
-                        ast_and_len a=tok_to_Ast(tok,p+3,n);
-                        Ast*v=make_ast(a.value, a.len);
-                        inst[*n_inst-1].value.vs->val=v;//set val
-                        p=n+1;
-                        continue;
-
-                    }
-                    else{
-                        if (n==-1){
-                            printf("ERROR : missing semicollon ';' on line %d after Token ",tok[p+2].line);
-                            token_print(tok[p+2],"\n");
-                            exit(1);
-                        }
-                        if(tok[p+2].type!=op||*tok[p+2].value.t!=OP_ASSIGN){
-                            printf("ERROR : missing assignement '=' on line %d after token",tok[p+2].line);
-                            token_print(tok[p+2],"\n");
-                            exit(1);
-                        }
-                    }
-                }
-            }
-
-        }
-        //var new set
-        if(tok[p].type==identifier){
-            if(p+1<len&&tok[p+1].type==op&&*tok[p+1].value.t==OP_ASSIGN){
-                int n=find_semicol(tok,p+1);
-                if(n==-1){
-                    printf("ERROR missing ';' on line %d",tok[p+1].line);
-                    exit(-1);
-                }
-                if(n==p+2){
-                    printf("ERROR missing expression on line %d after '='",tok[p+1].line);
-                    exit(-1);
-                }
-                (*n_inst)++;
-                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                inst[*n_inst-1].type=inst_new_varset_t;
-
-                inst[*n_inst-1].value.vs=malloc(sizeof(varset));
-                inst[*n_inst-1].value.vs->name=malloc(sizeof(char)*(strlen(tok[p].value.s))+1);
-                strcpy(inst[*n_inst-1].value.vs->name,tok[p].value.s);//set name
-                ast_and_len val=tok_to_Ast(tok,p+2,n);
-                Ast*v=make_ast(val.value, val.len);
-                inst[*n_inst-1].value.vs->val=v;//set val
-                inst[*n_inst - 1].line = tok[p].line;
-                p=n+1;
-                continue;
-            }
-        }
         //for 
         if(tok[p].type==keyword&&*tok[p].value.t==for_t){
             if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){

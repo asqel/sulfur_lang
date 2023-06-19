@@ -1,6 +1,8 @@
 #include "std.h"
 
 #include "string_su.h"
+#include "list_su.h"
+#include "funccall_su.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -170,7 +172,10 @@ Object std_bool(Object*obj,int n_arg){
     if(obj->type==Obj_boolean_t){
         return new_boolean(*obj->val.b);
     }
-    return nil_Obj;
+    if(obj->type == Obj_list_t){
+        return new_boolean(*obj->val.li->elements[0].val.i);
+    }
+    return new_boolean(0);
 }
 
 Object std_ount(Object*obj,int n_arg){
@@ -225,6 +230,7 @@ Object std_list(Object*obj,int n_arg){
         x.val.li->elements[0].type=Obj_ount_t;
         x.val.li->elements[0].val.i=malloc(sizeof(long long int));
         *x.val.li->elements[0].val.i=0;
+        add_count(x.val.li,Obj_list_t);
         return x;
     }
     Object x;
@@ -237,6 +243,7 @@ Object std_list(Object*obj,int n_arg){
     for(int i=1;i<=n_arg;i++){
         x.val.li->elements[i]=Obj_cpy(obj[i-1]);
     }
+    add_count(x.val.li,Obj_list_t);
 
     return x;
 }
@@ -371,13 +378,7 @@ Object set(Object *obj,int n_arg){
 
 }
 
-Object append(Object*obj,int n_arg){
-    int len = *(obj[0].val.li->elements[0].val.i);
-    obj[0].val.li->elements = realloc(obj->val.li->elements,(len+2)*sizeof(Object));
-    obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
-    (*obj[0].val.li->elements[0].val.i)++;
-    return obj[0];
-}
+
 
 Object type(Object* obj, int n_arg) {
     if (n_arg!=1){
@@ -432,16 +433,24 @@ Object get_methods(Object* argv, int argc){
     if(argv[0].type == Obj_string_t){
         return new_string(string_methods);
     }
+    if(argv[0].type == Obj_funcid_t){
+        return new_string(funccall_methods);
+    }
+    if(argv[0].type == Obj_list_t){
+        return new_string(list_methods);
+    }
     return new_string("");
 }
 
 Object pop(Object* argv, int argc){
-    int idx = *argv[1].val.i;
-    for(int i= idx + 1; i < *argv[0].val.li->elements[0].val.i; i++){
-        argv[0].val.li->elements[i - 1] = argv[0].val.li->elements[i];
+    if(*argv[0].val.li->elements[0].val.i == 0){
+        printf("ERROR cannot pop on empty list");
+        exit(1);
     }
-    argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * *argv[0].val.li->elements[0].val.i);
-    *(argv[0].val.li->elements[0].val.i) --;
+    int len = get_list_len(argv[0]);
+    Obj_free_val(argv[0].val.li->elements[len]);
+    (*argv[0].val.li->elements[0].val.i)--;
+    argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * len);
 }
 
 Object std_asc_val(Object* argv, int argc){
@@ -468,7 +477,6 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"sleep",&sleep,"");
     add_func(&MEMORY,"get",&get,"");
     add_func(&MEMORY,"set",&set,"");
-    add_func(&MEMORY,"append",&append,"");
     add_func(&MEMORY,"type",&type,"");
     add_func(&MEMORY,"set_precision",&set_precision,"");
     add_func(&MEMORY,"get_precision",&get_precision,"");
