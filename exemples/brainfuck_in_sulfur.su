@@ -1,19 +1,16 @@
 
 
-str code = "-[--->+<]>--.[--->+<]>++++.---------.------.-[--->+<]>--.---.>++++++++++.";
+code = "-[--->+<]>--.[--->+<]>++++.---------.------.-[--->+<]>--.---.>++++++++++.";
 
-list cells_positive = list(0);//[0,inf]
-list cells_negative = list(0);//[-inf, -1]
+cells_positive = list(0);//[0,inf]
+cells_negative = list(0);//[-inf, -1]
 
-int cells_idx =0;
+cells_idx =0;
 
-int p = 0;// index of instruction
-int len = code.len();
-str char = "";// current instruction
+p = 0;// index of instruction
+len = code.len();
 
-ount opening_idx = -1;
-ount count = -1;
-ount value = 0;
+
 
 while(p < len){
     char = code.get(p);
@@ -48,13 +45,13 @@ while(p < len){
     elif(char == ">"){
         cells_idx = cells_idx + 1;
         if(cells_idx >= cells_positive:(-1)){
-            append(cells_positive,0);
+            cells_positive.append(0);
         }
     }
     elif(char == "<"){
         cells_idx = cells_idx - 1;
         if(-cells_idx - 1 >= cells_negative:(-1)){
-            append(cells_negative,0);
+            cells_negative.append(0);
         }
     }
     elif(char == "."){
@@ -79,10 +76,10 @@ while(p < len){
             for(i from p-1 to -1){
                 
                 if(code.get(i) == "]"){
-                    count = count + 1;
+                    count += 1;
                 }
                 if(code.get(i) == "[" & count > 0){
-                    count = count -1;
+                    count += -1;
                 }
                 elif(code.get(i) == "[" & count == 0){
                     opening_idx = i;
@@ -106,10 +103,10 @@ while(p < len){
             opening_idx = -1;
             for(i from p+1 to len){
                 if(code.get(i) == "["){
-                    count = count + 1;
+                    count += 1;
                 }
                 if(code.get(i) == "]" & count > 0){
-                    count = count -1;
+                    count += -1;
                 }
                 elif(code.get(i) == "]" & count == 0){
                     opening_idx = i;
@@ -119,6 +116,14 @@ while(p < len){
             p = opening_idx;
         }
 
+    }
+    elif(char == ","){
+        if(cells_idx >= 0){
+            cells_positive:cells_idx = asc_val(input());
+        }
+        elif(cells_idx < 0){
+            cells_positive:(-cells_idx-1) = asc_val(input());
+        }
     }
     p = p + 1;
 }

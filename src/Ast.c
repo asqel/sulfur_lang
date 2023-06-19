@@ -49,6 +49,7 @@ int op_tok_to_op_ast(int v,int type){
             case OP_GREATER: return Ast_ge_t;
             case OP_ASSIGN : return Ast_assign_t;
             case OP_PLUS_ASSIGN : return Ast_plus_assign_t;
+            case OP_MINUS_ASSIGN : return Ast_minus_assign_t;
         }
     }
     return -1;

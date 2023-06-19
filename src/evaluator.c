@@ -102,10 +102,32 @@ Object eval_Ast(Ast*x){
             return o;
             
         }
+        if(x->type == Ast_minus_assign_t){
+            Ast ast;
+            ast.type = Ast_assign_t;
+            ast.left = x->left;
+            ast.right = malloc(sizeof(Ast));
+            ast.right->type = Ast_sub_t;
+            ast.right->left = x->left;
+            ast.right->right = x->right;
+            Object o = eval_Ast(&ast);
+            free(ast.right);
+            return o;
+            
+        }
         if(x->type==Ast_leq_t){
             Object a=eval_Ast(x->left);
             Object b=eval_Ast(x->right);
             Object o=less_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
+        if(x->type==Ast_fldiv_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=fl_div(a,b);
             Obj_free_val(a);
             Obj_free_val(b);
             return o;
@@ -384,7 +406,7 @@ Object eval_Ast(Ast*x){
                                 arg[i + 1] = eval_Ast(&x->right->root.fun->args[i]);
 
                             }
-                            arg[0] = Obj_cpy(a);
+                            arg[0] = a;
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
                             return res;
