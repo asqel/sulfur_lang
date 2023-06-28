@@ -137,6 +137,8 @@ Object new_ount(long long int value);
 
 Object new_floap(long double value);
 
+Object new_complex(long double re, long double im);
+
 //the string will be copied *
 Object new_string(char * value);
 

@@ -194,7 +194,8 @@ Object std_ount(Object*obj,int n_arg){
     if(obj->type==Obj_string_t){
         return new_ount(str_to_llint(obj->val.s));
     }
-    return nil_Obj;
+    printf("ERROR on ount()");
+    exit(1);
 }
 Object std_floap(Object*obj,int n_arg){
     if(obj->type==Obj_floap_t){
@@ -217,7 +218,8 @@ Object std_floap(Object*obj,int n_arg){
         *res.val.f=atof(obj->val.s);
         return res;
     }
-    return nil_Obj;
+    printf("ERROR on floap()");
+    exit(1);
 
 }
 
@@ -375,9 +377,43 @@ Object set(Object *obj,int n_arg){
     }
     obj[0].val.li->elements[index] = Obj_cpy(obj[2]);
     return nil_Obj;
-
 }
 
+
+Object comp(Object* argv, int argc){
+    if(argc == 1){
+        if(argv[0].type == Obj_ount_t){
+            return new_complex(*argv[0].val.i,0);
+        }
+        if(argv[0].type == Obj_floap_t){
+            return new_complex(*argv[0].val.f,0);
+        }
+        if(argv[0].type == Obj_boolean_t){
+            return new_complex(*argv[0].val.b,0);
+        }
+    }
+    if(argc == 2){
+        for(int i = 0; i < argc; i ++){
+            if(!(argv[i].type == Obj_ount_t || argv[i].type == Obj_floap_t || argv[i].type == Obj_boolean_t)){
+                printf("comp only takes ount, floap or boolean when 2 args");
+                exit(1);
+            }
+        }
+        Object re = std_floap(&argv[0],1);
+        Object im = std_floap(&argv[1],1);
+        Object c = new_complex(*re.val.f, *im.val.f);
+        Obj_free_val(re);
+        Obj_free_val(im);
+        return im;
+    }
+    if(argc == 1){
+        if(argv[0].type == Obj_complex_t){
+            return Obj_cpy(argv[0]);
+        }
+    }
+    printf("ERROR on comp()");
+    exit(1);
+}
 
 
 Object type(Object* obj, int n_arg) {
@@ -398,7 +434,12 @@ Object type(Object* obj, int n_arg) {
             return new_string("boolean");
         case Obj_list_t:
             return new_string("list");
+        case Obj_complex_t:
+            return new_string("complex");
+        case Obj_nil_t:
+            return new_string("nil");
         default:
+            printf("%d ",obj->type);
             return new_string("unknow");
     }
 }

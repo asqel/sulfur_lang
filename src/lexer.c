@@ -66,6 +66,8 @@ Token*lexe(char*text){
             toks[n_tok-1].value.c=malloc(sizeof(long double)*n_tok);
             toks[n_tok-1].value.c[0]=0.0;
             toks[n_tok-1].value.c[1]=1.0;
+            p +=2;
+            continue;
 
 
         }
