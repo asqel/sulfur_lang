@@ -61,6 +61,8 @@ typedef struct stack{
     int len;
 }stack;
 
+
+
 typedef union Obj_val{
     struct Object*o;
     char*s;//string {char,...}
@@ -97,7 +99,8 @@ enum Obj_Type{
     Obj_typeid_t,
     Obj_class_t,
     obj_module_t,
-    Obj_class_def_t
+    Obj_class_def_t,
+    Obj_class_instance_t
 };
 
 

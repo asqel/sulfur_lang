@@ -975,6 +975,18 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             p+=2;
             continue;
         }
+        if(tok[p].type == keyword && *tok[p].value.t == proceed_t){
+            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+            inst[*n_inst-1].type = inst_proceed_t;
+            p+=1;
+            continue;
+        }
+        if(tok[p].type == keyword && *tok[p].value.t == stop_t){
+            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+            inst[*n_inst-1].type = inst_stop_t;
+            p+=1;
+            continue;
+        }
         if(tok[p].type==keyword && *tok[p].value.t==def_t){
             if(p+1<len && tok[p+1].type==identifier){
                 if(p+2<len && tok[p+2].type==syntax && *tok[p+2].value.t==par_L){
