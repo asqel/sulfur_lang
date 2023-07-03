@@ -244,8 +244,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_endfor_t){
             int for_p = code[p].value.endfor;
-            printf("ùùù\n");
-
+            
             Object start = eval_Ast(code[for_p].value.fo->start);
             Object old_start = start;
             start = std_ount(&start, 1);
