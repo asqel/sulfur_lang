@@ -265,11 +265,22 @@ Object Obj_cpy(Object o){
             res.type=obj_module_t;
             res.val.module = o.val.module;
             return res;
+        case Obj_complex_t:
+            return new_complex(o.val.c[0], o.val.c[1]);
         default:
             return nil_Obj;
     }
 }
 
+
+Object new_complex(long double re, long double im){
+    Object o;
+    o.type = Obj_complex_t;
+    o.val.c = malloc(sizeof(long double) * 2);
+    o.val.c[0] = re;
+    o.val.c[1] = im;
+    return o;
+}
 
 int is_muttable(Object o){
     switch (o.type){

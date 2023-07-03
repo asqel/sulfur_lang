@@ -93,8 +93,21 @@ void init_libs(char*path){
     MEMORY = init_list(MEMORY, path);
 }
 
+void add_loop_count(int index, int *loops_count, int **loops){
+    (*loops_count)++;
+    (*loops) = realloc(*loops, sizeof(int) * (*loops_count));
+    (*loops)[*loops_count - 1] = index;
+}
+
+void remove_loop_count(int *loops_count, int **loops){
+    (*loops_count)--;
+    (*loops) = realloc(*loops, sizeof(int) * (*loops_count));
+}
+
 Object execute(Instruction* code, char* file_name, int len){
     int p = 0;
+    int *loops = malloc(sizeof(int));
+    int loops_count = 0; 
     while(p < len){
         if(code[p].type == inst_pass_t){
             p++;
@@ -185,6 +198,7 @@ Object execute(Instruction* code, char* file_name, int len){
             continue;
         }
         if(code[p].type == inst_for_t){
+            add_loop_count(p, &loops_count, &loops);
             Object start = eval_Ast(code[p].value.fo->start);
             Object old_start = start;
             start = std_ount(&start, 1);
@@ -222,6 +236,7 @@ Object execute(Instruction* code, char* file_name, int len){
             if(*start.val.i == *end.val.i){
                 Obj_free_val(end);
                 p = code[p].value.fo->endfor + 1;
+                remove_loop_count(&loops_count, &loops);
                 continue;
             }
             Obj_free_val(end);
@@ -229,6 +244,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_endfor_t){
             int for_p = code[p].value.endfor;
+            printf("ùùù\n");
 
             Object start = eval_Ast(code[for_p].value.fo->start);
             Object old_start = start;
@@ -276,6 +292,7 @@ Object execute(Instruction* code, char* file_name, int len){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p++;
+                    remove_loop_count(&loops_count, &loops);
                     continue;
                 }
             }
@@ -319,6 +336,7 @@ Object execute(Instruction* code, char* file_name, int len){
             
         }
         if(code[p].type == inst_while_t){
+            add_loop_count(p, &loops_count, &loops);
             Object condition = eval_Ast(code[p].value.wh->condition);
             Object c = std_bool(&condition, 1);
             Obj_free_val(condition);
@@ -330,6 +348,7 @@ Object execute(Instruction* code, char* file_name, int len){
             else{
                 Obj_free_val(c);
                 p = code[p].value.wh->endwhile + 1;
+                remove_loop_count(&loops_count, &loops);
                 continue;
             }
         }
@@ -345,8 +364,41 @@ Object execute(Instruction* code, char* file_name, int len){
             }
             else{
                 Obj_free_val(c);
+                remove_loop_count(&loops_count, &loops);
                 p++;
             }
+        }
+        if(code[p].type == inst_proceed_t){
+            if(loops_count){
+                int index = loops[loops_count - 1];
+                printf("index %d\n",index);
+                if(code[index].type == inst_while_t){
+                    p = code[index].value.wh->endwhile;
+                }
+                else if(code[index].type == inst_for_t){
+                    p = code[index].value.fo->endfor;
+                    printf("%d\n",p);
+                }
+            }
+            else{
+                p = 0;
+            }
+            continue;
+        }
+        if(code[p].type == inst_stop_t){
+            if(loops_count){
+                int index = loops[loops_count - 1];
+                if(code[index].type == inst_while_t){
+                    p = code[index].value.wh->endwhile + 1;
+                }
+                else if(code[index].type == inst_for_t){
+                    p = code[index].value.fo->endfor + 1;
+                }
+            }
+            else{
+                p = len;
+            }
+            continue;
         }
         if(code[p].type==inst_funcdef_t){
             int n=-1;

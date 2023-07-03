@@ -3,8 +3,8 @@
 #include <string.h>
 #include "../include/token_class.h"
 
-char KEYWORDS[12][7]={"if","while","else","elif","for","class","return","def","from","to","goto"};
-int keyword_len=11;
+char KEYWORDS[13][8]={"if","while","else","elif","for","class","return","def","from","to","goto","proceed","stop"};
+int keyword_len=13;
 
 Token nil_token={-1,nil,{.i=&(long long int){0}}};
 Token end_token={-1,end,{.i=&(long long int){1}}};

@@ -261,14 +261,8 @@ Object and(Object a,Object b){
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
         return new_boolean(*a.val.b && *b.val.b);
     }
-    Object old_a = a;
-    Object old_b = b;
-
     a = std_bool(&a, 1);
     b = std_bool(&b, 1);
-    
-    Obj_free_val(old_a);
-    Obj_free_val(old_b);
     Object o = and(a, b);
     Obj_free_val(a);
     Obj_free_val(b);
@@ -279,14 +273,8 @@ Object or(Object a,Object b){
     if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
         return new_boolean(*a.val.b || *b.val.b);
     }
-    Object old_a = a;
-    Object old_b = b;
-
     a = std_bool(&a, 1);
     b = std_bool(&b, 1);
-    
-    Obj_free_val(old_a);
-    Obj_free_val(old_b);
     Object o = or(a, b);
     Obj_free_val(a);
     Obj_free_val(b);
@@ -311,9 +299,7 @@ Object not(Object a){
         return new_boolean(0 == *a.val.b);
     }
     Object o = std_bool(&a, 1);
-    Object old_o = o;
     o = not(o);
-    Obj_free_val(old_o);
     return o;
 }
 

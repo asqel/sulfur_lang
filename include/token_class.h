@@ -87,10 +87,12 @@ enum keyword{
     def_t,//function 
     from_t,
     to_t,
-    goto_t
+    goto_t,
+    proceed_t,
+    stop_t
 };
 
-extern char KEYWORDS[12][7];
+extern char KEYWORDS[13][8];
 extern int keyword_len;
 
 extern Token nil_token;

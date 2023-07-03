@@ -100,7 +100,9 @@ enum instruction_type{
     inst_section_t,
     inst_goto_t,
     inst_pass_t,
-    inst_funcdef_t
+    inst_funcdef_t,
+    inst_proceed_t,
+    inst_stop_t,
 };
 
 //to acces an element
