@@ -400,19 +400,21 @@ Object execute(Instruction* code, char* file_name, int len){
         if(code[p].type==inst_funcdef_t){
             int n=-1;
             for(int i=0;i<MEMORY.len;i++){
-                if(!strcmp(MEMORY.keys[i],code[p].value.fc->name)){
+                if(!strcmp(MEMORY.keys[i],code[p].value.fc->info.name)){
                     n=i;
                     break;
                 }
             }
             if(n==-1){
                 Object f;
-                f.type=Obj_funcid_t;
+                f.type = Obj_funcid_t;
                 f.val.funcid=malloc(sizeof(Funcdef));
-                f.val.funcid->code=code[p].value.fc->code;
-                f.val.funcid->code_len=code[p].value.fc->code_len;
+                f.val.funcid->code = code[p].value.fc->code;
+                f.val.funcid->code_len = code[p].value.fc->code_len;
                 f.val.funcid->is_builtin=0;
-                add_object(&MEMORY,code[p].value.fc->name,f);
+                f.val.funcid->arg_names = code[p].value.fc->args;
+                f.val.funcid->nbr_of_args = code[p].value.fc->args_len;
+                add_object(&MEMORY, code[p].value.fc->info.name, f);
                 p++;
                 continue;
             }

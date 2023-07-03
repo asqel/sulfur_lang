@@ -42,7 +42,6 @@ int execute_file() {
         printf("File not found: %s\n",filepath);
         return 1;
     }
-    
     Token *l = lexe(text);
     int len = token_len(l); 
 

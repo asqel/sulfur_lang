@@ -989,49 +989,59 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             p+=1;
             continue;
         }
-        if(tok[p].type==keyword && *tok[p].value.t==def_t){
-            if(p+1<len && tok[p+1].type==identifier){
-                if(p+2<len && tok[p+2].type==syntax && *tok[p+2].value.t==par_L){
-                    char*name=tok[p+1].value.s;
-                    int op_par=p+2;
-                    int cl_par=search_rpar(tok,op_par);
+        if(tok[p].type == keyword && *tok[p].value.t == def_t){
+            if(p + 1 < len && tok[p + 1].type == identifier){
+                if(p + 2 < len && tok[p + 2].type == syntax && *tok[p + 2].value.t == par_L){
+                    char* name = tok[p + 1].value.s;
+                    int op_par = p+2;
+                    int cl_par = search_rpar(tok,op_par);
                     if(cl_par == -1){
                         printf("ERROR missing closing ')' in function definition on line %d\n",tok[op_par].line);
                         exit(1);
                     }
-                    if(tok[cl_par+1].type == syntax && *tok[cl_par+1].value.t==r_brack_L){
+                    if(tok[cl_par+1].type == syntax && *tok[cl_par+1].value.t == r_brack_L){
 
                     }
                     else{
                         printf("ERROR missing '{' after ')' in function definition on line %d\n",tok[cl_par].line);
                         exit(1);
                     }
-                    int op_rbrack=cl_par+1;
-                    int cl_rbrack=search_rrbrack(tok,op_rbrack);
+                    int op_rbrack = cl_par+1;
+                    int cl_rbrack = search_rrbrack(tok,op_rbrack);
                     if(cl_rbrack == -1){
                         printf("missing closing '}' in function definition on linee %d\n",tok[op_rbrack].line);
                         exit(1);
                     }
-                    if(op_par+1==cl_par){
-                        Funcdef_code f;
-                        f.code=malloc(sizeof(Instruction));
-                        f.code_len = 0;
-                        f.code=parse(tok,op_rbrack+1,cl_rbrack,f.code,&f.code_len);
-                        f.is_builtin=0;
-
-                        f.name=malloc(sizeof(char)*(1+strlen(name)));
-                        strcpy(f.name,name);
-                        (*n_inst)++;
-                        inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                        inst[*n_inst-1].type=inst_funcdef_t; 
-                        inst[*n_inst-1].value.fc=malloc(sizeof(Funcdef) + 1); 
-                        *(inst[*n_inst-1].value.fc)=f;
-                        p=cl_rbrack+1;
-                        continue;
-
-                    }
-
+                    Funcdef_code func;
                     
+                    func.info.name = malloc(sizeof(char) * (1 + strlen(name)));
+                    strcpy(func.info.name, name);
+                    func.info.description = NULL;
+
+                    func.args_len = 0;
+                    func.args = malloc(sizeof(char*));
+                    for(int i = op_par + 1; i < cl_par; i++){
+                        if(tok[i].type != identifier){
+                            printf("ERROR in funcdef in args\n");
+                            exit(1);
+                        }
+                        func.args_len++;
+                        func.args = realloc(func.args, sizeof(char*) * func.args_len);
+                        func.args[func.args_len - 1] = malloc(sizeof(char) * (1 + strlen(tok[i].value.s)));
+                        strcpy(func.args[func.args_len - 1], tok[i].value.s);
+                    }
+                    func.is_builtin = 0;
+                    func.func_p = NULL;
+                    func.code = malloc(sizeof(Instruction));
+                    func.code = parse(tok, op_rbrack + 1, cl_rbrack, func.code, &func.code_len);
+
+                    (*n_inst)++;
+                    inst = realloc(inst,sizeof(Instruction)*(*n_inst));
+                    inst[*n_inst-1].type = inst_funcdef_t;
+                    inst[*n_inst-1].value.fc = malloc(sizeof(Funcdef_code));
+                    *inst[*n_inst-1].value.fc = func;
+                    p = cl_rbrack + 1;
+                    continue;
                 }
                 else{
                     printf("Expected '(' after identifier in function definition on line %d",tok[p+1].line);
@@ -1043,6 +1053,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
                 exit(1);
             }
         }
+        
         else{
             int n=find_semicol(tok,p);
             if(n==-1){

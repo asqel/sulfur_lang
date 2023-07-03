@@ -110,7 +110,7 @@ to compile and run on macos:
 
 
 ### function definition:
-    def func_name(type1 arg1 , type2 arg2,...): return_type1 | return_type2 :{
+    def func_name(arg1 arg2 arg3 ...){
         instructions
     }
     

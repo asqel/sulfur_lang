@@ -41,24 +41,27 @@ typedef struct While{
     int endwhile;
 }While;
 
-typedef struct Swap{
-    char**ids;
-    int len;
-}Swap;
+
+
+typedef struct Func_info{
+    char* description;//can be shown with help()
+    char* name;
+}Func_info;
+
 
 typedef struct Funcdef_code{
-    char**ret_type;// list of types that can be returned by the function
-    int nbr_ret_type;//len of ret_type
-    char**arg_types;
-    char**arg_names;
-    int nbr_of_args;
-    int code_len;
+    Func_info info;
+
+    char** args;
+    int args_len;
+
     char is_builtin;
-    struct Object (*func_p)(struct Object*,int);//pointer to the builtin function
-    struct Instruction*code;
-    char*description;//can be shown with help()
-    char*name;
+    struct Object (*func_p)(struct Object*, int);//pointer to the builtin function
+
+    struct Instruction* code;
+    int code_len;
 }Funcdef_code;
+
 
 typedef struct Instruction{
     short int type;
@@ -75,7 +78,6 @@ typedef struct Instruction{
         int endif;
         int endifelse;
         Elif*el;
-        Swap*sw;
         char*section;
         char*goto_sec;
     }value;

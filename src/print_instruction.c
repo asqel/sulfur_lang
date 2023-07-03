@@ -79,7 +79,7 @@ void instruction_print(Instruction code){
         printf("PASS");
     }
     if(code.type == inst_funcdef_t){
-        printf("FUNCDEF : %s {\n", code.value.fc->name);
+        printf("FUNCDEF : %s {\n", code.value.fc->info.name);
         instructions_print(code.value.fc->code, code.value.fc->code_len);
         printf("}");
     }

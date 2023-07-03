@@ -5,9 +5,11 @@
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../sulfur_libs/blt_libs/string_su.h"
 #include "../sulfur_libs/blt_libs/funccall_su.h"
+#include "../sulfur_libs/blt_libs/list_su.h"
+
 
 extern Object execute(Instruction*code,char*file_name,int len);
-extern Object func_execute(Instruction*code,char*file_name,int len, int create_stack);
+extern Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack);
 
 extern memory MEMORY;
 extern stack STACK;
@@ -15,6 +17,7 @@ extern stack STACK;
 Object func_eval_Ast(Ast*x){
     if(x->type==Ast_funccall_t){
         Object func = get_Obj_mem(STACK.MEM[STACK.len - 1], x->root.fun->name);
+        
         if(func.type == Obj_not_found_t){
             func = get_Obj_mem(MEMORY, x->root.fun->name);
             if(func.type == Obj_not_found_t){
@@ -29,15 +32,31 @@ Object func_eval_Ast(Ast*x){
 
             }
             Object res = (*func.val.funcid->func_p)(a,x->root.fun->nbr_arg);
-       
+            Obj_free_array(a, x->root.fun->nbr_arg);
             return res;
         }
         else{
-            return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
+            Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
+
+            for(int i = 0; i < x->root.fun->nbr_arg; i++){
+                a[i] = func_eval_Ast(&x->root.fun->args[i]);
+
+            }
+            Object res = func_execute(func.val.funcid, a, x->root.fun->nbr_arg, 1);
+            Obj_free_array(a, x->root.fun->nbr_arg);
+            return res;
         }
     }
     if(x->type == Ast_anonym_func_t){
-        return func_execute(x->root.ano_func->code,"",x->root.ano_func->code_len, 0);
+        Funcdef f;
+        f.arg_names = NULL;
+        f.nbr_of_args = 0;
+        f.code = x->root.ano_func->code;
+        f.code_len = x->root.ano_func->code_len;
+        f.description = "";
+        f.func_p = NULL;
+        f.is_builtin = 0;
+        return func_execute(&f, NULL, 0, 0);
     }
     if(x->left==NULL && x->right==NULL&& !x->isAst){
         if(x->type == Ast_varcall_t){
@@ -90,6 +109,59 @@ Object func_eval_Ast(Ast*x){
             return o;
             
         }
+        if(x->type==Ast_plus_assign_t){
+            Ast ast;
+            ast.type = Ast_assign_t;
+            ast.left = x->left;
+            ast.right = malloc(sizeof(Ast));
+            ast.right->type = Ast_add_t;
+            ast.right->left = x->left;
+            ast.right->right = x->right;
+            Object o = func_eval_Ast(&ast);
+            free(ast.right);
+            return o;
+            
+        }
+        if(x->type == Ast_minus_assign_t){
+            Ast ast;
+            ast.type = Ast_assign_t;
+            ast.left = x->left;
+            ast.right = malloc(sizeof(Ast));
+            ast.right->type = Ast_sub_t;
+            ast.right->left = x->left;
+            ast.right->right = x->right;
+            Object o = func_eval_Ast(&ast);
+            free(ast.right);
+            return o;
+            
+        }
+        if(x->type==Ast_leq_t){
+            Object a=func_eval_Ast(x->left);
+            Object b=func_eval_Ast(x->right);
+            Object o=less_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
+        if(x->type==Ast_fldiv_t){
+            Object a=func_eval_Ast(x->left);
+            Object b=func_eval_Ast(x->right);
+            Object o=fl_div(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
+        if(x->type==Ast_or_t){
+            Object a=func_eval_Ast(x->left);
+            Object b=func_eval_Ast(x->right);
+            Object o=or(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
         if(x->type==Ast_sub_t){
             if(x->left!=NULL && x->right!=NULL){
                 Object a=func_eval_Ast(x->left);
@@ -124,6 +196,15 @@ Object func_eval_Ast(Ast*x){
             return o;
             
         }
+        if(x->type==Ast_noteq_t){
+            Object a=func_eval_Ast(x->left);
+            Object b=func_eval_Ast(x->right);
+            Object o = not_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+            
+        }
         if(x->type==Ast_div_t){
             Object a=func_eval_Ast(x->left);
             Object b=func_eval_Ast(x->right);
@@ -142,11 +223,34 @@ Object func_eval_Ast(Ast*x){
             return o;
         
         }
+        if(x->type==Ast_geq_t){
+            Object a=func_eval_Ast(x->left);
+            Object b=func_eval_Ast(x->right);
+            Object o=greater_eq(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        
+        }
         if(x->type==Ast_mod_t){
             Object a=func_eval_Ast(x->left);
             Object b=func_eval_Ast(x->right);
             Object o=mod(a,b);
             Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        }
+        if(x->type==Ast_and_t){
+            Object a=func_eval_Ast(x->left);
+            Object b=func_eval_Ast(x->right);
+            Object o=and(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        }
+        if(x->type==Ast_not_t){
+            Object b=func_eval_Ast(x->right);
+            Object o=not(b);
             Obj_free_val(b);
             return o;
         }
@@ -249,15 +353,19 @@ Object func_eval_Ast(Ast*x){
 
                     }
                     Object res = (*func.val.funcid->func_p)(arg, x->root.fun->nbr_arg);
-                    for(int i = 0; i < x->root.fun->nbr_arg; i++){
-                        Obj_free_val(arg[i]);
-                    }
-                    free(arg);
+                    Obj_free_array(arg, x->right->root.fun->nbr_arg);
                     Obj_free_val(a);
                     return res;
                 }
                 else{
-                    return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
+                    Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
+                    for(int i = 0; i < x->root.fun->nbr_arg; i++){
+                        a[i] = func_eval_Ast(&x->root.fun->args[i]);
+
+                    }
+                    Object res = func_execute(func.val.funcid, a, x->root.fun->nbr_arg, 1);
+                    Obj_free_array(a, x->root.fun->nbr_arg);
+                    return res;
                 }
             }
             if(a.type == Obj_string_t){
@@ -274,12 +382,11 @@ Object func_eval_Ast(Ast*x){
                                 arg[i + 1] = func_eval_Ast(&x->right->root.fun->args[i]);
 
                             }
-                            arg[0] = a;
+                            arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
-                            for(int i=0; i < 1 + x->right->root.fun->nbr_arg; i++){
-                                Obj_free_val(arg[i]);
-                            }
-                            free(arg);
+                            Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
+
+                            return res;
                         }
                         else{
                             Object res = (*func.val.funcid->func_p)(&a,1);
@@ -305,12 +412,38 @@ Object func_eval_Ast(Ast*x){
                                 arg[i + 1] = func_eval_Ast(&x->right->root.fun->args[i]);
 
                             }
+                            arg[0] = Obj_cpy(a);
+                            Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
+                            Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
+                            return res;
+                        }
+                        else{
+                            Object res = (*func.val.funcid->func_p)(&a,1);
+                            Obj_free_val(a);
+                            return res;
+                        }
+                    }
+
+                }
+            }
+            if(a.type == Obj_list_t){
+                if (x->right->type == Ast_funccall_t){
+                    Object func = get_Obj_mem(*list_module.MEM, x->right->root.fun->name);
+                    if (func.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of list",x->right->root.fun->name);
+                        exit(1);
+                    }
+                    if(func.val.funcid->is_builtin){
+                        if(x->right->root.fun->nbr_arg){
+                            Object*arg = malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
+                            for(int i=0; i < x->right->root.fun->nbr_arg; i++){
+                                arg[i + 1] = func_eval_Ast(&x->right->root.fun->args[i]);
+
+                            }
                             arg[0] = a;
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
-                            for(int i=0; i < 1 + x->right->root.fun->nbr_arg; i++){
-                                Obj_free_val(arg[i]);
-                            }
-                            free(arg);
+                            Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
+                            return res;
                         }
                         else{
                             Object res = (*func.val.funcid->func_p)(&a,1);
@@ -345,6 +478,35 @@ Object func_eval_Ast(Ast*x){
                 }
                 Object res = Obj_cpy(a.val.li->elements[1 + *b.val.i]);
                 Obj_free_val(a);
+                Obj_free_val(b);
+                return res;
+            }
+            if(a.type == Obj_string_t){
+                Object b=func_eval_Ast(x->right);
+                Object old_b = b;
+                b = std_ount(&b, 1);
+
+                Obj_free_val(old_b);
+                if(b.type == Obj_nil_t){
+                    printf("ERROR ':' only take ount convetible");
+                    exit(1);
+                }
+                int index = *b.val.i;
+                int len = strlen(a.val.s);
+                if(!(-1 <= index && index < len)){
+                    printf("ERROR string out of range on ':'");
+                    exit(1);
+                }
+                Object res;
+                if(index != -1){
+                    char s[2] = {a.val.s[index],'\0'};
+                    res = new_string(s);
+                }
+                else{
+                    res = new_ount(len);
+                }
+                Obj_free_val(a);
+                Obj_free_val(b);
                 return res;
             }
             else{

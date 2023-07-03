@@ -33,7 +33,15 @@ Object eval_Ast(Ast*x){
             return res;
         }
         else{
-            return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
+            Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
+
+            for(int i = 0; i < x->root.fun->nbr_arg; i++){
+                a[i] = eval_Ast(&x->root.fun->args[i]);
+
+            }
+            Object res = func_execute(func.val.funcid, a, x->root.fun->nbr_arg, 1);
+            Obj_free_array(a, x->root.fun->nbr_arg);
+            return res;
         }
     }
 
@@ -312,6 +320,7 @@ Object eval_Ast(Ast*x){
         }
         if(x->type == Ast_dot_t){
             Object a = eval_Ast(x->left);
+            
             if(a.type == obj_module_t){
                 Object func = get_Obj_mem(*a.val.module->MEM, x->right->root.fun->name);
                 if(func.type == Obj_not_found_t){
@@ -320,7 +329,6 @@ Object eval_Ast(Ast*x){
                 }
                 if(func.val.funcid->is_builtin){
                     Object*arg = malloc(sizeof(Object) * x->right->root.fun->nbr_arg);
-                    printf("%d \n",x->right->root.fun->nbr_arg);
                     for(int i=0;i<x->right->root.fun->nbr_arg;i++){
                         arg[i]=eval_Ast(&x->right->root.fun->args[i]);
 
@@ -331,7 +339,14 @@ Object eval_Ast(Ast*x){
                     return res;
                 }
                 else{
-                    return func_execute(func.val.funcid->code,"",func.val.funcid->code_len, 1);
+                    Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
+                    for(int i = 0; i < x->root.fun->nbr_arg; i++){
+                        a[i] = eval_Ast(&x->root.fun->args[i]);
+
+                    }
+                    Object res = func_execute(func.val.funcid, a, x->root.fun->nbr_arg, 1);
+                    Obj_free_array(a, x->root.fun->nbr_arg);
+                    return res;
                 }
             }
             if(a.type == Obj_string_t){

@@ -194,8 +194,7 @@ Object std_ount(Object*obj,int n_arg){
     if(obj->type==Obj_string_t){
         return new_ount(str_to_llint(obj->val.s));
     }
-    printf("ERROR on ount()");
-    exit(1);
+    return nil_Obj;
 }
 Object std_floap(Object*obj,int n_arg){
     if(obj->type==Obj_floap_t){
@@ -218,8 +217,7 @@ Object std_floap(Object*obj,int n_arg){
         *res.val.f=atof(obj->val.s);
         return res;
     }
-    printf("ERROR on floap()");
-    exit(1);
+    return nil_Obj;
 
 }
 
