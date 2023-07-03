@@ -1,8 +1,6 @@
-a = 0;
 for(i from 0 to 10){
     if( i == 5){
-        proceed;
+        stop
     }
-    a+=1;
+    println(i);
 }
-println(a);

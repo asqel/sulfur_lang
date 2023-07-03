@@ -976,12 +976,14 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             continue;
         }
         if(tok[p].type == keyword && *tok[p].value.t == proceed_t){
+            (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type = inst_proceed_t;
             p+=1;
             continue;
         }
         if(tok[p].type == keyword && *tok[p].value.t == stop_t){
+            (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type = inst_stop_t;
             p+=1;

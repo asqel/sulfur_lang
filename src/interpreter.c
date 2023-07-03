@@ -244,7 +244,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_endfor_t){
             int for_p = code[p].value.endfor;
-            
+
             Object start = eval_Ast(code[for_p].value.fo->start);
             Object old_start = start;
             start = std_ount(&start, 1);
@@ -370,13 +370,11 @@ Object execute(Instruction* code, char* file_name, int len){
         if(code[p].type == inst_proceed_t){
             if(loops_count){
                 int index = loops[loops_count - 1];
-                printf("index %d\n",index);
                 if(code[index].type == inst_while_t){
                     p = code[index].value.wh->endwhile;
                 }
                 else if(code[index].type == inst_for_t){
                     p = code[index].value.fo->endfor;
-                    printf("%d\n",p);
                 }
             }
             else{
