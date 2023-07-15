@@ -34,11 +34,9 @@ if the function number of args=0 a NULL pointer is passed
 return type must be Object
 */
 typedef struct Funcdef{
-    char**ret_type;// list of types that can be returned by the function
-    int nbr_ret_type;//len of ret_type
-    char**arg_types;
-    char**arg_names;
+    char** arg_names;
     int nbr_of_args;
+    
     int code_len;
     char is_builtin;
     struct Object (*func_p)(struct Object*,int);//pointer to the builtin function
