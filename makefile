@@ -18,16 +18,16 @@ run:
 
 stdlibs_win:
 	gcc -shared sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.dll -lm -fno-builtin-printf
-	gcc -shared sulfur_libs/std_libs/graphic.c build/API/memlib.c -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
+	gcc -shared sulfur_libs/std_libs/graphic/win_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c build/API/memlib.c -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
 	gcc -shared sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.dll -lm -fno-builtin-printf
 	gcc -shared sulfur_libs/std_libs/poppy.c build/API/memlib.c -o build/libs/poppy.dll -lm -fno-builtin-printf 
 
 stdlibs_linux:
 	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.so -lm -fno-builtin-printf
-	gcc -shared -fPIC sulfur_libs/std_libs/graphic.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
+	gcc -shared -fPIC sulfur_libs/std_libs/graphic/linux_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
 	gcc -shared -fPIC sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.so -lm -fno-builtin-printf
 	gcc -shared -fPIC sulfur_libs/std_libs/poppy.c build/API/memlib.c -o build/libs/poppy.so -lm -fno-builtin-printf 
-	
+
 win_all:
 	make win
 	make run
@@ -40,7 +40,7 @@ linux_all:
 linux_one_file:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c -o build/sulfur -lm -fno-builtin-printf -D ONE_FILE
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic-o build/sulfur -lm -fno-builtin-printf -D ONE_FILE
 
 help:
 	@echo win: build the interpreter and the built-in libs for windows
@@ -62,4 +62,3 @@ help:
 	@echo help: show this message
 	@echo
 	@echo linux_one_file : build sulfur with the std_libs in one file
-	
