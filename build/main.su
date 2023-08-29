@@ -1,0 +1,3 @@
+import("math","mt");
+
+println(mt.cos(0));
