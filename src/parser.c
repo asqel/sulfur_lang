@@ -6,6 +6,8 @@
 #include "../include/Ast.h"
 #include "../include/utilities.h"
 #include "../include/make_if.h"
+#include "../include/make_for.h"
+#include "../include/make_return.h"
 
 //take a math expression and see if it ok
 //return nothing 
@@ -795,123 +797,19 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             printf("ERROR expected if instruction above on line %d",tok[p].line);
             exit(1);
         }
+
         int old_n_inst = *n_inst;
-        
-        //if maker
+
+        //make if
         inst = make_if(tok, start, end, inst, n_inst, &p, len);
+        //make for
+        inst = make_for(tok, start, end, inst, n_inst, &p, len);
+        //make return
+        inst = make_return(tok, start, end, inst, n_inst, &p, len);
         if(old_n_inst != *n_inst){
             continue;
         }
-        old_n_inst = *n_inst;
 
-        //for 
-        if(tok[p].type==keyword&&*tok[p].value.t==for_t){
-            if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
-                int n=search_rpar(tok,p+1);
-                if(n==-1){
-                    printf("ERROR missing closing ')' on line %d after for",tok[p+1].line);
-                    exit(-1);
-                }
-                if(n==p+2){
-                    printf("ERROR empty for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
-                    exit(-1);
-                }
-                if(p+2<len&&tok[p+2].type==identifier){
-                    int id_idx=p+2;
-                    if(p+3<len&&tok[p+3].type==keyword&&*tok[p+3].value.t==from_t){
-                        int n2=-1;
-                        for(int i=p+4;i<len;i++){
-                            if(tok[i].type==keyword&&*tok[i].value.t==to_t){
-                                n2=i;
-                                break;
-                            }
-                        }
-                        if(n2==-1){
-                            printf("ERROR missing 'to' in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
-                            exit(-1);
-                        }
-                        if(n+1<len&&tok[n+1].type==syntax&&*tok[n+1].value.t==r_brack_L){
-                            int k=search_rrbrack(tok,n+1);
-                            if(k==-1){
-                                printf("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[n+1].line);
-                                exit(-1);
-                            }
-                            ast_and_len val = tok_to_Ast(tok,p+4,n2);
-                            Ast*x=make_ast(val.value, val.len);
-                            val=tok_to_Ast(tok,n2+1,n);
-                            Ast*x2=make_ast(val.value, val.len);
-
-                            (*n_inst)++;
-                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                            inst[*n_inst-1].type=inst_for_t;
-                            inst[*n_inst-1].value.fo=malloc(sizeof(For));
-                            
-                            inst[*n_inst-1].value.fo->var_name=malloc(sizeof(char)*(1+strlen(tok[id_idx].value.s)));
-                            strcpy(inst[*n_inst-1].value.fo->var_name,tok[id_idx].value.s);
-                            
-                            inst[*n_inst-1].value.fo->start=x;
-                            inst[*n_inst-1].value.fo->end=x2;
-
-                            int for_idx=*n_inst-1;
-
-                            inst=parse(tok,n+2,k,inst,n_inst);
-
-                            (*n_inst)++;
-                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                            inst[*n_inst-1].type=inst_endfor_t;
-                            inst[*n_inst-1].value.endfor=for_idx;
-                            inst[for_idx].value.fo->endfor=*n_inst-1;
-                            p=k+1;
-                            continue;
-                        }
-                        else{
-                            printf("ERROR missing '{' after for-statement on line %d after for",tok[n].line);
-                            exit(-1);
-                        }
-                    }
-
-                }
-                else{
-                    printf("ERROR in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
-                    exit(-1);
-                }
-            }
-        }
-        //return
-        if(tok[p].type==keyword && *tok[p].value.t==return_t){
-            int n=find_semicol(tok,p);
-            if(n==-1){
-                printf("ERROR missing ';' on line %d after return",tok[p].line);
-                exit(1);
-            }
-            if(n==p+1){
-                //if its "return;" then it is considered to be "return nil;"
-                (*n_inst)++;
-                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                inst[*n_inst-1].type=inst_return_t;
-                inst[*n_inst-1].value.ret=malloc(sizeof(Ast));
-                inst[*n_inst-1].value.ret->left=NULL;
-                inst[*n_inst-1].value.ret->right=NULL;
-
-                inst[*n_inst-1].value.ret->type=Ast_object_t;
-
-                inst[*n_inst-1].value.ret->root.obj=malloc(sizeof(Object));
-                inst[*n_inst-1].value.ret->root.obj->type=Obj_nil_t;
-                p=n+1;
-                continue;
-            }
-            else{
-                ast_and_len val =tok_to_Ast(tok,p+1,n);
-                Ast*x=make_ast(val.value, val.len);
-                (*n_inst)++;
-                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                inst[*n_inst-1].type=inst_return_t;
-                inst[*n_inst-1].value.ret=x;
-                p=n+1;
-                continue;
-            }
-
-        }
         if(tok[p].type==keyword&&*tok[p].value.t==while_t){
             if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
                 int opening_par=p+1;
