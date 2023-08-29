@@ -19,9 +19,6 @@ jobs:
 
     - name: build files
       run: |
-        make linux_one_file
-        mv build/sulfur sulfur-onefile-linux-x86_64.elf
-
         make linux
         mv build/sulfur sulfur-linux-x86_64.elf
 
@@ -39,7 +36,6 @@ jobs:
         automatic_release_tag: latest
         repo_token: "${{ secrets.GIT_TOKEN }}"
         files: |
-          sulfur-onefile-linux-x86_64.elf
           sulfur-linux-x86_64.elf
           libs-linux-x86_64.zip
           sulfur-profanOS-i386.bin
