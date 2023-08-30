@@ -75,8 +75,13 @@ int execute_file() {
 
     for(int i = 0; i < MEMORY.len; i++){
         free(MEMORY.keys[i]);
-        MEMORY.values[i].type == Obj_boolean_t ? free(MEMORY.values[i].val.b) : 0;
+        Obj_free_val(MEMORY.values[i]);
     }
+    for(int i = 0; i < len; i++){
+        free_tok_val(l[i]);
+    }
+    instruction_free_array(code, instruction_len);
+    free(l);
 
     free(MEMORY.keys);
     free(MEMORY.values);

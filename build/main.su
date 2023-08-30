@@ -1,8 +1,4 @@
-max_val = 10;
-i=0;
-a::
-println(i);
-i += 1;
-if(i < max_val){
-	goto a
+for(i from 0 to 10000){
+	
 }
+

@@ -148,3 +148,7 @@ int print_ast(Ast x){
 
     }
 }
+
+void free_ast(Ast x){
+    
+}
