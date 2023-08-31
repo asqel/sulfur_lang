@@ -1,3 +1,4 @@
-import("math","mt");
+for(i from 0 to 10000){
+	
+}
 
-println(mt.cos(0));
