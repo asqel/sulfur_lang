@@ -17,8 +17,8 @@ Window window;
 
 Object init_graphic(Object *argv, int *argc)
 {
-    Display *display = XOpenDisplay(NULL);
-    if(NULL == display)
+    display = XOpenDisplay(NULL);
+    if (NULL == display)
         return new_ount(-1);
     screen = DefaultScreen(display);
     window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0,
