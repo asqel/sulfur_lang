@@ -106,4 +106,6 @@ int op_tok_to_op_ast(int v,int type);
 int Ast_len(Ast*x);
 
 int print_ast(Ast x);
+
+void free_ast(Ast x);
 #endif

@@ -6,6 +6,9 @@
 #include "../include/Ast.h"
 #include "../include/utilities.h"
 #include "../include/make_if.h"
+#include "../include/make_for.h"
+#include "../include/make_return.h"
+#include "../include/make_while.h"
 
 //take a math expression and see if it ok
 //return nothing 
@@ -795,186 +798,51 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             printf("ERROR expected if instruction above on line %d",tok[p].line);
             exit(1);
         }
+
         int old_n_inst = *n_inst;
-        
-        //if maker
+
+        //make if
         inst = make_if(tok, start, end, inst, n_inst, &p, len);
-        if(old_n_inst != *n_inst){
-            continue;
-        }
-        old_n_inst = *n_inst;
-
-        //for 
-        if(tok[p].type==keyword&&*tok[p].value.t==for_t){
-            if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
-                int n=search_rpar(tok,p+1);
-                if(n==-1){
-                    printf("ERROR missing closing ')' on line %d after for",tok[p+1].line);
-                    exit(-1);
-                }
-                if(n==p+2){
-                    printf("ERROR empty for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
-                    exit(-1);
-                }
-                if(p+2<len&&tok[p+2].type==identifier){
-                    int id_idx=p+2;
-                    if(p+3<len&&tok[p+3].type==keyword&&*tok[p+3].value.t==from_t){
-                        int n2=-1;
-                        for(int i=p+4;i<len;i++){
-                            if(tok[i].type==keyword&&*tok[i].value.t==to_t){
-                                n2=i;
-                                break;
-                            }
-                        }
-                        if(n2==-1){
-                            printf("ERROR missing 'to' in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
-                            exit(-1);
-                        }
-                        if(n+1<len&&tok[n+1].type==syntax&&*tok[n+1].value.t==r_brack_L){
-                            int k=search_rrbrack(tok,n+1);
-                            if(k==-1){
-                                printf("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[n+1].line);
-                                exit(-1);
-                            }
-                            ast_and_len val = tok_to_Ast(tok,p+4,n2);
-                            Ast*x=make_ast(val.value, val.len);
-                            val=tok_to_Ast(tok,n2+1,n);
-                            Ast*x2=make_ast(val.value, val.len);
-
-                            (*n_inst)++;
-                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                            inst[*n_inst-1].type=inst_for_t;
-                            inst[*n_inst-1].value.fo=malloc(sizeof(For));
-                            
-                            inst[*n_inst-1].value.fo->var_name=malloc(sizeof(char)*(1+strlen(tok[id_idx].value.s)));
-                            strcpy(inst[*n_inst-1].value.fo->var_name,tok[id_idx].value.s);
-                            
-                            inst[*n_inst-1].value.fo->start=x;
-                            inst[*n_inst-1].value.fo->end=x2;
-
-                            int for_idx=*n_inst-1;
-
-                            inst=parse(tok,n+2,k,inst,n_inst);
-
-                            (*n_inst)++;
-                            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                            inst[*n_inst-1].type=inst_endfor_t;
-                            inst[*n_inst-1].value.endfor=for_idx;
-                            inst[for_idx].value.fo->endfor=*n_inst-1;
-                            p=k+1;
-                            continue;
-                        }
-                        else{
-                            printf("ERROR missing '{' after for-statement on line %d after for",tok[n].line);
-                            exit(-1);
-                        }
-                    }
-
-                }
-                else{
-                    printf("ERROR in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){",tok[p+1].line);
-                    exit(-1);
-                }
-            }
-        }
-        //return
-        if(tok[p].type==keyword && *tok[p].value.t==return_t){
-            int n=find_semicol(tok,p);
-            if(n==-1){
-                printf("ERROR missing ';' on line %d after return",tok[p].line);
-                exit(1);
-            }
-            if(n==p+1){
-                //if its "return;" then it is considered to be "return nil;"
-                (*n_inst)++;
-                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                inst[*n_inst-1].type=inst_return_t;
-                inst[*n_inst-1].value.ret=malloc(sizeof(Ast));
-                inst[*n_inst-1].value.ret->left=NULL;
-                inst[*n_inst-1].value.ret->right=NULL;
-
-                inst[*n_inst-1].value.ret->type=Ast_object_t;
-
-                inst[*n_inst-1].value.ret->root.obj=malloc(sizeof(Object));
-                inst[*n_inst-1].value.ret->root.obj->type=Obj_nil_t;
-                p=n+1;
-                continue;
-            }
-            else{
-                ast_and_len val =tok_to_Ast(tok,p+1,n);
-                Ast*x=make_ast(val.value, val.len);
-                (*n_inst)++;
-                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                inst[*n_inst-1].type=inst_return_t;
-                inst[*n_inst-1].value.ret=x;
-                p=n+1;
-                continue;
-            }
-
-        }
-        if(tok[p].type==keyword&&*tok[p].value.t==while_t){
-            if(p+1<len&&tok[p+1].type==syntax&&*tok[p+1].value.t==par_L){
-                int opening_par=p+1;
-                int closing_par=search_rpar(tok,p+1);
-                if (closing_par==-1){
-                    printf("ERROR missing closing ')' on line %d after while",tok[p+1].line);
-                    exit(-1);
-                }
-                p=closing_par+1;
-                if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
-                    int opening_rbrack=p;
-                    int closing_rback=search_rrbrack(tok,p);
-                    if(closing_rback==-1){
-                        printf("ERROR missing closing '}' on line %d after while",tok[p+1].line);
-                        exit(-1);
-
-                    }
+        //make for
+        inst = make_for(tok, start, end, inst, n_inst, &p, len);
+        //make return
+        inst = make_return(tok, start, end, inst, n_inst, &p, len);
+        //make while
+        inst = make_while(tok, start, end, inst, n_inst, &p, len);
+        //make section
+        if(tok[p].type == identifier && p + 1 < len){
+            if(tok[p + 1].type == syntax && *tok[p + 1].value.t == colon && p + 2 < len){
+                if(tok[p + 2].type == syntax && *tok[p + 2].value.t == colon){
                     (*n_inst)++;
-                    inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                    inst[*n_inst-1].type=inst_while_t;
-                    inst[*n_inst-1].value.wh=malloc(sizeof(While));
-                    ast_and_len val = tok_to_Ast(tok,opening_par+1,closing_par);
-                    inst[*n_inst-1].value.i->condition=make_ast(val.value, val.len);
-                    int while_index=*n_inst-1;
-                    
-                    inst=parse(tok,opening_rbrack+1,closing_rback,inst,n_inst);
-
-                    (*n_inst)++;
-                    inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                    inst[*n_inst-1].type=inst_endwhile_t;
-                    inst[*n_inst-1].value.endwhile=while_index;
-                    inst[while_index].value.wh->endwhile=*n_inst-1;
-                    p=closing_rback+1;
-                    continue;
+                    inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+                    inst[*n_inst - 1].type = inst_section_t;
+                    inst[*n_inst - 1].value.section = malloc(sizeof(char) * (1 + strlen(tok[p].value.s)));
+                    strcpy(inst[*n_inst - 1].value.section, tok[p].value.s);
+                    p += 3;
                 }
             }
         }
-        if(tok[p].type==identifier && p+1<len){
-            if(tok[p+1].type==syntax && *tok[p+1].value.t==colon && p+2 < len){
-                if(tok[p+2].type==syntax && *tok[p+2].value.t==colon){
-                    (*n_inst)++;
-                    inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-                    inst[*n_inst-1].type=inst_section_t;
-                    inst[*n_inst-1].value.section=malloc(sizeof(char)*(1+strlen(tok[p].value.s)));
-                    strcpy(inst[*n_inst-1].value.section,tok[p].value.s);
-                    p+=3;
-                    continue;
-                }
-            }
-        }
-        if(tok[p].type==keyword&&*tok[p].value.t==goto_t){
-            if(!(p+1<len&&tok[p+1].type==identifier)){
+        //make goto
+        if(tok[p].type == keyword && *tok[p].value.t == goto_t){
+            if(!(p + 1 < len && tok[p + 1].type == identifier)){
                 printf("missing identifier after goto on line %d",tok[p].line);
                 exit(1);
             }
             (*n_inst)++;
-            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-            inst[*n_inst-1].type=inst_goto_t;
-            inst[*n_inst-1].value.goto_sec=malloc(sizeof(char)*(1+strlen(tok[p+1].value.s)));
-            strcpy(inst[*n_inst-1].value.section,tok[p+1].value.s);
-            p+=2;
+            inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+            inst[*n_inst - 1].type = inst_goto_t;
+            inst[*n_inst - 1].value.goto_sec = malloc(sizeof(char) * (1 + strlen(tok[p + 1].value.s)));
+            strcpy(inst[*n_inst - 1].value.section,tok[p + 1].value.s);
+            p += 2;
             continue;
         }
+        if(old_n_inst != *n_inst){
+            continue;
+        }
+
+        
+        
+        
         if(tok[p].type == keyword && *tok[p].value.t == proceed_t){
             (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
@@ -989,70 +857,70 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             p+=1;
             continue;
         }
-        if(tok[p].type == keyword && *tok[p].value.t == def_t){
-            if(p + 1 < len && tok[p + 1].type == identifier){
-                if(p + 2 < len && tok[p + 2].type == syntax && *tok[p + 2].value.t == par_L){
-                    char* name = tok[p + 1].value.s;
-                    int op_par = p+2;
-                    int cl_par = search_rpar(tok,op_par);
-                    if(cl_par == -1){
-                        printf("ERROR missing closing ')' in function definition on line %d\n",tok[op_par].line);
-                        exit(1);
-                    }
-                    if(tok[cl_par+1].type == syntax && *tok[cl_par+1].value.t == r_brack_L){
+        //if(tok[p].type == keyword && *tok[p].value.t == def_t){
+        //    if(p + 1 < len && tok[p + 1].type == identifier){
+        //        if(p + 2 < len && tok[p + 2].type == syntax && *tok[p + 2].value.t == par_L){
+        //            char* name = tok[p + 1].value.s;
+        //            int op_par = p+2;
+        //            int cl_par = search_rpar(tok,op_par);
+        //            if(cl_par == -1){
+        //                printf("ERROR missing closing ')' in function definition on line %d\n",tok[op_par].line);
+        //                exit(1);
+        //            }
+        //            if(tok[cl_par+1].type == syntax && *tok[cl_par+1].value.t == r_brack_L){
 
-                    }
-                    else{
-                        printf("ERROR missing '{' after ')' in function definition on line %d\n",tok[cl_par].line);
-                        exit(1);
-                    }
-                    int op_rbrack = cl_par+1;
-                    int cl_rbrack = search_rrbrack(tok,op_rbrack);
-                    if(cl_rbrack == -1){
-                        printf("missing closing '}' in function definition on linee %d\n",tok[op_rbrack].line);
-                        exit(1);
-                    }
-                    Funcdef_code func;
-                    
-                    func.info.name = malloc(sizeof(char) * (1 + strlen(name)));
-                    strcpy(func.info.name, name);
-                    func.info.description = NULL;
+        //            }
+        //            else{
+        //                printf("ERROR missing '{' after ')' in function definition on line %d\n",tok[cl_par].line);
+        //                exit(1);
+        //            }
+        //            int op_rbrack = cl_par+1;
+        //            int cl_rbrack = search_rrbrack(tok,op_rbrack);
+        //            if(cl_rbrack == -1){
+        //                printf("missing closing '}' in function definition on linee %d\n",tok[op_rbrack].line);
+        //                exit(1);
+        //            }
+        //            Funcdef_code func;
+        //            
+        //            func.info.name = malloc(sizeof(char) * (1 + strlen(name)));
+        //            strcpy(func.info.name, name);
+        //            func.info.description = NULL;
 
-                    func.args_len = 0;
-                    func.args = malloc(sizeof(char*));
-                    for(int i = op_par + 1; i < cl_par; i++){
-                        if(tok[i].type != identifier){
-                            printf("ERROR in funcdef in args\n");
-                            exit(1);
-                        }
-                        func.args_len++;
-                        func.args = realloc(func.args, sizeof(char*) * func.args_len);
-                        func.args[func.args_len - 1] = malloc(sizeof(char) * (1 + strlen(tok[i].value.s)));
-                        strcpy(func.args[func.args_len - 1], tok[i].value.s);
-                    }
-                    func.is_builtin = 0;
-                    func.func_p = NULL;
-                    func.code = malloc(sizeof(Instruction));
-                    func.code = parse(tok, op_rbrack + 1, cl_rbrack, func.code, &func.code_len);
+        //            func.args_len = 0;
+        //            func.args = malloc(sizeof(char*));
+        //            for(int i = op_par + 1; i < cl_par; i++){
+        //                if(tok[i].type != identifier){
+        //                    printf("ERROR in funcdef in args\n");
+        //                    exit(1);
+        //                }
+        //                func.args_len++;
+        //                func.args = realloc(func.args, sizeof(char*) * func.args_len);
+        //                func.args[func.args_len - 1] = malloc(sizeof(char) * (1 + strlen(tok[i].value.s)));
+        //                strcpy(func.args[func.args_len - 1], tok[i].value.s);
+        //            }
+        //            func.is_builtin = 0;
+        //            func.func_p = NULL;
+        //            func.code = malloc(sizeof(Instruction));
+        //            func.code = parse(tok, op_rbrack + 1, cl_rbrack, func.code, &func.code_len);
 
-                    (*n_inst)++;
-                    inst = realloc(inst,sizeof(Instruction)*(*n_inst));
-                    inst[*n_inst-1].type = inst_funcdef_t;
-                    inst[*n_inst-1].value.fc = malloc(sizeof(Funcdef_code));
-                    *inst[*n_inst-1].value.fc = func;
-                    p = cl_rbrack + 1;
-                    continue;
-                }
-                else{
-                    printf("Expected '(' after identifier in function definition on line %d",tok[p+1].line);
-                    exit(1);
-                }
-            }
-            else{
-                printf("Expected an identifier after def on line %d",tok[p].line);
-                exit(1);
-            }
-        }
+        //            (*n_inst)++;
+        //            inst = realloc(inst,sizeof(Instruction)*(*n_inst));
+        //            inst[*n_inst-1].type = inst_funcdef_t;
+        //            inst[*n_inst-1].value.fc = malloc(sizeof(Funcdef_code));
+        //            *inst[*n_inst-1].value.fc = func;
+        //            p = cl_rbrack + 1;
+        //            continue;
+        //        }
+        //        else{
+        //            printf("Expected '(' after identifier in function definition on line %d",tok[p+1].line);
+        //            exit(1);
+        //        }
+        //    }
+        //    else{
+        //        printf("Expected an identifier after def on line %d",tok[p].line);
+        //        exit(1);
+        //    }
+        //}
         
         else{
             int n=find_semicol(tok,p);

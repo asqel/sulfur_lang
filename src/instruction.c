@@ -14,3 +14,24 @@ int inst_to_str(Instruction*i){
        printf("Expr:[]");
     }
 }
+
+void instruction_free_array(Instruction *code, int len){
+    for(int i = 0; i < len; i++){
+        instruction_free(code[i]);
+    }
+    free(code);
+}
+
+void instruction_free(Instruction code){
+    switch (code.type){
+        case inst_varset_t:
+            free(code.value.vs->name);
+            free(code.value.vs->type);
+            free_ast(*code.value.vs->val);
+            free(code.value.vs->val);
+            //TODO other types and make free_ast function
+        default:
+            break;
+    }
+
+}

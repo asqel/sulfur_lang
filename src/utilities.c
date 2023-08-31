@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +16,6 @@
 #endif
 
 #ifdef __profanOS__
-#include "filesys.h"
 #include "syscall.h"
 #endif
 
@@ -136,20 +136,16 @@ char*str_cat_new(char*s1,char*s2){
     return s;
 }
 
-char *read_file(char *path) {
+char *read_file(char*path){
     #ifdef __profanOS__
-    sid_t file_id = fu_path_to_sid(ROOT_SID, path);
 
-    if (IS_NULL_SID(file_id) || !fu_is_file(file_id)) {
+    if (!c_fs_does_path_exists(path)) {
         return NULL;
     }
+
+    char *text = malloc(c_fs_get_file_size(path) + 1);
+    c_fs_read_file(path, text);
     
-    uint32_t size = fu_get_file_size(file_id);
-    char *text = malloc(size + 1);
-    text[size] = '\0';
-
-    fu_file_read(file_id, text, 0, size);
-
     return text;
 
     #else
@@ -369,11 +365,9 @@ void* get_standard_module(char* filename){
     if(!strcmp(filename, "math")){
         return &__load_math;
     }
-    #ifndef __profanOS__
     if(!strcmp(filename, "graphic")){
         return &__load_graphic;
     }
-    #endif
     if(!strcmp(filename, "math")){
         return &__load_poppy;
     }
