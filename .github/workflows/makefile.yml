@@ -2,7 +2,7 @@ name: build sulfur
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "build" ]
   workflow_dispatch:
 
 jobs:
