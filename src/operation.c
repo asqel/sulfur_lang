@@ -10,27 +10,25 @@ floap | floap
 boolean | boolean
 */
 Object add(Object a,Object b){
-    if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
+    if(a.type == Obj_ount_t&&b.type == Obj_ount_t)
         return new_ount(*a.val.i + *b.val.i);
-    }
-    if(a.type==Obj_string_t&&b.type==Obj_string_t){
+
+    if(a.type == Obj_string_t&&b.type == Obj_string_t)
         return new_string(str_cat_new(a.val.s, b.val.s));
-    }
-    if(a.type==Obj_floap_t && b.type==Obj_floap_t){
+
+    if(a.type == Obj_floap_t && b.type == Obj_floap_t)
         return new_floap(*a.val.f + *b.val.f);
-    }
-    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
+
+    if(a.type == Obj_boolean_t && b.type == Obj_boolean_t)
         return new_boolean(*a.val.b + *b.val.b);
 
-    }
-    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t)
         return new_floap(*a.val.f + *b.val.i);
-    }
-    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
-        return new_floap(*b.val.f + *a.val.i);
-    }
 
-    if(a.type==Obj_list_t && b.type==Obj_list_t){
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t)
+        return new_floap(*b.val.f + *a.val.i);
+
+    if(a.type == Obj_list_t && b.type == Obj_list_t){
         Object x;
         x.type=Obj_list_t;
         int len=*a.val.li->elements[0].val.i+*b.val.li->elements[0].val.i;
@@ -62,42 +60,42 @@ floap | floap
 boolean | boolean
 */
 Object sub(Object a,Object b){
-    if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
+    if(a.type==Obj_ount_t&&b.type==Obj_ount_t)
         return new_ount(*a.val.i - *b.val.i);
-    }
-    if(a.type==Obj_floap_t && b.type==Obj_floap_t){
+
+    if(a.type==Obj_floap_t && b.type==Obj_floap_t)
         return new_floap(*a.val.f - *b.val.f);
-    }
-    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
+
+    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t)
         return new_boolean(*a.val.b-*b.val.b);
-    }
-    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t)
         return new_floap(*a.val.f - *b.val.i);
-    }
-    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t)
         return new_floap(*a.val.i - *b.val.f );
-    }
+
     printf("ERROR : operation(-) between 2 types not supported %d %d\n",a.type,b.type);
     exit(1);
 }
 
 
 Object mul(Object a,Object b){
-    if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
+    if(a.type==Obj_ount_t&&b.type==Obj_ount_t)
         return new_ount(*a.val.i * (*b.val.i));
-    }
-    if(a.type==Obj_floap_t && b.type==Obj_floap_t){
+
+    if(a.type==Obj_floap_t && b.type==Obj_floap_t)
         return new_floap((*a.val.f) * (*b.val.f));
-    }
-    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t){
+
+    if(a.type==Obj_boolean_t && b.type==Obj_boolean_t)
         return new_boolean(*a.val.b * (*b.val.b));
-    }
-    if(a.type == Obj_floap_t && b.type == Obj_ount_t){
+
+    if(a.type == Obj_floap_t && b.type == Obj_ount_t)
         return new_floap(*a.val.f * (*b.val.i));
-    }
-    if(a.type == Obj_ount_t && b.type == Obj_floap_t){
+
+    if(a.type == Obj_ount_t && b.type == Obj_floap_t)
         return new_floap(*a.val.i * (*b.val.f));
-    }
+
     printf("ERROR : operation(*) between 2 types not supported\n");
     exit(1);
 }

@@ -500,6 +500,20 @@ Object std_rand(Object* argv, int argc){
     return new_floap((long double)rand()/RAND_MAX);
 }
 
+Object std_print_memory(Object* argv, int argc){
+    if (argc){
+        printf("ERROR print_memory doesn't take args\n");
+        exit(1);
+    }
+    printf("\nMEMORY:%d\n",MEMORY.len);
+    for(int i = 0; i < MEMORY.len; i++){
+        printf("    %s: ",MEMORY.keys[i]);
+        println_prompt(&MEMORY.values[i],1);
+    }
+    return nil_Obj;
+}
+
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
     add_object(&MEMORY,"_",nil_Obj);
@@ -540,6 +554,8 @@ memory init_std(memory MEMORY,char*path){
 
     srand(*current_timestamp(NULL,0).val.i);
     add_func(&MEMORY, "rand",&std_rand,"");
+
+    add_func(&MEMORY, "__print_memory__", &std_print_memory, "");
 
 
         
