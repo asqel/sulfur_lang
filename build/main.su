@@ -1,1 +1,1 @@
-__print_memory__();
+print("salut\n".escape());
