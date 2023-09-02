@@ -10,7 +10,7 @@ to compile and run on macos:
 
 ## built-in types
     ount : signed integer   
-        ex : 7
+        ex : 7 or 0x7 (for hex notation)
     floap : signed floating point number    
         ex : 3.14
     boolean : can store only 2 value 1b(True) or 0b(False)  
