@@ -72,7 +72,9 @@ enum Operators {
   OP_LESS_EQUAL,// <=
   OP_GREATER_EQUAL,// >=
   OP_LESS,// <
-  OP_GREATER// >
+  OP_GREATER,// >
+  OP_LSHIFT,// <<
+  OP_RSHIFT// >>
 };
 
 //Token value for keywords
@@ -100,7 +102,7 @@ extern Token end_token;
 
 extern char DIGITS[10];
 
-extern char OPS[20][3];
+extern char OPS[22][3];
 extern int ops_len;
 
 extern char SYNTAX[13][2];

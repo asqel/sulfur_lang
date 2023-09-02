@@ -538,11 +538,13 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"list",&std_list,"");
     add_func(&MEMORY,"time",&current_timestamp,"");
     add_func(&MEMORY,"sleep",&sleep,"");
+    /*depracated*/
     add_func(&MEMORY,"get",&get,"");
+    /*depracated*/
     add_func(&MEMORY,"set",&set,"");
     add_func(&MEMORY,"type",&type,"");
-    add_func(&MEMORY,"set_precision",&set_precision,"");
-    add_func(&MEMORY,"get_precision",&get_precision,"");
+    add_func(&MEMORY,"__set_precision__",&set_precision,"");
+    add_func(&MEMORY,"__get_precision__",&get_precision,"");
     char*path0=abs_path();
     back_slash_to_path(path0);
     char *d= uti_dirname(path0);

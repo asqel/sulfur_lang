@@ -160,6 +160,14 @@ int find_highest_op(Ast*e,int len){
             }
         }
     }
+    //search for >>(rshift) <<(lshift)
+    for(int i=0;i<len;i++){
+        if(e[i].type==Ast_op_t&&!e[i].isAst){
+            if(e[i].root.op==OP_RSHIFT||e[i].root.op==OP_LSHIFT){
+                return i;
+            }
+        }
+    }
     //search for <(less) >(greater) <=(less_eq) >=(greater_eq)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&&!e[i].isAst){

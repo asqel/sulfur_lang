@@ -164,6 +164,9 @@ to compile and run on macos:
     >= : greater than or equal
     == : equal 
     != : not equal
+    << : left shift bits
+    >> : right shift bits
+    :  : used to acces strings or lists ("abcd":3 == "d") if index = -1 the len will be returned
     
 
 ## importation:
@@ -200,23 +203,50 @@ to compile and run on macos:
         l:a = 7 // l = 7, 1, 0b
         l:(a + 1) = -30 //l = 7, -30, 0b
 
+## the interpreter:
+    available flags:
+        -m : show memory after execution
+        -l : show tokens after lexing
+        -p : show parser output
+
 ## built-in functions:
-    print(x,...) : print to stdout the value of each args separated with space
-    println(x,...) : call print with the same arguments and print a new line 
+    print(...) : print to stdout the value of each args separated with space
+    println(...) : call print with the same arguments and print a new line 
     input() : read input from stdin until there is a new line return the input as a string
     time() : return the unix time in miliseconds as an ount
-    import(File,As) : import the file File as As (if As == "" Objects from file will be in stored in memory)
+    import(File,As) : import the file File as `As` (if `As` == "" Objects from file will be stored in global memory)
     import(File) : import the file File as its name
-
-    sleep(x) : poses the execution for x miliseconds
-    bool(x) : return the boolean value of x
-    ount(x) : return the ount value of x  
-    list(x,...) : return a list composed of every argument passed if none the list is empty
+    sleep(x) : poses the execution for `x` miliseconds
+    bool(x) : return the boolean value of `x`
+    ount(x) : return the ount value of `x`  
+    floap(x) : returb the floap value of `x`
+    list(...) : return a list composed of every argument passed if none the list is empty
+    *depracated*
+        get(x, n) : return the `n`-th element of `x` (works on string and list)
+        set(x, n, v) : set the `n`-th element of `x` to `v` (works on list)
+    type(x) : return the type of `x` as a string
+    __set_precision(x)__ : the precision to `x` of floap when printing
+    __get_precision()__ : return the precision of floap when printing as an ount
+    var_exists(x) : check if the var `x` exists (x must be a string)
+    chr(...) : return a string composed of the values in arguments (i.e. chr(97, 98) == "ab")
+    asc_val(x) : return the ascii value of the first character in x as a ount
+    method(x) : returns the methods of x as a string
+    pop(x) : remove last element of x (x must be a list)
+    rand() : returns a random floap between 1 and 0
+    __print_memory__() : print the memory 
+    __set_flush__(x) : tell if the interpreter should fflush(stdout) when printing
 
 ## built-in vars:
     __path__ : the path of the executed .su file
+    __interpreter_path__ : the path of the interpreter
+    __dir_path__ : the directory path of the interpreter
+    __os__ : the name of the OS if it is known else it will be 'UNKNOWN'
+    __version__ : version of the interpreter
+    __base_precision__ : the base precision for printing floap
     nil : a constant used like null
+    _ : a var guaranted to exist and by default set to nil
+    __ : a var guaranted to exist and by default set to nil
+    ___ : a var guaranted to exist and by default set to nil
 
 
-## the interpreter:
-if you call it with the argument -m the memory will be shown at the end of execution
+
