@@ -71,7 +71,7 @@ Token*lexe(char*text){
 
 
         }
-        if(text[p] == '0' && p + 2 < len && text[p + 1]){
+        if(text[p] == '0' && p + 2 < len && text[p + 1] == 'x'){
             int start = p + 2;
             int end = -1;
             int i = start;
