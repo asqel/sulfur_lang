@@ -10,6 +10,8 @@ LDFLAGS = "-T build/profan/_link.ld"
 
 OBJDIR  = "build/profan_objects"
 
+SRC_DIRS = ["src", "sulfur_libs/blt_libs", "sulfur_libs/std_libs", "sulfur_libs/std_libs/graphic"]
+
 ENDNOTE = """
     The  file  "sulfur.bin"  was  successfully
      generated from the output folder "build/"
@@ -39,7 +41,7 @@ def main():
 
     objs = []
 
-    for dir in ["src", "sulfur_libs/blt_libs", "sulfur_libs/std_libs"]:
+    for dir in SRC_DIRS:
         objs.extend(
             compile_file(src, dir)
             for src in [e for e in os.listdir(dir) if e.endswith(".c")]
