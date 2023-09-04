@@ -86,6 +86,8 @@ enum Ast_types{
     Ast_op_t,
     Ast_syntax_t,
     Ast_keyword_t,
+    Ast_rshift_t,
+    Ast_lshift_t,
     Ast_assign_t,
     Ast_plus_assign_t,
     Ast_minus_assign_t,
@@ -106,4 +108,6 @@ int op_tok_to_op_ast(int v,int type);
 int Ast_len(Ast*x);
 
 int print_ast(Ast x);
+
+void free_ast(Ast x);
 #endif

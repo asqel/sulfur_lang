@@ -5,6 +5,7 @@
 
 extern int precision;
 extern int base_precision;
+extern int is_flushing;
 
 Object read_prompt(Object*o,int n_arg);
  

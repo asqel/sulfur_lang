@@ -236,6 +236,22 @@ Object eval_Ast(Ast*x){
             Obj_free_val(b);
             return o;
         }
+        if(x->type==Ast_rshift_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=rshift(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        }
+        if(x->type==Ast_lshift_t){
+            Object a=eval_Ast(x->left);
+            Object b=eval_Ast(x->right);
+            Object o=lshift(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        }
         if(x->type==Ast_not_t){
             Object b=eval_Ast(x->right);
             Object o=not(b);

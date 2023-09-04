@@ -1,6 +1,7 @@
 
 #include "../include/Ast.h"
 #include "../sulfur_libs/blt_libs/std.h"
+#include "../include/instruction.h"
 
 
 int Ast_has_r(Ast x){
@@ -50,6 +51,8 @@ int op_tok_to_op_ast(int v,int type){
             case OP_ASSIGN : return Ast_assign_t;
             case OP_PLUS_ASSIGN : return Ast_plus_assign_t;
             case OP_MINUS_ASSIGN : return Ast_minus_assign_t;
+            case OP_LSHIFT : return Ast_lshift_t;
+            case OP_RSHIFT : return Ast_rshift_t;
         }
     }
     return -1;
@@ -93,7 +96,10 @@ char* get_op_as_str(int type){
             return "=";
         case Ast_dot_t:
             return ".";
-            
+        case Ast_lshift_t:
+            return "<<";
+        case Ast_rshift_t:
+            return ">>";
     }
 }
 
@@ -116,6 +122,8 @@ int print_ast(Ast x){
         case Ast_le_t:
         case Ast_ge_t:
         case Ast_assign_t:
+        case Ast_lshift_t:
+        case Ast_rshift_t:
         case Ast_dot_t:
             if(x.left!=NULL){
                 printf("{");
@@ -146,5 +154,34 @@ int print_ast(Ast x){
             printf(")] ");
             return 0;
 
+    }
+}
+
+void free_ast(Ast x){
+    if(x.type == Ast_object_t){
+        Obj_free_val(*x.root.obj);
+        free(x.root.obj);
+    }
+    else if(x.type == Ast_varcall_t)
+        free(x.root.varcall);
+    else if(x.type == Ast_funccall_t){
+        free(x.root.fun->name);
+        for(int i = 0; i < x.root.fun->nbr_arg; i++){
+            free_ast(x.root.fun->args[i]);
+        }
+        free(x.root.fun->args);
+        free(x.root.fun);
+    }
+    else if(x.type == Ast_anonym_func_t){
+        instruction_free_array(x.root.ano_func->code, x.root.ano_func->code_len);
+        free(x.root.ano_func);
+    }
+    if (x.right){
+        free_ast(*x.right);
+        free(x.right);
+    }
+    if (x.left){
+        free_ast(*x.left);
+        free(x.left);
     }
 }

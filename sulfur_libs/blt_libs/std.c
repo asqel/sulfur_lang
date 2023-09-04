@@ -31,8 +31,9 @@
 extern memory MEMORY;
 extern char* VERSION;
 
-int precision=5;
-int base_precision=6;
+int precision = 5;
+int base_precision = 6;
+int is_flushing = 0;
 
 Object read_prompt(Object*o,int n_arg) {
     int capacity = 16;
@@ -58,33 +59,34 @@ Object print_prompt(Object*obj,int n_arg){
             print_prompt(&obj[i],1);
             printf(" ");
         }
+        if (is_flushing){
+            fflush(stdout);
+        }
         return print_prompt(&obj[n_arg-1],1);
 
     }
     if(obj->type==Obj_string_t){
         printf("%s",obj->val.s);
-        return nil_Obj;
     }
-    if(obj->type==Obj_boolean_t){
+    else if(obj->type==Obj_boolean_t){
         printf(*obj->val.b == 0 ? "0b" : "1b");
-        return nil_Obj;
     }
-    if(obj->type==Obj_class_t){
-        return nil_Obj;
+    else if(obj->type==Obj_class_t){
         
     }
-    if(obj->type==Obj_complex_t){
+    else if(obj->type==Obj_complex_t){
         printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
-        return nil_Obj;
     }
-    if(obj->type==Obj_floap_t){
+    else if(obj->type==Obj_floap_t){
         printf("%.*Lf",precision,*obj->val.f);
-        return nil_Obj;
     }
-    if(obj->type==Obj_list_t){
+    else if(obj->type==Obj_list_t){
         int len=*(obj->val.li->elements[0].val.i);
         if(len==0){
             printf("[]");
+            if (is_flushing){
+                fflush(stdout);
+            }
             return nil_Obj;
         }
         printf("[");
@@ -94,36 +96,33 @@ Object print_prompt(Object*obj,int n_arg){
         }
         print_prompt(&obj->val.li->elements[len],1);
         printf("]");
-        return nil_Obj;
 
     }
-    if(obj->type==Obj_funcid_t){
+    else if(obj->type==Obj_funcid_t){
         printf("function at :%p",obj->val.funcid);
-        return nil_Obj;
     }
-    if(obj->type==Obj_nil_t){
+    else if(obj->type==Obj_nil_t){
         printf("nil");
-        return nil_Obj;
     }
-    if(obj->type==Obj_Obj_t){
+    else if(obj->type==Obj_Obj_t){
         //print_prompt(obj->val.o,);
-        return nil_Obj;
     }
-    if(obj->type==Obj_ount_t){
+    else if(obj->type==Obj_ount_t){
         printf("%lld",*obj->val.i);
-        return nil_Obj;
     }
-    if(obj->type==Obj_typeid_t){
+    else if(obj->type==Obj_typeid_t){
         printf("%s",obj->val.typeid);
-        return nil_Obj;
     }
-    if(obj->type == obj_module_t){
+    else if(obj->type == obj_module_t){
         printf("{\n");
         for(int i=0;i<obj->val.module->MEM->len;i++){
             printf("%s : ",obj->val.module->MEM->keys[i]);
             println_prompt(&obj->val.module->MEM->values[i],1);
         }
         printf("\n}");
+    }
+    if (is_flushing){
+        fflush(stdout);
     }
     return nil_Obj;
 
@@ -219,6 +218,17 @@ Object std_floap(Object*obj,int n_arg){
     }
     return nil_Obj;
 
+}
+
+Object std_set_flush(Object* obj, int n_arg){
+    if(n_arg != 1){
+        printf("ERROR in __set_flush__ only takes one arg\n");
+        exit(1);
+    }
+    Object x = std_bool(obj, 1);
+    is_flushing = *x.val.b;
+    Obj_free_val(x);
+    return nil_Obj;
 }
 
 Object std_list(Object*obj,int n_arg){
@@ -500,6 +510,20 @@ Object std_rand(Object* argv, int argc){
     return new_floap((long double)rand()/RAND_MAX);
 }
 
+Object std_print_memory(Object* argv, int argc){
+    if (argc){
+        printf("ERROR print_memory doesn't take args\n");
+        exit(1);
+    }
+    printf("\nMEMORY:%d\n",MEMORY.len);
+    for(int i = 0; i < MEMORY.len; i++){
+        printf("    %s: ",MEMORY.keys[i]);
+        println_prompt(&MEMORY.values[i],1);
+    }
+    return nil_Obj;
+}
+
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY,"nil",nil_Obj);
     add_object(&MEMORY,"_",nil_Obj);
@@ -514,11 +538,13 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"list",&std_list,"");
     add_func(&MEMORY,"time",&current_timestamp,"");
     add_func(&MEMORY,"sleep",&sleep,"");
+    /*depracated*/
     add_func(&MEMORY,"get",&get,"");
+    /*depracated*/
     add_func(&MEMORY,"set",&set,"");
     add_func(&MEMORY,"type",&type,"");
-    add_func(&MEMORY,"set_precision",&set_precision,"");
-    add_func(&MEMORY,"get_precision",&get_precision,"");
+    add_func(&MEMORY,"__set_precision__",&set_precision,"");
+    add_func(&MEMORY,"__get_precision__",&get_precision,"");
     char*path0=abs_path();
     back_slash_to_path(path0);
     char *d= uti_dirname(path0);
@@ -536,13 +562,10 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"methods",&get_methods,"");
     add_func(&MEMORY, "pop",&pop,"");
 
-
-
     srand(*current_timestamp(NULL,0).val.i);
     add_func(&MEMORY, "rand",&std_rand,"");
 
-
-        
-    
+    add_func(&MEMORY, "__print_memory__", &std_print_memory, "");
+    add_func(&MEMORY, "__set_flush__", &std_set_flush, "");
     return MEMORY;
 }

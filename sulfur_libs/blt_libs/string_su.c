@@ -102,33 +102,37 @@ Object str_starts_with(Object* argv, int argc){
     return new_boolean(res);
 }
 
-//char* str_escape() {
-//    size_t len = strlen(str);
-//    char* result = malloc(sizeof(char) * (len + 1));
-//    int i = 0;
-//    int j = 0;
-//    while (i < len) {
-//        if (str[i] == '\\') {
-//            i++;
-//            switch (str[i]) {
-//                case 'a': result[j++] = '\a'; break;
-//                case 'b': result[j++] = '\b'; break;
-//                case 'f': result[j++] = '\f'; break;
-//                case 'n': result[j++] = '\n'; break;
-//                case 'r': result[j++] = '\r'; break;
-//                case 't': result[j++] = '\t'; break;
-//                case 'v': result[j++] = '\v'; break;
-//                case '\\': result[j++] = '\\'; break;
-//                default: result[j++] = '\\'; result[j++] = str[i]; break;
-//            }
-//        } else {
-//            result[j++] = str[i];
-//        }
-//        i++;
-//    }
-//    result[j] = '\0';
-//    return realloc(result, sizeof(char) * j);
-//}
+char* str_escape(char *str) {
+    size_t len = strlen(str);
+    char* result = malloc(sizeof(char) * (len + 1));
+    int i = 0;
+    int j = 0;
+    while (i < len) {
+        if (str[i] == '\\') {
+            i++;
+            switch (str[i]) {
+                case 'a': result[j++] = '\a'; break;
+                case 'b': result[j++] = '\b'; break;
+                case 'f': result[j++] = '\f'; break;
+                case 'n': result[j++] = '\n'; break;
+                case 'r': result[j++] = '\r'; break;
+                case 't': result[j++] = '\t'; break;
+                case 'v': result[j++] = '\v'; break;
+                case '\\': result[j++] = '\\'; break;
+                default: result[j++] = '\\'; result[j++] = str[i]; break;
+            }
+        } else {
+            result[j++] = str[i];
+        }
+        i++;
+    }
+    result[j] = '\0';
+    return realloc(result, sizeof(char) * j);
+}
+
+Object str_convert_escape(Object* argv, int argc){
+    return new_string(str_escape(argv[0].val.s));
+}
 
 Object str_get(Object* argv, int argc){
     Object index = argv[1];
@@ -175,7 +179,7 @@ memory init_string(memory MEMORY,char*path){
     add_func_Module(mod,"starts_with",&str_starts_with,"");
     add_func_Module(mod,"get",&str_get,"");
     add_func_Module(mod,"set",&str_set,"");
-    //add_func_Module(mod,"escape",&str_escape,""); // transforme \t to ttabs \n to line feed
+    add_func_Module(mod,"escape",&str_convert_escape,""); // transforme \t to ttabs \n to line feed
     //CamelCaseTo_snake_case
     //snake_case_toCamelCase
     //function to add upper case every each space like "salut ici " -> "Salut Ici"

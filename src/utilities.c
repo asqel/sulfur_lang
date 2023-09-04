@@ -369,11 +369,9 @@ void* get_standard_module(char* filename){
     if(!strcmp(filename, "math")){
         return &__load_math;
     }
-    #ifndef __profanOS__
     if(!strcmp(filename, "graphic")){
         return &__load_graphic;
     }
-    #endif
     if(!strcmp(filename, "math")){
         return &__load_poppy;
     }

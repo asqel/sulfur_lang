@@ -13,19 +13,22 @@ char *profan_get_current_dir();
 #endif
 
 
-char* VERSION = "2.3";
+
+char* VERSION = "2.4";
 /*
 args:
     *nothing*     - interactive shell
     *filepath*    - execute file
     -m *filepath* - show memory after execution
     -p *filepath* - show parse tree
+    -l *filepath* - show tokens after lexing
 
     order of flags doesn't matter
 */
 
 int show_mem=0;
 int show_parse = 0;
+int show_lexe = 0;
 char *filepath = NULL;
 
 extern ref_count* REFS;
@@ -44,6 +47,9 @@ int execute_file() {
     }
     Token *l = lexe(text);
     int len = token_len(l); 
+
+    if (show_lexe)
+        tokens_print(l, "\n");
 
     int instruction_len = 0;
     Instruction*code = parse(l, -1, -1, NULL, &instruction_len);
@@ -74,8 +80,13 @@ int execute_file() {
 
     for(int i = 0; i < MEMORY.len; i++){
         free(MEMORY.keys[i]);
-        MEMORY.values[i].type == Obj_boolean_t ? free(MEMORY.values[i].val.b) : 0;
+        Obj_free_val(MEMORY.values[i]);
     }
+    for(int i = 0; i < len; i++){
+        free_tok_val(l[i]);
+    }
+    instruction_free_array(code, instruction_len);
+    free(l);
 
     free(MEMORY.keys);
     free(MEMORY.values);

@@ -4,6 +4,7 @@
 
 extern int show_mem;
 extern int show_parse;
+extern int show_lexe;
 extern char*filepath;
 
 int parse_main_args(int argc, char** argv){
@@ -13,6 +14,8 @@ int parse_main_args(int argc, char** argv){
                 show_mem = 1;
             } else if (argv[i][1] == 'p'){
                 show_parse = 1;
+            }else if (argv[i][1] == 'l'){
+                show_lexe = 1;
             } else {
                 printf("Unknown flag: %s\n", argv[i]);
                 return 1;

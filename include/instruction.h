@@ -132,4 +132,7 @@ extern Lib*LIBS;
 extern long long int LIBS_len;
 
 
+void instruction_free_array(Instruction *code, int len);
+
+void instruction_free(Instruction code);
 #endif

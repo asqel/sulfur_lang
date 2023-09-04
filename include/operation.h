@@ -50,4 +50,8 @@ Object or(Object a,Object b);
 Object less_eq(Object a,Object b);
 Object fl_div(Object a,Object b);
 
+Object lshift(Object a,Object b);
+
+Object rshift(Object a,Object b);
+
 #endif
