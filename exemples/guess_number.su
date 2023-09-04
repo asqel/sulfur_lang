@@ -17,7 +17,6 @@ while(n != guess & count < 10){
 if(n == guess){
     println("you won in",count,"tries number was",n);
 }
-
 else{
     println("you lose number was",n);
 }
