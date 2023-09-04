@@ -51,6 +51,8 @@ int op_tok_to_op_ast(int v,int type){
             case OP_ASSIGN : return Ast_assign_t;
             case OP_PLUS_ASSIGN : return Ast_plus_assign_t;
             case OP_MINUS_ASSIGN : return Ast_minus_assign_t;
+            case OP_LSHIFT : return Ast_lshift_t;
+            case OP_RSHIFT : return Ast_rshift_t;
         }
     }
     return -1;
@@ -94,7 +96,10 @@ char* get_op_as_str(int type){
             return "=";
         case Ast_dot_t:
             return ".";
-            
+        case Ast_lshift_t:
+            return "<<";
+        case Ast_rshift_t:
+            return ">>";
     }
 }
 
@@ -117,6 +122,8 @@ int print_ast(Ast x){
         case Ast_le_t:
         case Ast_ge_t:
         case Ast_assign_t:
+        case Ast_lshift_t:
+        case Ast_rshift_t:
         case Ast_dot_t:
             if(x.left!=NULL){
                 printf("{");

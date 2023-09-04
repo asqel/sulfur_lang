@@ -279,6 +279,24 @@ Object or(Object a,Object b){
     return o;
 }
 
+Object lshift(Object a,Object b){
+    if(a.type == Obj_ount_t && b.type == Obj_ount_t){
+        return new_ount((*a.val.i) << (*b.val.i));
+    }
+    printf("ERROR : operation(<<) between 2 types not supported\n");
+    exit(1);
+}
+
+Object rshift(Object a,Object b){
+    if(a.type == Obj_ount_t && b.type == Obj_ount_t){
+        return new_ount((*a.val.i) >> (*b.val.i));
+    }
+    printf("ERROR : operation(<<) between 2 types not supported\n");
+    exit(1);
+}
+
+
+
 Object negate(Object a){
     if(a.type==Obj_ount_t){
         return new_ount(- *a.val.i);

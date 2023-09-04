@@ -86,6 +86,8 @@ enum Ast_types{
     Ast_op_t,
     Ast_syntax_t,
     Ast_keyword_t,
+    Ast_rshift_t,
+    Ast_lshift_t,
     Ast_assign_t,
     Ast_plus_assign_t,
     Ast_minus_assign_t,
