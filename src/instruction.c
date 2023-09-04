@@ -29,7 +29,34 @@ void instruction_free(Instruction code){
             free(code.value.vs->type);
             free_ast(*code.value.vs->val);
             free(code.value.vs->val);
-            //TODO other types and make free_ast function
+            break;
+        case inst_endif:
+        case inst_endifelse:
+        case inst_endfor_t:
+        case inst_endwhile_t:
+            break;//nothing
+        case inst_if_t:
+            free_ast(*code.value.i->condition);
+            free(code.value.i->condition);
+            free(code.value.i);
+            break;
+        case inst_elif_t:
+            free_ast(*code.value.el->condition);
+            free(code.value.el->condition);
+            free(code.value.el);
+            break;
+        case inst_while_t:
+            free_ast(*code.value.wh->condition);
+            free(code.value.wh->condition);
+            free(code.value.wh);
+            break;
+        case inst_for_t:
+            free_ast(*code.value.fo->end);
+            free(code.value.fo->end);
+            free_ast(*code.value.fo->start);
+            free(code.value.fo->start);
+            free(code.value.fo->var_name);
+            break;
         default:
             break;
     }

@@ -1,6 +1,7 @@
 
 #include "../include/Ast.h"
 #include "../sulfur_libs/blt_libs/std.h"
+#include "../include/instruction.h"
 
 
 int Ast_has_r(Ast x){
@@ -150,5 +151,30 @@ int print_ast(Ast x){
 }
 
 void free_ast(Ast x){
-    
+    if(x.type == Ast_object_t){
+        Obj_free_val(*x.root.obj);
+        free(x.root.obj);
+    }
+    else if(x.type == Ast_varcall_t)
+        free(x.root.varcall);
+    else if(x.type == Ast_funccall_t){
+        free(x.root.fun->name);
+        for(int i = 0; i < x.root.fun->nbr_arg; i++){
+            free_ast(x.root.fun->args[i]);
+        }
+        free(x.root.fun->args);
+        free(x.root.fun);
+    }
+    else if(x.type == Ast_anonym_func_t){
+        instruction_free_array(x.root.ano_func->code, x.root.ano_func->code_len);
+        free(x.root.ano_func);
+    }
+    if (x.right){
+        free_ast(*x.right);
+        free(x.right);
+    }
+    if (x.left){
+        free_ast(*x.left);
+        free(x.left);
+    }
 }

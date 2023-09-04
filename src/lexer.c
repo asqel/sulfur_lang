@@ -71,6 +71,40 @@ Token*lexe(char*text){
 
 
         }
+        if(text[p] == '0' && p + 2 < len && text[p + 1]){
+            int start = p + 2;
+            int end = -1;
+            int i = start;
+            long long int result = 0;
+            while(i < len && (('0' <= text[i] && text[i] <= '9') || ('a' <= text[i] && text[i] <= 'f') || ('A' <= text[i] && text[i] <= 'F')) )
+                i++;
+            end = i;
+            long long int power_sixteen = 1;
+            for(i = end - 1; i >= start; i--){
+                if(text[i] <= '9' && text[i] >= '0'){
+                    result += power_sixteen * (text[i] - '0');
+                    power_sixteen *= 16;
+                }
+                else if(text[i] <= 'f' && text[i] >= 'a'){
+                    result += power_sixteen * (text[i] - 'a' + 10);
+                    power_sixteen *= 16;
+                }
+                else if(text[i] <= 'F' && text[i] >= 'A'){
+                    result += power_sixteen * (text[i] - 'A' + 10);
+                    power_sixteen *= 16;
+                }
+            }
+            n_tok++;
+            toks = realloc(toks,sizeof(Token) * n_tok);
+            toks[n_tok - 1].line = line;
+            toks[n_tok - 1].value.i = malloc(sizeof(long long int));
+            *toks[n_tok - 1].value.i = result;
+            toks[n_tok - 1].type = ount;
+            p = end;
+            continue;
+
+            
+        }
         if(str_contains_char(DIGITS,text[p])){
             int e=p;
             int longeur=1;
