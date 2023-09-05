@@ -338,6 +338,14 @@ Object eval_Ast(Ast*x){
             Object a = eval_Ast(x->left);
             
             if(a.type == obj_module_t){
+                if(x->right->type == Ast_varcall_t){
+                    Object res = get_Obj_mem(*a.val.module->MEM, x->right->root.varcall);
+                    return Obj_cpy(res);
+                }
+                if(x->right->type != Ast_funccall_t){
+                    printf("ERROR wrong right operand on dot('.') operator\n");
+                    exit(1);
+                }
                 Object func = get_Obj_mem(*a.val.module->MEM, x->right->root.fun->name);
                 if(func.type == Obj_not_found_t){
                     printf("ERROR function '%s' not found in module '%s'", x->root.fun->name, *a.val.module->filename);

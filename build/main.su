@@ -1,1 +1,3 @@
 print(chr(0xF0, 0x9F, 0x90, 0xa7), "\n".escape());
+import("math","mt");
+println(mt.pi);
