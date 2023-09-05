@@ -19,6 +19,7 @@ void check_syntax(Ast*x){
 
 }
 
+int line = -1; 
 
 ast_and_len tok_to_Ast(Token*tok,int start,int end){
     int len=end-start+1;
@@ -617,7 +618,7 @@ Ast*make_ast(Ast*e,int len){
     while(len>1){
         int n=find_highest_op(e,len);
         if(n==-1){
-            printf("len %d %d %d %d",len,e[0].type,e[1].type,e[2].type);
+            printf("len %d %d %d %d %d",len,e[0].type,e[1].type,e[2].type, line);
             printf("ERROR in expression #0\n");
             exit(1);
         }
@@ -787,7 +788,6 @@ int count_elseelif(Token*tok,int p){
 
 
 
-
 //to parse everything pass your tokens ,-1,-1,NULL,a pointer that will ccount tthe length of instructions
 Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
 
@@ -810,14 +810,19 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         int old_n_inst = *n_inst;
 
         //make if
+        line = tok[p].line;
         inst = make_if(tok, start, end, inst, n_inst, &p, len);
         //make for
+        line = tok[p].line;
         inst = make_for(tok, start, end, inst, n_inst, &p, len);
         //make return
+        line = tok[p].line;
         inst = make_return(tok, start, end, inst, n_inst, &p, len);
         //make while
+        line = tok[p].line;
         inst = make_while(tok, start, end, inst, n_inst, &p, len);
         //make section
+        line = tok[p].line;
         if(tok[p].type == identifier && p + 1 < len){
             if(tok[p + 1].type == syntax && *tok[p + 1].value.t == colon && p + 2 < len){
                 if(tok[p + 2].type == syntax && *tok[p + 2].value.t == colon){

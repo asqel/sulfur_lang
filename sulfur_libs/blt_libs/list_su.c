@@ -12,6 +12,12 @@ Object append_list(Object*obj,int n_arg){
     return Obj_cpy(obj[0]);
 }
 
+Object clear_list(Object*obj,int n_arg){
+    Obj_free_array(obj[0].val.li->elements, *obj[0].val.li->elements[0].val.i);
+    obj->val.li->elements = malloc(sizeof(Object));
+    obj->val.li->elements[0] = new_ount(0);
+    return nil_Obj;
+}
 
 memory init_list(memory MEMORY,char*path){
     char* module_name = "list";
@@ -22,6 +28,7 @@ memory init_list(memory MEMORY,char*path){
     strcpy(mod.val.module->filename, module_name);
 
     add_func_Module(mod, "append", &append_list, "");
+    add_func_Module(mod, "clear", &clear_list, "");
 
     list_module = *mod.val.module;
     return MEMORY;
