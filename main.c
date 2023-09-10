@@ -7,13 +7,6 @@
 #include "include/func_interpreter.h"
 #include "sulfur_libs/blt_libs/std.h"
 
-#ifdef __profanOS__
-#include <profan.h>
-char *profan_get_current_dir();
-#endif
-
-
-
 char* VERSION = "2.4";
 /*
 args:
@@ -98,17 +91,6 @@ int execute_file() {
 int main(int argc,char **argv){
     back_slash_to_path(argv[0]);
     parse_main_args(argc, argv);
-
-    #ifdef __profanOS__
-
-    if (filepath) {
-        char *loc = profan_get_current_dir();
-        char *new_file = malloc(strlen(filepath) + strlen(loc) + 2);
-        assemble_path(loc, filepath, new_file);
-        filepath = new_file;
-    }
-
-    #endif
     
     if (filepath) {
         return execute_file();
