@@ -405,13 +405,13 @@ Object execute(Instruction* code, char* file_name, int len){
                     break;
                 }
             }
-            if(n==-1){
+            if(n == -1){
                 Object f;
                 f.type = Obj_funcid_t;
-                f.val.funcid=malloc(sizeof(Funcdef));
+                f.val.funcid = malloc(sizeof(Funcdef));
                 f.val.funcid->code = code[p].value.fc->code;
                 f.val.funcid->code_len = code[p].value.fc->code_len;
-                f.val.funcid->is_builtin=0;
+                f.val.funcid->is_builtin = 0;
                 f.val.funcid->arg_names = code[p].value.fc->args;
                 f.val.funcid->nbr_of_args = code[p].value.fc->args_len;
                 add_object(&MEMORY, code[p].value.fc->info.name, f);

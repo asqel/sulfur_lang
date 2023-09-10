@@ -180,6 +180,7 @@ memory init_string(memory MEMORY,char*path){
     add_func_Module(mod,"get",&str_get,"");
     add_func_Module(mod,"set",&str_set,"");
     add_func_Module(mod,"escape",&str_convert_escape,""); // transforme \t to ttabs \n to line feed
+    add_func_Module(mod,"esc",&str_convert_escape,"");
     //CamelCaseTo_snake_case
     //snake_case_toCamelCase
     //function to add upper case every each space like "salut ici " -> "Salut Ici"

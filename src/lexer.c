@@ -71,7 +71,7 @@ Token*lexe(char*text){
 
 
         }
-        if(text[p] == '0' && p + 2 < len && text[p + 1]){
+        if(text[p] == '0' && p + 2 < len && text[p + 1] == 'x'){
             int start = p + 2;
             int end = -1;
             int i = start;
@@ -280,7 +280,33 @@ Token*lexe(char*text){
     toks[n_tok-1]=end_token;
     return toks;
 }
- 
-
-
-
+/*
+Token *after_lexe(Token *toks, int len){
+    Token *new_tok = malloc(sizeof(Token) * (len + 1));
+    int new_len = 0;
+    int i = 0;
+    
+    while(i < len){
+        if (toks[i].type == identifier){
+            if(strcmp(toks[i].value.s, "e") || strcmp(toks[i].value.s, "E")){
+                if(i + 1 < len && toks[i + 1].type == str){
+                    new_tok[new_len] = toks[i + 1];
+                    char *new_str = uti_str_escape(new_tok[new_len].value.s);
+                    free(new_tok[new_len].value.s);
+                    free(toks[i].value.s);
+                    new_tok[new_len].value.s = new_str;
+                    i += 2;
+                    continue;
+                }
+            }
+            
+        }
+        new_tok[new_len] = toks[new_len];
+        i++;
+    }
+    free(toks);
+    new_tok = realloc(new_tok, sizeof(Token) * (new_len + 1));
+    new_tok[new_len] = end_token;
+    tokens_print(new_tok, "\n");
+    return new_tok;
+}*/
