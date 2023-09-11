@@ -1,17 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "../include/lexer.h"
 #include "../include/memlib.h"
 #include "../include/parser.h"
 #include "../include/interpreter.h"
 #include "../include/func_interpreter.h"
 #include "../sulfur_libs/blt_libs/std.h"
-
-
-extern int show_parse;
-extern int show_mem;
-extern char* VERSION;
-
+#include "../include/sulfur.h"
 
 extern void instructions_print(Instruction* code, int code_len);
 
@@ -54,7 +50,7 @@ int does_code_is_good(char *code) {
     return 1;
 }
 
-int interactive_shell() {
+int interactive_shell(sulfur_args_t *args) {
     printf("Welcome to sulfur v%s interactive shell!\n", VERSION);
     printf("Type 'q' or destroy your computer to exit\n");
 
@@ -94,7 +90,7 @@ int interactive_shell() {
         int instruction_len = 0;
         Instruction *insts = parse(l, -1, -1, NULL, &instruction_len);
 
-        if (show_parse) {
+        if (args->show_parse) {
             instructions_print(insts, instruction_len);
         }
 
@@ -109,7 +105,7 @@ int interactive_shell() {
     free(code);
 
     precision = base_precision;
-    if (show_mem) {
+    if (args->show_mem) {
         printf("\n\nMEMORY:%d\n",MEMORY.len);
         for(int i = 0; i < MEMORY.len; i++){
             printf("    %s: ",MEMORY.keys[i]);

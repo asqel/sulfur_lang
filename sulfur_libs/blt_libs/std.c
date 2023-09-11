@@ -11,6 +11,7 @@
 #include <string.h>
 #include "../../include/memlib.h"
 #include "../../include/utilities.h"
+#include "../../include/sulfur.h"
 
 #ifdef __profanOS__
 #include <syscall.h>
@@ -29,7 +30,6 @@
 #endif
 
 extern memory MEMORY;
-extern char* VERSION;
 
 int precision = 5;
 int base_precision = 6;
