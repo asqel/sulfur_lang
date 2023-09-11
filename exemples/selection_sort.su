@@ -1,26 +1,26 @@
-l = list();
+l = list()
 
-n = 1000;
+n = 1000
 
 for(i from 0 to n){
-    l.append(ount(rand()*n));
+    l.append(ount(rand()*n))
 }
 
-len = l:-1;
+len = l:-1
 
-t0 = time();
+t0 = time()
 
 for(i from 0 to len){
-    min_idx = i;
+    min_idx = i
     for(k from i + 1 to len){
         if(l:k < l:min_idx){
-            min_idx = k;
+            min_idx = k
         }
     }
-    l:min_idx = (l:i = l:min_idx);// inverse the values because (a = b) return the old value of a
+    l:min_idx = (l:i = l:min_idx) // inverse the values because (a = b) return the old value of a
 }
 
-t1 = time();
+t1 = time()
 
-println(l);
-println("time taken :",(t1 -t0)/1000);
+println(l)
+println("time taken :",(t1 -t0)/1000)
