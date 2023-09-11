@@ -51,11 +51,6 @@ int does_code_is_good(char *code) {
     if (nub != 0) return 0;
 
     if (len == 1 && code[0] == 'q') return 2;
-
-    // check if the line ends with ';', '}'
-    if (code[len - 1] != ';' && code[len - 1] != '}') {
-        return 0;
-    }
     return 1;
 }
 
