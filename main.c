@@ -7,7 +7,7 @@
 #include "include/func_interpreter.h"
 #include "sulfur_libs/blt_libs/std.h"
 
-char* VERSION = "2.4";
+char *VERSION = "2.4";
 /*
 args:
     *nothing*     - interactive shell

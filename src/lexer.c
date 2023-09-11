@@ -1,21 +1,26 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 #include <math.h>
+
+#include "../include/preprocessor.h"
 #include "../include/token_class.h"
 #include "../include/utilities.h"
 #include "../include/lexer.h"
 
-Token*lexe(char*text) {
+Token *lexe(char *input) {
+    char *text = preprocess(input);
+
     int line = 1;
-    Token*toks;
+    Token *toks;
     int n_tok = 0;
     int len = strlen(text);
     int p = 0;
 
     n_tok++;
     toks = malloc(sizeof(Token));
-    toks[n_tok-1]= nil_token;
+    toks[n_tok-1] = nil_token;
+
     while (p < len) {
         if (text[p] == '/' && p+1 < len && text[p+1] == '/') {
             while (p < len && text[p] != '\n')
@@ -23,8 +28,8 @@ Token*lexe(char*text) {
             continue;
         }
 
-        if (text[p]=='/' && p+1 < len && text[p+1]=='*') {
-            p+= 2;
+        if (text[p] == '/' && p+1 < len && text[p+1] == '*') {
+            p += 2;
             while (p < len) {
                 if (text[p] == '*' && p+1 < len && text[p+1] == '/') {
                     p += 2;
@@ -39,18 +44,18 @@ Token*lexe(char*text) {
             continue;
         }
 
-        if (text[p]=='\n') {
+        if (text[p] == '\n') {
             line++;
             p++;
             continue;
         }
 
-        if (text[p]== '\t' || text[p] == ' ' || text[p]=='\r') {
+        if (text[p] == '\t' || text[p] == ' ' || text[p] == '\r') {
             p++;
             continue;
         }
 
-        if ((text[p]=='1' || text[p]=='0') && p+1 < len && (text[p+1]=='b' || text[p+1]=='B')) {
+        if ((text[p] == '1' || text[p] == '0') && p+1 < len && (text[p+1] == 'b' || text[p+1] == 'B')) {
             n_tok++;
             toks = realloc(toks, sizeof(Token)*n_tok);
             toks[n_tok-1].type = boolean_t;
@@ -73,7 +78,7 @@ Token*lexe(char*text) {
             continue;
         }
 
-        if (text[p]=='0' && p+2 < len && text[p+1]=='x') {
+        if (text[p] == '0' && p+2 < len && text[p+1] == 'x') {
             long long int result = 0;
             int start = p + 2;
             int end = -1;
@@ -125,7 +130,7 @@ Token*lexe(char*text) {
                 s[i]= text[p+i];
             }
             s[longeur]='\0';
-            
+
             int n = str_count(s, '.');
             if (n == 0) {
                 n_tok++;
@@ -139,7 +144,7 @@ Token*lexe(char*text) {
             }
 
             if (n > 1) {
-                printf("ya une erreur la sur les floap en fait");
+                printf("ya une erreur la sur les floap en fait\n");
                 exit(0);
             }
 
@@ -191,7 +196,7 @@ Token*lexe(char*text) {
             }
         }
 
-        char s[2]={text[p], '\0'};
+        char s[2] = {text[p], '\0'};
         if (op_to_enum(s) != -1) {
             // ops single char
             n_tok++;
@@ -204,9 +209,9 @@ Token*lexe(char*text) {
             continue;
         }
 
-        char s2[2]={text[p], '\0'};
+        char s2[2] = {text[p], '\0'};
 
-        if (sy_to_enum(s2)!=-1) {
+        if (sy_to_enum(s2) != -1) {
             // syntax
             n_tok++;
             toks = realloc(toks, sizeof(Token)*n_tok);
@@ -218,11 +223,11 @@ Token*lexe(char*text) {
             continue;
         }
 
-        if (text[p]=='\'') {
+        if (text[p] == '\'') {
             p++;
             int n = 0;
             char*s = malloc(sizeof(char));
-            while (p < len && text[p]!='\'') {
+            while (p < len && text[p] != '\'') {
                 n++;
                 s = realloc(s, sizeof(char)*n);
                 s[n-1]= text[p];
@@ -239,18 +244,18 @@ Token*lexe(char*text) {
             continue;
         }
 
-        if (text[p]=='"') {
+        if (text[p] == '"') {
             p++;
             int n=0;
-            char*s=malloc(sizeof(char));
-            while(p<len&&text[p]!='"') {
+            char *s=malloc(sizeof(char));
+            while (p < len && text[p] != '"') {
                 n++;
                 s = realloc(s, sizeof(char)*n);
-                s[n-1]= text[p];
+                s[n-1] = text[p];
                 p++;
             }
 
-            s = realloc(s, sizeof(char)*(n+1));
+            s = realloc(s, sizeof(char) * (n+1));
             s[n]='\0';
             n_tok++;
             toks = realloc(toks, sizeof(Token)*n_tok);
@@ -284,17 +289,17 @@ Token*lexe(char*text) {
             toks[n_tok-1].line = line;
             toks[n_tok-1].value.t = malloc(sizeof(short int));
             *toks[n_tok-1].value.t = kw_to_enum(m);
-            p = e+1;
+            p = e + 1;
             free(m);
             continue;
         }
 
         n_tok++;
-        toks = realloc(toks, sizeof(Token)*n_tok);
+        toks = realloc(toks, sizeof(Token) * n_tok);
         toks[n_tok-1].type = identifier;
         toks[n_tok-1].value.s = m;
         toks[n_tok-1].line = line;
-        p = e+1;
+        p = e + 1;
         continue;
     }
 
@@ -304,6 +309,8 @@ Token*lexe(char*text) {
 
     // c'est pour enlever le premier token qui est normalemennt nil et ajouter le end
     toks[n_tok-1] = end_token;
+
+    free(text);
     return toks;
 }
 
