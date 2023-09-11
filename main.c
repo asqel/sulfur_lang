@@ -22,7 +22,7 @@ void show_help(char *name, int full) {
         "  -p, --show-parse    show parse tree\n"
         "  -l, --show-lexe     show tokens after lexing\n"
         "  -h, --help          show this help message and exit\n"
-        "  -v, --version       show program's version number and exit\n\n"
+        "  -v, --version       show sulfur version and exit\n"
 
         "If no file is given, sulfur will run in interactive mode.\n"
         "If file is given, sulfur will execute it and exit.\n"
