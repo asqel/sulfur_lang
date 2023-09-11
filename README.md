@@ -9,6 +9,7 @@ you need to have gcc installed in order To compile and run the interpreter:
 - On Windows : `make win_all`
 - On Linux   : `make linux_all`
 - On macOS   : It's not fully supported; consider using `make linux_all`
+- For profanOS : `make profan` and follow the instructions
 
 it will generate a file called sulfur and run it without argument
 ## Built-in types
@@ -25,36 +26,39 @@ it will generate a file called sulfur and run it without argument
 
 ### Setting / changing the value of a variable
 `Var_name` = *Expression*; \
+
 #### example :
 ```
 pi = 3.14;
 ```
 
 ### conditons
-if ( *Expression* ){ //first condition \
+if ( *Expression* ) { //first condition \
     &emsp;**Instructions**
 
-}elif ( *Expression* ){ // secondary condition \
+} elif ( *Expression* ) { // secondary condition \
     &emsp;**Instructions**
 
-}elif ( *Expression* ){ // third condition \
+} elif ( *Expression* ) { // third condition \
     &emsp;**Instructions**
 
-}else{ \
+} else { \
     &emsp;**Instructions**
 
 }
+
 #### example :
 ```
-if(pi > 4){
+if (pi > 4) {
     print("pi is greater than 4");
+}
 
-}elif(pi == "hi"){
+elif (pi == "hi") {
     print("pi is a string");
+}
 
-}else{
+else {
     print("pi is pi");
-
 }
 ```
 
@@ -62,9 +66,10 @@ if(pi > 4){
 for (`name_of_var` from **Expression** to **Expression**) {
     Instructions
 }
+
 #### example :
 ```
-for (i from 0 to 10){
+for (i from 0 to 10) {
     println(i);
 }
 ```
@@ -89,7 +94,7 @@ while(**Expression**){ \ // while condition
 #### example :
 ```
 i = 0;
-while (i < 10){
+while (i < 10) {
     println(i);
     i += 1;
 }
@@ -122,11 +127,11 @@ a section can have the same name as a variable and that will cause no issues
 ```
 pi = 3;
 println({
-    if(pi > 3){
+    if (pi > 3){
         return "greater";
-}else{
-    return "lower or equal";
-}
+    } else {
+        return "lower or equal";
+    }
 });
 ```
 #### techanical explanation :
@@ -204,9 +209,29 @@ println("length", l : -1);
 ## the interpreter
 if it is run without a path to a file the shell will be launched \
 available flags :
-- `-m` : show memory after execution
-- `-l` : show lexer output
-- `-p` : show parser output
+```
+-m, --show-mem      show memory after execution
+-p, --show-parse    show parse tree
+-l, --show-lexe     show tokens after lexing
+-h, --help          show help message and exit
+-v, --version       show sulfur version and exit
+```
+
+## Makefile
+
+- `win` : Compile for Windows
+- `linux` : Compile for Linux
+- `profan` : Compile for profanOS
+- `run` : Start the interpreter
+- `stdlibs_win` : Compile the standard libraries for Windows
+- `stdlibs_linux` : Compile the standard libraries for Linux
+- `win_all` : Compile for Windows and start the interpreter
+- `linux_all` : Compile for Linux and start the interpreter
+- `linux_one_file` : Compile for Linux without separate libraries
+- `help` : Show Makefile details
+
+Files can also be downloaded from [stable releases](https://github.com/asqel/sulfur_lang/releases) (windows and linux)
+and from the automated [repository](https://github.com/elydre/sulfur_lang/releases/tag/latest) (linux, one-file and profanOS)
 
 
 ## Built-in Functions
@@ -234,7 +259,7 @@ available flags :
 
 ## Built-in Variables
 
-- `` __path__` : The path of the executed .su file.
+- `__path__` : The path of the executed .su file.
 - `__interpreter_path__` : The path of the interpreter.
 - `__dir_path__` : The directory path of the interpreter.
 - `__os__` : The name of the OS, or "UNKNOWN" if not known.
