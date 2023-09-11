@@ -12,5 +12,4 @@ macOS:
 unix:
     unistd.h
 profanOS:
-    profan.h
     syscall.h
