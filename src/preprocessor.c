@@ -29,10 +29,15 @@ char *add_semicolon(char *input) {
         }
 
         text[t_index++] = input[i];
-        if (open_parenthesis == 0 &&
-            (input[i] != ';' && input[i] != '{' && input[i] != '}' && input[i] != '\n') &&
-            (input[i+1] == '\n' || input[i+1] == '\0')
-        ) text[t_index++] = ';';
+        
+        if (open_parenthesis || input[i] == ';' || input[i] == '{' || input[i] == '}' || input[i] == '\n')
+            continue;
+
+        if (input[i+1] == '\n' || input[i+1] == '\0')
+            text[t_index++] = ';';
+        
+        else if (input[i+1] == '/' && input[i+2] == '/')
+            text[t_index++] = ';';
     }
     text[t_index] = '\0';
 
@@ -40,5 +45,6 @@ char *add_semicolon(char *input) {
 }
 
 char *preprocess(char *input) {
-    return add_semicolon(input);
+    char *output = add_semicolon(input);
+    return output;
 }
