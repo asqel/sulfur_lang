@@ -1,23 +1,22 @@
-n = ount(rand()*100);
-count = 0;
-guess = -1;
-println("guess : ");
+n = ount(rand()*100)
+count = 0
+guess = -1
+println("guess : ")
 while(n != guess & count < 10){
-    guess = ount(input());
+    guess = ount(input())
     if(guess < n){
-        println("too low");
+        println("too low")
     }
     elif(guess >n){
-        println("too high");
+        println("too high")
     }
     
-    count = count + 1;
+    count = count + 1
 }
 
 if(n == guess){
-    println("you won in",count,"tries number was",n);
+    println("you won in",count,"tries number was",n)
 }
 else{
-    println("you lose number was",n);
+    println("you lose number was",n)
 }
-
