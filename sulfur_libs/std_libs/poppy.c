@@ -23,11 +23,11 @@ char*po_read_file(char*path){
 
 Object std_po_read_file(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR po_read_file only takes 1 arg");
+        printf("ERROR po_read_file only takes 1 arg\n");
         exit(1);
     }
     if(argv[0].type != Obj_string_t){
-        printf("ERROR po_read_file only takes a string");
+        printf("ERROR po_read_file only takes a string\n");
         exit(1);
     }
     char * text = po_read_file(argv[0].val.s);

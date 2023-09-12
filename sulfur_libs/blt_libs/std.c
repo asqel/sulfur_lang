@@ -139,12 +139,12 @@ Object std_chr(Object* argv, int argc){
         return std_chr(&argv->val.li->elements[1], *argv->val.li->elements[0].val.i);
     }
     if(argc <= 0){
-        printf("ERROR std_chr takes at least one arg");
+        printf("ERROR std_chr takes at least one arg\n");
         exit(1);
     }
     for(int i=0; i < argc; i++){
         if(argv[i].type != Obj_ount_t){
-            printf("ERROR std_chr only takes strings");
+            printf("ERROR std_chr only takes strings\n");
             exit(1);
         }
     }
@@ -159,7 +159,7 @@ Object std_chr(Object* argv, int argc){
 
 Object std_bool(Object*obj,int n_arg){
     if(n_arg!=1){
-        printf("ERROR %s only 1 argument needed in bool call",n_arg>1?"too many arguments":"too few arguments");
+        printf("ERROR %s only 1 argument needed in bool call\n", n_arg>1 ? "too many arguments" : "too few arguments");
         exit(1);
     }
     if(obj->type==Obj_ount_t){
@@ -317,16 +317,16 @@ Object var_exists(Object* args, int n_arg){
 
 Object get(Object *obj,int n_arg){
     if (n_arg!=2){
-        printf("ERROR get only takes 2 arguments");
+        printf("ERROR get only takes 2 arguments\n");
         exit(1);
     }
     if(obj[0].type != Obj_string_t && obj[0].type != Obj_list_t){
-        printf("ERROR get only take list or string as first argument");
+        printf("ERROR get only take list or string as first argument\n");
         exit(1);
     }
     Object index=std_ount(&(obj[1]),1);
     if (index.type == Obj_nil_t){
-        printf("ERROR get only take a ount-convetible as second argument");
+        printf("ERROR get only take a ount-convetible as second argument\n");
         exit(1);
     }
     int len=0;
@@ -340,7 +340,7 @@ Object get(Object *obj,int n_arg){
             return res;
         }
         if (*index.val.i >= len || *index.val.i<-1){
-            printf("ERROR get out of range");
+            printf("ERROR get out of range\n");
             exit(1);
         }
         Object res;
@@ -352,7 +352,7 @@ Object get(Object *obj,int n_arg){
     }
     len=*(obj[0].val.li->elements[0].val.i);
     if (*index.val.i >= len || *index.val.i<-1){
-        printf("ERROR get out of range");
+        printf("ERROR get out of range\n");
         exit(1);
     }
     return obj[0].val.li->elements[*index.val.i+1];
@@ -361,15 +361,15 @@ Object get(Object *obj,int n_arg){
 
 Object set(Object *obj,int n_arg){
     if(n_arg != 3){
-        printf("ERROR set only takes 3 args");
+        printf("ERROR set only takes 3 args\n");
         exit(1);
     }
     if(obj[0].type != Obj_list_t && obj[0].type != Obj_string_t){
-        printf("ERROR set only takes string or list as first arg");
+        printf("ERROR set only takes string or list as first arg\n");
         exit(1);
     }
     if(obj[1].type != Obj_ount_t && obj[1].type != Obj_floap_t){
-        printf("ERROR set only take ount or floap as second arg");
+        printf("ERROR set only take ount or floap as second arg\n");
         exit(1);
     }
     int index;
@@ -380,7 +380,7 @@ Object set(Object *obj,int n_arg){
         index = 1+(int)*obj[1].val.f;
     }
     if (index > *obj[0].val.li->elements[0].val.i || index<1){
-        printf("ERROR set out of range");
+        printf("ERROR set out of range\n");
         exit(1);
     }
     obj[0].val.li->elements[index] = Obj_cpy(obj[2]);
@@ -403,7 +403,7 @@ Object comp(Object* argv, int argc){
     if(argc == 2){
         for(int i = 0; i < argc; i ++){
             if(!(argv[i].type == Obj_ount_t || argv[i].type == Obj_floap_t || argv[i].type == Obj_boolean_t)){
-                printf("comp only takes ount, floap or boolean when 2 args");
+                printf("ERROR comp only takes ount, floap or boolean when 2 args\n");
                 exit(1);
             }
         }
@@ -419,14 +419,14 @@ Object comp(Object* argv, int argc){
             return Obj_cpy(argv[0]);
         }
     }
-    printf("ERROR on comp()");
+    printf("ERROR on comp()\n");
     exit(1);
 }
 
 
 Object type(Object* obj, int n_arg) {
     if (n_arg!=1){
-        printf("ERROR type only take one arg");
+        printf("ERROR type only take one arg\n");
         exit(1);
     }
     switch (obj[0].type){
@@ -455,11 +455,11 @@ Object type(Object* obj, int n_arg) {
 
 Object set_precision(Object* args, int argc){
     if(argc!=1){
-        printf("ERROR set_precision only takes one arg");
+        printf("ERROR set_precision only takes one arg\n");
         exit(1);
     }
     if(args[0].type != Obj_ount_t){
-        printf("ERROR set_precision only takes ount as arg");
+        printf("ERROR set_precision only takes ount as arg\n");
         exit(1);
     }
     precision=*args[0].val.i;
@@ -468,7 +468,7 @@ Object set_precision(Object* args, int argc){
 
 Object get_precision(Object* args, int argc){
     if(argc!=0){
-        printf("ERROR get_precision doesnt take any arg");
+        printf("ERROR get_precision doesnt take any arg\n");
         exit(1);
     }
     return new_ount(precision);
@@ -476,7 +476,7 @@ Object get_precision(Object* args, int argc){
 
 Object get_methods(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR methods only takes one  arg");
+        printf("ERROR methods only takes one arg\n");
         exit(1);
     }
     if(argv[0].type == Obj_string_t){
@@ -493,7 +493,7 @@ Object get_methods(Object* argv, int argc){
 
 Object pop(Object* argv, int argc){
     if(*argv[0].val.li->elements[0].val.i == 0){
-        printf("ERROR cannot pop on empty list");
+        printf("ERROR cannot pop on empty list\n");
         exit(1);
     }
     int len = get_list_len(argv[0]);

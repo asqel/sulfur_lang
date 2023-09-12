@@ -16,16 +16,16 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
             int opening_par = *p + 1;
             int closing_par = search_rpar(tok, *p + 1);
             if (closing_par == -1){
-                printf("ERROR missing closing ')' on line %d after if",tok[*p + 1].line);
-                exit(-1);
+                printf("ERROR missing closing ')' on line %d after if\n",tok[*p + 1].line);
+                exit(1);
             }
             *p = closing_par+1;
             if(*p < len&&tok[*p].type == syntax && *tok[*p].value.t == r_brack_L){
                 int opening_rbrack = *p;
                 int closing_rback = search_rrbrack(tok, *p);
                 if(closing_rback == -1){
-                    printf("ERROR missing closing '}' on line %d after if",tok[*p + 1].line);
-                    exit(-1);
+                    printf("ERROR missing closing '}' on line %d after if\n",tok[*p + 1].line);
+                    exit(1);
                 }
                 (*n_inst)++;
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
@@ -49,15 +49,15 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                         opening_par = *p + 1;
                         closing_par = search_rpar(tok, opening_par);
                         if(closing_par == -1){
-                            printf("ERROR missing closing ')' on line %d after elif", tok[opening_par].line);
+                            printf("ERROR missing closing ')' on line %d after elif\n", tok[opening_par].line);
                         }
                         *p = closing_par+1;
                         if(*p < len && tok[*p].type == syntax && *tok[*p].value.t == r_brack_L){
                             int opening_rbrack = *p;
                             int closing_rback = search_rrbrack(tok, *p);
                             if(closing_rback == -1){
-                                printf("ERROR missing closing '}' on line %d after elif",tok[*p + 1].line);
-                                exit(-1);
+                                printf("ERROR missing closing '}' on line %d after elif\n",tok[*p + 1].line);
+                                exit(1);
                             }
                             (*n_inst)++;
                             inst = realloc(inst, sizeof(Instruction) * (*n_inst));
@@ -78,13 +78,13 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                             endifelse_ps[endif_n - 1] = *n_inst - 1;//ffaut faire ca en bas aussi avec le else oublie pas hein !
                         }
                         else{
-                            printf("ERROR missing opening '{' on line %d after elif",tok[*p-1].line);
-                            exit(-1);
+                            printf("ERROR missing opening '{' on line %d after elif\n",tok[*p-1].line);
+                            exit(1);
                         }
                     }
                     else{
-                        printf("ERROR missing opening '(' on line %d after elif",tok[*p].line);
-                        exit(-1);
+                        printf("ERROR missing opening '(' on line %d after elif\n",tok[*p].line);
+                        exit(1);
                     }
                 }
                 if(*p < len && tok[*p].type == keyword && *tok[*p].value.t == else_t){
@@ -92,8 +92,8 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                         opening_rbrack = *p + 1;
                         closing_rback = search_rrbrack(tok, opening_rbrack);
                         if(closing_rback == -1){
-                            printf("ERROR missing closing '}' on line %d after else", tok[*p + 1].line);
-                            exit(-1);
+                            printf("ERROR missing closing '}' on line %d after else\n", tok[*p + 1].line);
+                            exit(1);
                         }
                         (*n_inst)++;
                         inst = realloc(inst, sizeof(Instruction) * (*n_inst));
@@ -110,8 +110,8 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                         endifelse_ps[endif_n - 1] = *n_inst - 1;
                     }
                     else{
-                        printf("ERROR missing opening '{' on line %d after else",tok[*p].line);
-                        exit(-1);
+                        printf("ERROR missing opening '{' on line %d after else\n",tok[*p].line);
+                        exit(1);
                     }
                 }
                 (*n_inst)++;
@@ -123,11 +123,10 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                 free(endifelse_ps);
                 return inst;
             }
-            
         }
         else{
-            printf("ERROR on if missing opening '(' line %d",tok[*p].line);
-            exit(-1);
+            printf("ERROR on if missing opening '(' line %d\n",tok[*p].line);
+            exit(1);
         }
     }
     return inst;
