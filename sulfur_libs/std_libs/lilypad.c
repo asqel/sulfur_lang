@@ -6,11 +6,11 @@
 
 Object std_malloc(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR in malloc");
+        printf("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t){
-        printf("ERRRIR in malloc");
+        printf("ERRRIR in malloc\n");
         exit(1);
     }
     #ifdef __profanOS__
@@ -23,11 +23,11 @@ Object std_malloc(Object* argv, int argc){
 
 Object std_free(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR in malloc");
+        printf("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t){
-        printf("ERRRIR in malloc");
+        printf("ERRRIR in malloc\n");
         exit(1);
     }
     #ifdef __profanOS__
@@ -42,11 +42,11 @@ Object std_free(Object* argv, int argc){
 
 Object std_get_val_byte(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR in malloc");
+        printf("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t){
-        printf("ERRRIR in malloc");
+        printf("ERRRIR in malloc\n");
         exit(1);
     }
 
@@ -60,11 +60,11 @@ Object std_get_val_byte(Object* argv, int argc){
 
 Object std_set_val_byte(Object* argv, int argc){
     if(argc != 2){
-        printf("ERROR in malloc");
+        printf("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t, argv[1].type != Obj_ount_t){
-        printf("ERRRIR in malloc");
+        printf("ERRRIR in malloc\n");
         exit(1);
     }
 

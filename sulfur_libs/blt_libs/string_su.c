@@ -15,7 +15,7 @@ char * string_methods = "upper() : return a new string by converting every lette
 ;
 Object str_upper(Object*x, int argc){
     if(argc != 1){
-        printf("upper only takes one arg %d were passed",argc);
+        printf("upper only takes one arg %d were passed\n",argc);
     }
     Object res = new_string(x[0].val.s);
     
@@ -31,7 +31,7 @@ Object str_upper(Object*x, int argc){
 
 Object str_lower(Object*x, int argc){
     if(argc != 1){
-        printf("lower only takes one arg %d were passed",argc);
+        printf("lower only takes one arg %d were passed\n",argc);
     }
     Object res = new_string(x[0].val.s);
     
@@ -47,11 +47,11 @@ Object str_lower(Object*x, int argc){
 
 Object str_contains(Object* argv, int argc){
     if(argc != 2){
-        printf("ERROR str:contains only takes 2 args");
+        printf("ERROR str:contains only takes 2 args\n");
         exit(1);
     }
     if(argv[0].type != Obj_string_t || argv[1].type != Obj_string_t){
-        printf("ERROR str:contains onlyt takes strings");
+        printf("ERROR str:contains onlyt takes strings\n");
         exit(1);
     }
     return new_boolean(strstr(argv[0].val.s,argv[1].val.s) != NULL);
@@ -59,19 +59,19 @@ Object str_contains(Object* argv, int argc){
 
 Object str_length(Object* argv, int argc){
     if(argc > 1){
-        printf("ERROR str:length doesn't take any arg");
+        printf("ERROR str:length doesn't take any arg\n");
         exit(1);
     }
     return new_ount(strlen(argv[0].val.s));
 }
 Object str_starts_with(Object* argv, int argc){
     if(argc == 1){
-        printf("ERROR str:starts_with takes at least one arg");
+        printf("ERROR str:starts_with takes at least one arg\n");
         exit(1);
     }
     for(int i=0; i<argc; i++){
         if(argv[i].type != Obj_string_t){
-            printf("ERROR str:starts_with only takes strings as arg");
+            printf("ERROR str:starts_with only takes strings as arg\n");
             exit(1);
         }
     }
@@ -145,7 +145,7 @@ Object str_get(Object* argv, int argc){
         return res;
     }
     if (*index.val.i >= len || *index.val.i<-1){
-        printf("ERROR get out of range");
+        printf("ERROR get out of range\n");
         exit(1);
     }
     Object res;

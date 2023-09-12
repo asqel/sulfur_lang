@@ -21,25 +21,25 @@ int REFS_len;
 
 Object import_func(Object*arg,int argc){
     if (argc>2){
-        printf("ERROR in import maximum 2 arguments");
+        printf("ERROR in import maximum 2 arguments\n");
         exit(1);
     }  
     for (int i = 0; i < argc; i++){
         if (arg[i].type != Obj_string_t){
-            printf("ERROR in import only string arguments accepted");
+            printf("ERROR in import only string arguments accepted\n");
             exit(1);
         }
     }
     if(argc == 1){
         if (!id_acceptable_ptr(arg[0].val.s)){
             printf("ERROR cannot import file with space in its name (%s)\n",arg[0].val.s);
-            printf("use second argument to import as");
+            printf("use second argument to import as\n");
             exit(1);
         }
         Object (*loader)(void)=get_module_loader(arg[0].val.s);
         Object o=(*loader)();
         if(o.type !=obj_module_t){
-            printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+            printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
             exit(1);
         }
         add_object(&MEMORY,arg[0].val.s,o);
@@ -54,7 +54,7 @@ Object import_func(Object*arg,int argc){
             Object o=(*loader)();
 
             if(o.type !=obj_module_t){
-                printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+                printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
                 exit(1);
             }
             add_object(&MEMORY,arg[1].val.s,o);
@@ -63,7 +63,7 @@ Object import_func(Object*arg,int argc){
             Object (*loader)(void)=get_module_loader(arg[0].val.s);
             Object o=(*loader)();
             if(o.type !=obj_module_t){
-                printf("ERROR in loading module %s , value return by loader incorrect",arg[0].val.s);
+                printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
                 exit(1);
             }
             for(int i=0;i<o.val.module->MEM->len;i++){
@@ -191,7 +191,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 }
             }
             if(n == -1){
-                printf("section %s doesnt exists", code[p].value.goto_sec);
+                printf("section %s doesnt exists\n", code[p].value.goto_sec);
                 exit(1);
             }
             p = n;
@@ -210,11 +210,11 @@ Object execute(Instruction* code, char* file_name, int len){
             Obj_free_val(old_end);
 
             if(start.type == Obj_nil_t){
-                printf("ERROR cant convert the value of start to ount in for");
+                printf("ERROR cant convert the value of start to ount in for\n");
                 exit(1);
             }
             if(end.type == Obj_nil_t){
-                printf("ERROR cant convert the value of end to ount in for");
+                printf("ERROR cant convert the value of end to ount in for\n");
                 exit(1);
             }
 
@@ -276,7 +276,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 Obj_free_val(old_obj);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount",code[for_p].value.fo->var_name);
+                    printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
                     exit(1);
                 }
                 (*MEMORY.values[n].val.i)++;
@@ -314,7 +314,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 Obj_free_val(old_obj);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount",code[for_p].value.fo->var_name);
+                    printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
                     exit(1);
                 }
                 (*MEMORY.values[n].val.i)--;
@@ -419,7 +419,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 continue;
             }
             else{
-                printf("ERROR function has same name as variable or another function");
+                printf("ERROR function has same name as variable or another function\n");
                 exit(1);
 
             }
