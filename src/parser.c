@@ -618,7 +618,7 @@ Ast*make_ast(Ast*e,int len){
     while(len>1){
         int n=find_highest_op(e,len);
         if(n==-1){
-            printf("len %d %d %d %d %d",len,e[0].type,e[1].type,e[2].type, line);
+            printf("len %d %d %d %d %d\n",len,e[0].type,e[1].type,e[2].type, line);
             printf("ERROR in expression #0\n");
             exit(1);
         }
@@ -739,27 +739,27 @@ int count_elseelif(Token*tok,int p){
             int opening_par=p+1;
             int closing_par=search_rpar(tok,opening_par);
             if(closing_par==-1){
-                printf("ERROR missing closing ')' on line %d after elif",tok[opening_par].line);
+                printf("ERROR missing closing ')' on line %d after elif\n",tok[opening_par].line);
             }
             p=closing_par+1;
             if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
                 int opening_rbrack=p;
                 int closing_rback=search_rrbrack(tok,p);
                 if(closing_rback==-1){
-                    printf("ERROR missing closing '}' on line %d after elif",tok[p+1].line);
-                    exit(-1);
+                    printf("ERROR missing closing '}' on line %d after elif\n",tok[p+1].line);
+                    exit(1);
                 }
                 p=closing_rback+1;
                 n++;
             }
             else{
-                printf("ERROR missing opening '{' on line %d after else",tok[p-1].line);
-                exit(-1);
+                printf("ERROR missing opening '{' on line %d after else\n",tok[p-1].line);
+                exit(1);
             }
         }
         else{
-            printf("ERROR missing opening '(' on line %d after elif",tok[p].line);
-            exit(-1);
+            printf("ERROR missing opening '(' on line %d after elif\n",tok[p].line);
+            exit(1);
         }
     }
     if(p < len&&tok[p].type == keyword && *tok[p].value.t == else_t){
@@ -770,15 +770,15 @@ int count_elseelif(Token*tok,int p){
                 for(int i= opening_rbrack;i<len;i++){
                     token_print(tok[i],"\n");
                 }
-                printf("ERROR missing closing '}' on line %d after else",tok[p+1].line);
-                exit(-1);
+                printf("ERROR missing closing '}' on line %d after else\n",tok[p+1].line);
+                exit(1);
             }
             p=closing_rback+1;
             n++;
         }
         else{
-            printf("ERROR missing opening '{' on line %d after else",tok[p].line);
-            exit(-1);
+            printf("ERROR missing opening '{' on line %d after else\n",tok[p].line);
+            exit(1);
         }
     }
 
@@ -803,7 +803,7 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
         
         //les else et les elif sont gerer par la partie if make du parser
         if(tok[p].type==keyword&&(*tok[p].value.t==elif_t||*tok[p].value.t==else_t)){
-            printf("ERROR expected if instruction above on line %d",tok[p].line);
+            printf("ERROR expected if instruction above on line %d\n",tok[p].line);
             exit(1);
         }
 
@@ -939,8 +939,8 @@ Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
             int n=find_semicol(tok,p);
             if(n==-1){
                 token_print(tok[p-1],"n");
-                printf("ERROR unexpected token on line %d",tok[p].line);
-                exit(-1);
+                printf("ERROR unexpected token on line %d\n",tok[p].line);
+                exit(1);
             }
             if(n==p){
                 p++;

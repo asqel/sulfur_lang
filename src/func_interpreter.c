@@ -132,7 +132,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                 }
             }
             if(n==-1){
-                printf("section %s doesnt exists",code[p].value.goto_sec);
+                printf("ERROR section %s doesnt exists",code[p].value.goto_sec);
                 exit(1);
             }
             p=n;
@@ -152,11 +152,11 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
             Obj_free_val(old_end);
 
             if(start.type == Obj_nil_t){
-                printf("ERROR cant convert the value of start to ount in for");
+                printf("ERROR cant convert the value of start to ount in for\n");
                 exit(1);
             }
             if(end.type == Obj_nil_t){
-                printf("ERROR cant convert the value of end to ount in for");
+                printf("ERROR cant convert the value of end to ount in for\n");
                 exit(1);
             }
             int n = -1;
@@ -218,7 +218,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                 Obj_free_val(old);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var to ount");
+                    printf("ERROR in for cant convert loop var to ount\n");
                     exit(1);
                 }
                 (*MEMORY.values[n].val.i)++;
@@ -256,7 +256,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                 Obj_free_val(old);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var to ount");
+                    printf("ERROR in for cant convert loop var to ount\n");
                     exit(1);
                 }
                 (*MEMORY.values[n].val.i)--;
@@ -361,7 +361,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                 continue;
             }
             else{
-                printf("ERROR function has same name as variable or another function");
+                printf("ERROR function has same name as variable or another function\n");
                 exit(1);
 
             }

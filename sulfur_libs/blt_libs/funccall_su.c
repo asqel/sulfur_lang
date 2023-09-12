@@ -14,7 +14,7 @@ Object funccall_call(Object* argv, int argc){
         return (*argv[0].val.funcid->func_p)(&argv[1], argc - 1);
     }
     else{
-        printf("ERROR do not use that its not implemented yet(function expression call un sulfur)");
+        printf("ERROR do not use that its not implemented yet(function expression call un sulfur)\n");
         exit(1);
     }
 }

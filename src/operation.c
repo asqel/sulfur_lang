@@ -323,28 +323,28 @@ Object not(Object a){
 Object mod(Object a,Object b){
     if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
         if(*b.val.i == 0){
-            printf("ERROR modulo by 0 (ount)");
+            printf("ERROR modulo by 0 (ount)\n");
             exit(1);
         }
         return new_ount(*a.val.i%*b.val.i);
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
         if(*b.val.f == 0){
-            printf("ERROR modulo by 0 (floap)");
+            printf("ERROR modulo by 0 (floap)\n");
             exit(1);
         }
         return new_floap((long long int)(*a.val.f)%(long long int)(*b.val.f));
     }
     if(a.type == Obj_floap_t && b.type == Obj_ount_t){
         if(*b.val.i == 0){
-            printf("ERROR modulo by 0 (ount)");
+            printf("ERROR modulo by 0 (ount)\n");
             exit(1);
         }
         return new_ount((long long int)*a.val.f % *b.val.i);
     }
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         if((long long int)*b.val.f == 0){
-            printf("ERROR modulo by 0 (floap)");
+            printf("ERROR modulo by 0 (floap)\n");
             exit(1);
         }
         return new_ount(*a.val.i % (long long int)*b.val.f);

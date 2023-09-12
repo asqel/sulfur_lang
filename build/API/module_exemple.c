@@ -4,12 +4,12 @@
 Object add_nums(Object* argv, int argc){
     //only take  2 arguments
     if(argc != 2){
-        printf("ERROR in malloc");
+        printf("ERROR in malloc\n");
         exit(1);
     }
     //only take args of type ount
     if(argv[0].type != Obj_ount_t || argv[1].type != Obj_ount_t){
-        printf("ERRRIR in malloc");
+        printf("ERRRIR in malloc\n");
         exit(1);
     }
     int res = *argv[0].val.i + *argv[1].val.i;
