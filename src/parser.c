@@ -616,26 +616,25 @@ Ast*make_ast(Ast*e,int len){
     //make operators
     p=0;
     while(len>1){
-        int n=find_highest_op(e,len);
+       int n=find_highest_op(e,len);
         if(n==-1){
-            printf("len %d %d %d %d %d\n",len,e[0].type,e[1].type,e[2].type, line);
-            printf("ERROR in expression #0\n");
+            printf("ERROR in expression missing operator on line %d\n",line);
             exit(1);
         }
         if(n-1<0){
-            printf("ERROR missing left operand in expression #1\n");
+            printf("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(n+1>=len){
-            printf("ERROR missing right operand in expression #2\n");
+            printf("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(!(e[n-1].isAst || e[n-1].type==Ast_object_t || e[n-1].type==Ast_varcall_t || e[n-1].type == Ast_anonym_func_t)){
-            printf("ERROR missing left operand in expression #3\n");
+            printf("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(!(e[n+1].isAst || e[n+1].type==Ast_object_t || e[n+1].type==Ast_varcall_t || e[n+1].type == Ast_anonym_func_t)){
-            printf("ERROR missing right operand in expression #4\n");
+            printf("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         Ast op_ast;

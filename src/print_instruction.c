@@ -83,7 +83,12 @@ void instruction_print(Instruction code){
         instructions_print(code.value.fc->code, code.value.fc->code_len);
         printf("}");
     }
-
+    if(code.type == inst_proceed_t){
+        printf("PROCEED\n");
+    }
+    if(code.type == inst_stop_t){
+        printf("STOP\n");
+    }
 }
 
 

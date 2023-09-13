@@ -78,7 +78,9 @@ Object print_prompt(Object*obj,int n_arg){
         printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
     }
     else if(obj->type==Obj_floap_t){
-        printf("%.*Lf",precision,*obj->val.f);
+        char tmp[30];
+        sprintf(tmp, "%%.%dLf", precision);
+        printf(tmp, *(obj->val.f));
     }
     else if(obj->type==Obj_list_t){
         int len=*(obj->val.li->elements[0].val.i);
