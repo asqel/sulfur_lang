@@ -26,9 +26,9 @@ int entry2(int argc, char **argv) {
 }
 
 long long __moddi3(long long a, long long b) {
-    return a % b;
+    return (long long) ((int) a % (int) b);
 }
 
 long long __divdi3(long long a, long long b) {
-    return a / b;
+    return (long long) ((int) a / (int) b);
 }
