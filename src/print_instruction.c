@@ -87,7 +87,7 @@ void instruction_print(Instruction code){
         printf("PROCEED\n");
     }
     if(code.type == inst_stop_t){
-        printf("SOPT\n");
+        printf("STOP\n");
     }
 }
 
