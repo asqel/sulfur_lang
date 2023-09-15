@@ -336,7 +336,6 @@ Object eval_Ast(Ast*x){
         }
         if(x->type == Ast_dot_t){
             Object a = eval_Ast(x->left);
-            
             if(a.type == obj_module_t){
                 if(x->right->type == Ast_varcall_t){
                     Object res = get_Obj_mem(*a.val.module->MEM, x->right->root.varcall);
@@ -401,6 +400,14 @@ Object eval_Ast(Ast*x){
                     }
 
                 }
+                else if(x->right->type == Ast_varcall_t){
+                    Object var = get_Obj_mem(*string_module.MEM, x->right->root.varcall);
+                    if (var.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of string",x->right->root.varcall);
+                        exit(1);
+                    }
+                    return Obj_cpy(var);
+                }
                 
             }
             if(a.type == Obj_funcid_t){
@@ -430,6 +437,14 @@ Object eval_Ast(Ast*x){
                     }
 
                 }
+                else if(x->right->type == Ast_varcall_t){
+                    Object var = get_Obj_mem(*funccall_module.MEM, x->right->root.varcall);
+                    if (var.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of funccall",x->right->root.varcall);
+                        exit(1);
+                    }
+                    return Obj_cpy(var);
+                }
             }
             if(a.type == Obj_list_t){
                 if (x->right->type == Ast_funccall_t){
@@ -457,6 +472,14 @@ Object eval_Ast(Ast*x){
                         }
                     }
 
+                }
+                else if(x->right->type == Ast_varcall_t){
+                    Object var = get_Obj_mem(*list_module.MEM, x->right->root.varcall);
+                    if (var.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
+                        exit(1);
+                    }
+                    return Obj_cpy(var);
                 }
             }
             else{
