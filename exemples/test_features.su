@@ -1,54 +1,54 @@
 goto a
 c::
-println("tis is printred in second");
+println("tis is printred in second")
 goto b
 a::
 //test for
 for(i from 0 to 100){
-	println(i + 2.1);
+	println(i + 2.1)
 }
 
 //test goto / section
-println("this is printed first");
+println("this is printed first")
 goto c
 b::
 
-println("this is written using 0x45 : 69",0x45);
+println("this is written using 0x45 : 69",0x45)
 
 //value switch
-a = 4;
-b = 5;
-println("values before",a,b);
-a = (b = a);
-println("values after",a,b);
+a = 4
+b = 5
+println("values before",a,b)
+a = (b = a)
+println("values after",a,b)
 
-i = 10;
+i = 10
 while(i > 0){
-	println("compte a rebous while",i);
-	i -= 1;
+	println("compte a rebous while",i)
+	i -= 1
 }
 
-pi = 3.14;
+pi = 3.14
 
 if(pi == 3.14){
-	println("pi est un floap");
+	println("pi est un floap")
 }
 elif(pi == 3){
-	println("pi est un ount");
+	println("pi est un ount")
 }
 else{
-	println("pi is something", type(pi));
+	println("pi is something", type(pi))
 }
 
-println("this for will be start at 0 and go to 100 but ends at the first number divisible by 9 and greater than 30");
+println("this for will be start at 0 and go to 100 but ends at the first number divisible by 9 and greater than 30")
 
 for(i from 0 to 100){
-	println(i);
+	println(i)
 	if(i % 9 == 0 & i > 30){
-		stop;
+		stop
 	}
 }
 
-l = list(3, 4, 0b, 0x42, "un str", list(0,0));
-println("list, its len an its last member will be printed");
-println(l, l:-1, l:((l:-1) - 1));
+l = list(3, 4, 0b, 0x42, "un str", list(0,0))
+println("list, its len an its last member will be printed")
+println(l, l:-1, l:((l:-1) - 1))

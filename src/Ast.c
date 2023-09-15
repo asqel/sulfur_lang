@@ -185,3 +185,15 @@ void free_ast(Ast x){
         free(x.left);
     }
 }
+
+char *get_op_str(Ast x)
+{
+    if(x.type == Ast_op_t)
+        return get_op(x.root.op);
+    else if(x.type == Ast_syntax_t)
+        if(x.root.sy == dot)
+            return ".";
+        if(x.root.sy == colon)
+            return ":";
+            
+}

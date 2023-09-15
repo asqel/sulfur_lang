@@ -31,10 +31,6 @@ int str_contains_char(char *x,char v){
     return 0;
 }
 
-#ifdef __profanOS__
-char *profan_get_current_dir();
-#endif
-
 char*abs_path(){
     char *path=malloc(sizeof(char)*(PATH_MAX+1));
     #ifdef _WIN32
@@ -49,7 +45,9 @@ char*abs_path(){
             exit(EXIT_FAILURE);
         }
     #elif __profanOS__
-        strcpy(path, profan_get_current_dir());
+        char *tmp = getenv("PWD");
+        if (tmp == NULL) tmp = "/";
+        strcpy(path, tmp);
     #else
         if (readlink("/proc/self/exe", path, PATH_MAX) == -1) {
             perror("readlink");

@@ -13,7 +13,7 @@ Instruction *make_return(Token *tok, int start, int end, Instruction *inst, int 
 	if(tok[*p].type == keyword && *tok[*p].value.t == return_t){
         int n = find_semicol(tok, *p);
         if(n == -1){
-            printf("ERROR missing ';' on line %d after return",tok[*p].line);
+            printf("ERROR missing ';' on line %d after return\n",tok[*p].line);
             exit(1);
         }
         if(n == *p + 1){
