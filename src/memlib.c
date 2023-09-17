@@ -53,7 +53,6 @@ int Obj_free_val(Object obj){
         case Obj_nil_t:
             break;
         case Obj_end_t:
-            free(obj.val.i);
             break;
         case Obj_list_t:
             remove_count(obj.val.li, Obj_list_t);
@@ -101,17 +100,17 @@ void Obj_print(Object obj){
 void*get_obj_pointer(Object o){
     switch(o.type){
         case Obj_boolean_t:
-            return &o.val.b;
+            return NULL;
         case Obj_list_t:
             return o.val.li;
         case Obj_complex_t:
-            return o.val.c;
+            return NULL;
         case Obj_floap_t:
-            return &o.val.f;
+            return NULL;
         case Obj_funcid_t:
             return o.val.funcid;
         case Obj_ount_t:
-            return &o.val.i;
+            return NULL;
         case Obj_string_t:
             return o.val.s;
         case Obj_typeid_t:

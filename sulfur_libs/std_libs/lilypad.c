@@ -15,9 +15,9 @@ Object std_malloc(Object* argv, int argc){
     }
     #ifdef __profanOS__
     // 32 bit system
-    return new_ount((long int) malloc(*argv[0].val.i));
+    return new_ount((long int) malloc(argv[0].val.i));
     #else
-    return new_ount((long long int) malloc(*argv[0].val.i));
+    return new_ount((long long int) malloc(argv[0].val.i));
     #endif
 }
 
@@ -32,9 +32,9 @@ Object std_free(Object* argv, int argc){
     }
     #ifdef __profanOS__
     // 32 bit system
-    free((void *) (long int) *argv[0].val.i);
+    free((void *) (long int) argv[0].val.i);
     #else
-    free((void *) *argv[0].val.i);
+    free((void *) argv[0].val.i);
     #endif
 
     return nil_Obj;
@@ -52,9 +52,9 @@ Object std_get_val_byte(Object* argv, int argc){
 
     #ifdef __profanOS__
     // 32 bit system
-    return new_ount(*((unsigned char *) (long int) *argv[0].val.i));
+    return new_ount(*((unsigned char *) (long int) argv[0].val.i));
     #else
-    return new_ount(*((unsigned char *) *argv[0].val.i));
+    return new_ount(*((unsigned char *) argv[0].val.i));
     #endif
 }
 
@@ -70,9 +70,9 @@ Object std_set_val_byte(Object* argv, int argc){
 
     #ifdef __profanOS__
     // 32 bit system
-    *((unsigned char *) (long int) *argv[0].val.i) = (unsigned char) *argv[1].val.i;
+    *((unsigned char *) (long int) argv[0].val.i) = (unsigned char) argv[1].val.i;
     #else
-    *((unsigned char *) *argv[0].val.i) = (unsigned char) *argv[1].val.i;
+    *((unsigned char *) argv[0].val.i) = (unsigned char) argv[1].val.i;
     #endif
 
     return nil_Obj;

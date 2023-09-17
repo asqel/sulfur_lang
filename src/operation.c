@@ -34,9 +34,7 @@ Object add(Object a,Object b){
         int len = a.val.li->elements[0].val.i + b.val.li->elements[0].val.i;
         x.val.li=malloc(sizeof(list));
         x.val.li->elements=malloc(sizeof(Object)*(len+1));
-        x.val.li->elements[0].type=Obj_ount_t;
-        x.val.li->elements[0].val.i = malloc(sizeof(long long int));
-        x.val.li->elements[0].val.i = len;
+        x.val.li->elements[0] = new_ount(len);
         int len1 = a.val.li->elements[0].val.i;
         int len2 = a.val.li->elements[0].val.i;
         for(int i=0;i<len1;i++){

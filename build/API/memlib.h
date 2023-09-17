@@ -63,11 +63,11 @@ typedef struct stack{
 
 typedef union Obj_val{
     struct Object*o;
-    char*s;//string {char,...}
-    long long int*i;//ount 
-    long double*f;//floap
-    long double*c;//complex {re,im}
-    char*b;//boolean 
+    char* s;//string {char,...}
+    long long int i;//ount 
+    long double f;//floap
+    long double c[2];//complex {re,im}
+    char b;//boolean 
     class*cl;//class
     class*cl_def;
     Funcdef *funcid;//contain a function identifier

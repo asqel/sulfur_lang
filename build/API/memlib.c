@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
-Object nil_Obj ={Obj_nil_t,{.b=&(char){0}}};
-Object not_found_Obj ={Obj_not_found_t,{.b=&(char){0}}};
+Object end_Obj = {Obj_end_t, .val.b = -1};
+Object nil_Obj = {Obj_nil_t, .val.b = 0};
+Object not_found_Obj = {Obj_not_found_t, .val.b = 0};
 
 //return 1 if they are the same
 //else 0
@@ -21,13 +21,13 @@ int Obj_cmp(Object obj1,Object obj2){
             case Obj_string_t:
                 return !strcmp(obj1.val.s,obj2.val.s);
             case Obj_ount_t:
-                return *obj1.val.i==*obj2.val.i;
+                return obj1.val.i==obj2.val.i;
             case Obj_floap_t:
-                return *obj1.val.f==*obj2.val.f;
+                return obj1.val.f==obj2.val.f;
             case Obj_complex_t:
-                return *obj1.val.c==*obj2.val.c&&obj1.val.c[1]==obj2.val.c[1];
+                return obj1.val.c == obj2.val.c && obj1.val.c[1] == obj2.val.c[1];
             case Obj_boolean_t:
-                *obj1.val.b==*obj2.val.b;
+                obj1.val.b == obj2.val.b;
             default:
                 //ERROR
                 break;
@@ -51,22 +51,16 @@ void Obj_free_val(Object obj){
             free(obj.val.s);
             break;
         case Obj_ount_t:
-            free(obj.val.i);
             break;
         case Obj_floap_t:
-            free(obj.val.f);
             break;
         case Obj_complex_t:
-            free(obj.val.c);
             break;
         case Obj_boolean_t:
-            free(obj.val.b);
             break;
         case Obj_nil_t:
-            free(obj.val.i);
             break;
         case Obj_end_t:
-            free(obj.val.i);
             break;
         case Obj_list_t:
             break;
@@ -92,16 +86,16 @@ void Objs_print(Object*obj,int len){
 void Obj_print(Object obj){
     switch (obj.type){
         case Obj_boolean_t:
-            printf("Obj_b:[%s]",*obj.val.b!=0?"1b":"0b");
+            printf("Obj_b:[%s]", obj.val.b != 0 ? "1b" : "0b");
             break;
         case Obj_complex_t:
-            printf("Obj_c:[%Lf+%Lfi]",obj.val.c[0],obj.val.c[1]);
+            printf("Obj_c:[%Lf + %Lfi]",obj.val.c[0],obj.val.c[1]);
             break;
         case Obj_floap_t:
-            printf("Obj_f:[%Lf]",*obj.val.f);
+            printf("Obj_f:[%Lf]", obj.val.f);
             break;
         case Obj_ount_t:
-            printf("Obj_i:[%lld]",*obj.val.i);
+            printf("Obj_i:[%lld]", obj.val.i);
     
         default:
             break;
@@ -111,17 +105,17 @@ void Obj_print(Object obj){
 void*get_obj_pointer(Object o){
     switch(o.type){
         case Obj_boolean_t:
-            return o.val.b;
+            return NULL;
         case Obj_list_t:
             return o.val.li;
         case Obj_complex_t:
-            return o.val.c;
+            return NULL;
         case Obj_floap_t:
-            return o.val.f;
+            return NULL;
         case Obj_funcid_t:
             return o.val.funcid;
         case Obj_ount_t:
-            return o.val.i;
+            return NULL;
         case Obj_string_t:
             return o.val.s;
         case Obj_typeid_t:
@@ -209,16 +203,14 @@ void add_Object_Module(Object mod, char*name,Object x){
 Object new_ount(long long int value){
     Object o;
     o.type=Obj_ount_t;
-    o.val.i=malloc(sizeof(long long int));
-    *o.val.i=value;
+    o.val.i=value;
     return o;
 }
 
 Object new_floap(long double value){
     Object o;
     o.type=Obj_floap_t;
-    o.val.f=malloc(sizeof(long double));
-    *o.val.f=value;
+    o.val.f=value;
     return o;
 }
 
@@ -234,8 +226,7 @@ Object new_string(char * value){
 Object new_boolean(int value){
     Object o;
     o.type=Obj_boolean_t;
-    o.val.b=malloc(sizeof(char));
-    *o.val.b= value ? 1:0;
+    o.val.b= value ? 1:0;
     return o;
 }
 
@@ -243,13 +234,18 @@ Object Obj_cpy(Object o){
     Object res;
     switch (o.type){
         case Obj_ount_t:
-            return new_ount(*o.val.i);
+            return o;
         case Obj_floap_t:
-            return new_floap(*o.val.f);
+            return new_floap(o.val.f);
         case Obj_string_t:
             return new_string(o.val.s);
         case Obj_boolean_t:
-            return new_boolean(*o.val.b);
+            return o;
+        case Obj_complex_t:
+            res.type = Obj_complex_t;
+            res.val.c[0] = o.val.c[0];
+            res.val.c[1] = o.val.c[1];
+            return res;
         case Obj_list_t:
             res.type = Obj_list_t;
             res.val.li = o.val.li;
