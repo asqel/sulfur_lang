@@ -316,8 +316,8 @@ Object eval_Ast(Ast*x){
                     printf("ERROR in assign index not ount\n");
                     exit(1);
                 }
-                int index = *index_obj.val.i;
-                if(!( -1 <= index && index < *(in_what.val.li->elements[0].val.i))){
+                int index = index_obj.val.i;
+                if(!( -1 <= index && index < (in_what.val.li->elements[0].val.i))){
                     printf("ERROR cannot assign out of range\n");
                     exit(1);
                 }
@@ -499,8 +499,8 @@ Object eval_Ast(Ast*x){
                     printf("ERROR ':' only take ount convetible\n");
                     exit(1);
                 }
-                int index = *b.val.i;
-                if(!(-1 <= index && index < *a.val.li->elements[0].val.i)){
+                int index = b.val.i;
+                if(!(-1 <= index && index < a.val.li->elements[0].val.i)){
                     printf("ERROR list out of range on ':'\n");
                     exit(1);
                 }
@@ -519,7 +519,7 @@ Object eval_Ast(Ast*x){
                     printf("ERROR ':' only take ount convetible\n");
                     exit(1);
                 }
-                int index = *b.val.i;
+                int index = b.val.i;
                 int len = strlen(a.val.s);
                 if(!(-1 <= index && index < len)){
                     printf("ERROR string out of range on ':'\n");
