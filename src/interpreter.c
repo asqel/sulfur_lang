@@ -7,6 +7,7 @@
 #include "../sulfur_libs/blt_libs/funccall_su.h"
 #include "../sulfur_libs/blt_libs/list_su.h"
 
+#include "../include/sulfur.h"
 #include "../include/operation.h"
 #include "../include/utilities.h"
 #include "../include/token_class.h"
@@ -18,6 +19,27 @@ memory MEMORY;
 
 ref_count* REFS;
 int REFS_len;
+
+Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
+    if(as != NULL){
+        Object o = (*loader)(CTX);
+        if(o.type !=obj_module_t){
+            printf("ERROR in loading module '%s' as '%s', value return by loader incorrect\n", name, as);
+            exit(1);
+        }
+        add_object(&MEMORY, as, o);
+    }
+    else{
+        Object o=(*loader)(CTX);
+        if(o.type !=obj_module_t){
+            printf("ERROR in loading module %s , value return by loader incorrect\n",name);
+            exit(1);
+        }
+        for(int i=0;i<o.val.module->MEM->len;i++){
+            add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
+        }
+    }
+}
 
 Object import_func(Object*arg,int argc){
     if (argc>2){
@@ -36,13 +58,7 @@ Object import_func(Object*arg,int argc){
             printf("use second argument to import as\n");
             exit(1);
         }
-        Object (*loader)(void)=get_module_loader(arg[0].val.s);
-        Object o=(*loader)();
-        if(o.type !=obj_module_t){
-            printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
-            exit(1);
-        }
-        add_object(&MEMORY,arg[0].val.s,o);
+        add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, arg[0].val.s);
     }
     if (argc==2){
         if (strcmp(arg[1].val.s,"") && !id_acceptable_ptr(arg[1].val.s)){
@@ -50,29 +66,13 @@ Object import_func(Object*arg,int argc){
             exit(1);
         }
         if (strcmp(arg[1].val.s,"")){
-            Object (*loader)(void)=get_module_loader(arg[0].val.s);
-            Object o=(*loader)();
-
-            if(o.type !=obj_module_t){
-                printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
-                exit(1);
-            }
-            add_object(&MEMORY,arg[1].val.s,o);
+            add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, arg[1].val.s);
         }
         else{
-            Object (*loader)(void)=get_module_loader(arg[0].val.s);
-            Object o=(*loader)();
-            if(o.type !=obj_module_t){
-                printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
-                exit(1);
-            }
-            for(int i=0;i<o.val.module->MEM->len;i++){
-                add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
-            }
+            add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, NULL);
         }
-
     }
-
+    return nil_Obj;
 }
 
 

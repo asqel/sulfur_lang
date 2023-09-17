@@ -152,4 +152,12 @@ Object get_Obj_mem(memory MEMORY, char* name);
 
 void*realloc_c(void*mem,long long int old_size,long long int new_size);
 
+typedef struct Sulfur_ctx{
+    void *memlib_func;
+    void *std_func;
+    void *vars;
+    memory *MEM;
+    int *errno; // len = 4 [is_error,type,error_number,extra]
+} Sulfur_ctx;
+
 #endif

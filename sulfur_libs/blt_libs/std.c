@@ -384,7 +384,7 @@ Object set(Object *obj,int n_arg){
 }
 
 
-Object comp(Object* argv, int argc){
+Object std_comp(Object* argv, int argc){
     if(argc == 1){
         if(argv[0].type == Obj_ount_t){
             return new_complex(argv[0].val.i,0);

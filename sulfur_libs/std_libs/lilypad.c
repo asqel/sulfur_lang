@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifndef ONE_FILE
+    Sulfur_ctx context;
+#endif
 
 Object std_malloc(Object* argv, int argc){
     if(argc != 1){
@@ -80,8 +83,9 @@ Object std_set_val_byte(Object* argv, int argc){
 
 #ifndef ONE_FILE
 
-Object __loader() {
+Object __loader(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    context = ctx;
 
     add_func_Module(mod, "free", &std_free, "");
     add_func_Module(mod, "malloc", &std_malloc, "");
@@ -93,8 +97,9 @@ Object __loader() {
 
 #else
 
-Object __load_lilypad() {
+Object __load_lilypad(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    (void)ctx;
 
     add_func_Module(mod, "free", &std_free, "");
     add_func_Module(mod, "malloc", &std_malloc, "");
