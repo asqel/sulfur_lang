@@ -20,13 +20,13 @@ int Obj_cmp(Object obj1,Object obj2){
             case Obj_string_t:
                 return !strcmp(obj1.val.s,obj2.val.s);
             case Obj_ount_t:
-                return *obj1.val.i==*obj2.val.i;
+                return obj1.val.i == obj2.val.i;
             case Obj_floap_t:
-                return *obj1.val.f==*obj2.val.f;
+                return obj1.val.f == obj2.val.f;
             case Obj_complex_t:
-                return *obj1.val.c==*obj2.val.c&&obj1.val.c[1]==obj2.val.c[1];
+                return *obj1.val.c == *obj2.val.c && obj1.val.c[1] == obj2.val.c[1];
             case Obj_boolean_t:
-                *obj1.val.b==*obj2.val.b;
+                obj1.val.b == obj2.val.b;
             default:
                 //ERROR
                 break;
@@ -50,22 +50,9 @@ int Obj_free_val(Object obj){
         case Obj_string_t:
             free(obj.val.s);
             break;
-        case Obj_ount_t:
-            free(obj.val.i);
-            break;
-        case Obj_floap_t:
-            free(obj.val.f);
-            break;
-        case Obj_complex_t:
-            free(obj.val.c);
-            break;
-        case Obj_boolean_t:
-            free(obj.val.b);
-            break;
         case Obj_nil_t:
             break;
         case Obj_end_t:
-            free(obj.val.i);
             break;
         case Obj_list_t:
             remove_count(obj.val.li, Obj_list_t);
@@ -94,16 +81,16 @@ void Objs_print(Object*obj,int len){
 void Obj_print(Object obj){
     switch (obj.type){
         case Obj_boolean_t:
-            printf("Obj_b:[%s]",*obj.val.b!=0?"1b":"0b");
+            printf("Obj_b:[%s]", obj.val.b!=0?"1b":"0b");
             break;
         case Obj_complex_t:
             printf("Obj_c:[%Lf+%Lfi]",obj.val.c[0],obj.val.c[1]);
             break;
         case Obj_floap_t:
-            printf("Obj_f:[%Lf]",*obj.val.f);
+            printf("Obj_f:[%Lf]", obj.val.f);
             break;
         case Obj_ount_t:
-            printf("Obj_i:[%lld]",*obj.val.i);
+            printf("Obj_i:[%lld]", obj.val.i);
     
         default:
             break;
@@ -113,17 +100,17 @@ void Obj_print(Object obj){
 void*get_obj_pointer(Object o){
     switch(o.type){
         case Obj_boolean_t:
-            return o.val.b;
+            return NULL;
         case Obj_list_t:
             return o.val.li;
         case Obj_complex_t:
-            return o.val.c;
+            return NULL;
         case Obj_floap_t:
-            return o.val.f;
+            return NULL;
         case Obj_funcid_t:
             return o.val.funcid;
         case Obj_ount_t:
-            return o.val.i;
+            return NULL;
         case Obj_string_t:
             return o.val.s;
         case Obj_typeid_t:
@@ -206,17 +193,15 @@ void add_Object_Module(Object mod, char*name,Object x){
 
 Object new_ount(long long int value){
     Object o;
-    o.type=Obj_ount_t;
-    o.val.i=malloc(sizeof(long long int));
-    *o.val.i=value;
+    o.type = Obj_ount_t;
+    o.val.i = value;
     return o;
 }
 
 Object new_floap(long double value){
     Object o;
-    o.type=Obj_floap_t;
-    o.val.f=malloc(sizeof(long double));
-    *o.val.f=value;
+    o.type = Obj_floap_t;
+    o.val.f = value;
     return o;
 }
 
@@ -232,8 +217,7 @@ Object new_string(char * value){
 Object new_boolean(int value){
     Object o;
     o.type=Obj_boolean_t;
-    o.val.b=malloc(sizeof(char));
-    *o.val.b= value ? 1:0;
+    o.val.b = value ? 1:0;
     return o;
 }
 #include "../sulfur_libs/blt_libs/std.h"
@@ -241,13 +225,13 @@ Object Obj_cpy(Object o){
     Object res;
     switch (o.type){
         case Obj_ount_t:
-            return new_ount(*o.val.i);
+            return new_ount(o.val.i);
         case Obj_floap_t:
-            return new_floap(*o.val.f);
+            return new_floap(o.val.f);
         case Obj_string_t:
             return new_string(o.val.s);
         case Obj_boolean_t:
-            return new_boolean(*o.val.b);
+            return new_boolean(o.val.b);
         case Obj_list_t:
             res.type = Obj_list_t;
             res.val.li = o.val.li;
@@ -273,7 +257,6 @@ Object Obj_cpy(Object o){
 Object new_complex(long double re, long double im){
     Object o;
     o.type = Obj_complex_t;
-    o.val.c = malloc(sizeof(long double) * 2);
     o.val.c[0] = re;
     o.val.c[1] = im;
     return o;
@@ -313,7 +296,7 @@ void Obj_free_array(Object* objs, int len){
 
 int get_list_len(Object l){
     if(l.type == Obj_list_t){
-        return *l.val.li->elements[0].val.i;
+        return l.val.li->elements[0].val.i;
     }
     return 0;
 }
@@ -343,7 +326,7 @@ void remove_count(void* address, int type){
             REFS[i].count -= 1;
             if(REFS[i].count == 0){
                 if(type == Obj_list_t){
-                    Obj_free_array(((list*)address)->elements, *((list*)address)->elements[0].val.i);
+                    Obj_free_array(((list*)address)->elements, ((list*)address)->elements[0].val.i);
                     free(address);
                 }
                 if(type == Obj_funcid_t){

@@ -54,7 +54,7 @@ Object set_width(Object *argv, int argc)
         return new_ount(-1);
     if(argv[0].type != Obj_ount_t)
         return new_ount(-1);
-    width = *argv[0].val.i;
+    width = argv[0].val.i;
     XResizeWindow(display, window, width, height);
     return nil_Obj;
 }
@@ -65,7 +65,7 @@ Object set_height(Object *argv, int argc)
         return new_ount(-1);
     if(argv[0].type != Obj_ount_t)
         return new_ount(-1);
-    height = *argv[0].val.i;
+    height = argv[0].val.i;
     XResizeWindow(display, window, width, height);
     return nil_Obj;
 }
@@ -79,13 +79,13 @@ Object set_pixel(Object *argv, int argc){
         if(argv[i].type != Obj_ount_t)
             return new_ount(-1);
     }
-    int x = *argv[0].val.i;
-    int y = *argv[1].val.i;
+    int x = argv[0].val.i;
+    int y = argv[1].val.i;
 
     XColor color;
-    color.red = *argv[2].val.i * 65535 / 255;
-    color.green = *argv[3].val.i * 65535 / 255;
-    color.blue = *argv[4].val.i * 65535 / 255;
+    color.red = argv[2].val.i * 65535 / 255;
+    color.green = argv[3].val.i * 65535 / 255;
+    color.blue = argv[4].val.i * 65535 / 255;
     color.flags = DoRed | DoGreen | DoBlue;
 
     if (!XAllocColor(display, DefaultColormap(display, screen), &color)) {
@@ -111,9 +111,9 @@ Object fill_window(Object* argv, int argc) {
     }
 
     XColor color;
-    color.red = *argv[0].val.i * 65535 / 255;
-    color.green = *argv[1].val.i * 65535 / 255;
-    color.blue = *argv[2].val.i * 65535 / 255;
+    color.red = argv[0].val.i * 65535 / 255;
+    color.green = argv[1].val.i * 65535 / 255;
+    color.blue = argv[2].val.i * 65535 / 255;
     color.flags = DoRed | DoGreen | DoBlue;
 
     if (!XAllocColor(display, DefaultColormap(display, screen), &color)) {
@@ -136,15 +136,15 @@ Object fill_rect(Object* argv, int argc){
             return new_ount(-1);
     }
 
-    int x = *argv[0].val.i;
-    int y = *argv[1].val.i;
-    int w = *argv[2].val.i;
-    int h = *argv[3].val.i;
+    int x = argv[0].val.i;
+    int y = argv[1].val.i;
+    int w = argv[2].val.i;
+    int h = argv[3].val.i;
 
     XColor color;
-    color.red = *argv[4].val.i * 65535 / 255;
-    color.green = *argv[5].val.i * 65535 / 255;
-    color.blue = *argv[6].val.i * 65535 / 255;
+    color.red = argv[4].val.i * 65535 / 255;
+    color.green = argv[5].val.i * 65535 / 255;
+    color.blue = argv[6].val.i * 65535 / 255;
     color.flags = DoRed | DoGreen | DoBlue;
 
     if (!XAllocColor(display, DefaultColormap(display, screen), &color)) {

@@ -119,7 +119,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
-            if(*(c.val.b)){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -133,7 +133,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
-            if(*(c.val.b)){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -233,7 +233,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 MEMORY.values[n] = start;
 
             }
-            if(*start.val.i == *end.val.i){
+            if(start.val.i == end.val.i){
                 Obj_free_val(end);
                 p = code[p].value.fo->endfor + 1;
                 remove_loop_count(&loops_count, &loops);
@@ -257,7 +257,7 @@ Object execute(Instruction* code, char* file_name, int len){
 
 
             //positive for 
-            if(*start.val.i < *end.val.i){
+            if(start.val.i < end.val.i){
                 int n = -1;
                 for(int i = 0; i < MEMORY.len; i++){
                     if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
@@ -279,9 +279,9 @@ Object execute(Instruction* code, char* file_name, int len){
                     printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
                     exit(1);
                 }
-                (*MEMORY.values[n].val.i)++;
+                MEMORY.values[n].val.i++;
 
-                if(*end.val.i > *MEMORY.values[n].val.i){
+                if(end.val.i > MEMORY.values[n].val.i){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p=for_p+1;
@@ -317,9 +317,9 @@ Object execute(Instruction* code, char* file_name, int len){
                     printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
                     exit(1);
                 }
-                (*MEMORY.values[n].val.i)--;
+                MEMORY.values[n].val.i--;
 
-                if(*end.val.i < *MEMORY.values[n].val.i){
+                if(end.val.i < MEMORY.values[n].val.i){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p=for_p+1;
@@ -339,7 +339,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object condition = eval_Ast(code[p].value.wh->condition);
             Object c = std_bool(&condition, 1);
             Obj_free_val(condition);
-            if(*c.val.b){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -356,7 +356,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object condition = eval_Ast(code[while_p].value.wh->condition);
             Object c=std_bool(&condition,1);
             Obj_free_val(condition);
-            if(*c.val.b){
+            if(c.val.b){
                 Obj_free_val(c);
                 p=code[p].value.endwhile+1;
                 continue;

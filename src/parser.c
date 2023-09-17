@@ -39,8 +39,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_ount_t;
-                e[i-start-offset].root.obj->val.i=malloc(sizeof(long long int));
-                *e[i-start-offset].root.obj->val.i=*tok[i].value.i;
+                e[i-start-offset].root.obj->val.i=*tok[i].value.i;
                 break;
             case str:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
@@ -53,21 +52,18 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_floap_t;
-                e[i-start-offset].root.obj->val.f=malloc(sizeof(long double));
-                *e[i-start-offset].root.obj->val.f=*tok[i].value.f;
+                e[i-start-offset].root.obj->val.f=*tok[i].value.f;
                 break;
             case boolean_t:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_boolean_t;
-                e[i-start-offset].root.obj->val.b=malloc(sizeof(short int));
-                *e[i-start-offset].root.obj->val.b=*tok[i].value.b;
+                e[i-start-offset].root.obj->val.b=*tok[i].value.b;
                 break;
             case comp:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_complex_t;
-                e[i-start-offset].root.obj->val.c=malloc(sizeof(long double)*2);
                 e[i-start-offset].root.obj->val.c[0]=tok[i].value.c[0];
                 e[i-start-offset].root.obj->val.c[1]=tok[i].value.c[1];
                 break;

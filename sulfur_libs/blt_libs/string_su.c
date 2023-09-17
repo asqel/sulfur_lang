@@ -137,27 +137,27 @@ Object str_convert_escape(Object* argv, int argc){
 Object str_get(Object* argv, int argc){
     Object index = argv[1];
     int len=strlen(argv[0].val.s);
-    if (*index.val.i==-1){
+    if (index.val.i==-1){
         Object res;
         res.type=Obj_ount_t;
         res.val.s=malloc(sizeof(long long int));
         *res.val.s=len;
         return res;
     }
-    if (*index.val.i >= len || *index.val.i<-1){
+    if (index.val.i >= len || index.val.i<-1){
         printf("ERROR get out of range\n");
         exit(1);
     }
     Object res;
     res.type=Obj_string_t;
     res.val.s=malloc(sizeof(char)*2);
-    res.val.s[0]=argv[0].val.s[*index.val.i];
+    res.val.s[0]=argv[0].val.s[index.val.i];
     res.val.s[1]='\0';
     return res;
 }
 
 Object str_set(Object* argv, int argc){
-    argv[0].val.s[*argv[1].val.i] = argv[2].val.s[0];
+    argv[0].val.s[argv[1].val.i] = argv[2].val.s[0];
     return new_string(argv[0].val.s);
 }
 
