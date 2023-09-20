@@ -1,6 +1,10 @@
 #ifdef _WIN32
 
-#include "../../../include/memlib.h"
+#ifndef ONE_FILE
+    #include "../../../build/API/memlib.h"
+#else
+    #include "../../../include/memlib.h"
+#endif
 #include "graphic.h"
 #include <stdio.h>
 #include <stdlib.h>

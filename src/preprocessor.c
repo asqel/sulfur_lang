@@ -4,6 +4,23 @@
 #include "../include/preprocessor.h"
 #include "../include/utilities.h"
 
+int is_there_brack_elif(int from, char *input) {
+    int i = from + 1;
+    if (input[from] == '\0')
+        return 0;
+    while (input[i] == '\0' || input[i] == ' ' || input[i] == '\n' || input[i] == '\t' || input[i] == '\r') {
+        i++;
+    }
+    if(input[i] == '{' || input[i] == '(')
+        return 1;
+    if(input[i] == 'e' && input[i + 1] == 'l' && input[i + 2] == 'i' && input[i + 3] == 'f')
+        return 1;
+    if(input[i] == 'e' && input[i + 1] == 'l' && input[i + 2] == 's' && input[i + 3] == 'e')
+        return 1;
+    return 0;
+
+}
+
 char *add_semicolon(char *input) {
     char *text = malloc(sizeof(char) * (strlen(input) + 2 + str_count(input, '\n')));
     int in_string = 0;
@@ -33,7 +50,7 @@ char *add_semicolon(char *input) {
         if (open_parenthesis || input[i] == ';' || input[i] == '{' || input[i] == '}' || input[i] == '\n')
             continue;
 
-        if (input[i+1] == '\n' || input[i+1] == '\0')
+        if ((input[i+1] == '\n' || input[i+1] == '\0') && !is_there_brack_elif(i + 1, input))
             text[t_index++] = ';';
         
         else if (input[i+1] == '/' && input[i+2] == '/')

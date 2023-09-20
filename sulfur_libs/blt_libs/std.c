@@ -14,17 +14,17 @@
 #include "../../include/sulfur.h"
 
 #ifdef __profanOS__
-#include <syscall.h>
+    #include <syscall.h>
 #endif
 
 #ifdef _WIN32
     char* __os__="windows";
 #elif __APPLE__
     char* __os__="APPLE";
-#elif __linux__
-    char* __os__="linux";
 #elif __profanOS__
     char* __os__="profanOS";
+#elif __linux__
+    char* __os__="linux";
 #else 
     char* __os__="UNKNOWN";
 #endif
