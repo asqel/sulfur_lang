@@ -1,6 +1,10 @@
 #if __profanOS__
 
-#include "../../../include/memlib.h"
+#ifndef ONE_FILE
+    #include "../../../build/API/memlib.h"
+#else
+    #include "../../../include/memlib.h"
+#endif
 #include <syscall.h>
 
 int width = 400;

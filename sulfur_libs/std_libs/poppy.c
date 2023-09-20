@@ -1,4 +1,8 @@
-#include "../../build/API/memlib.h"
+#ifndef ONE_FILE
+    #include "../../build/API/memlib.h"
+#else
+    #include "../../include/memlib.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 

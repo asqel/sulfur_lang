@@ -1,5 +1,9 @@
 //this is the lib to manage memory
-#include "../../include/memlib.h"
+#ifndef ONE_FILE
+    #include "../../build/API/memlib.h"
+#else
+    #include "../../include/memlib.h"
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -81,6 +85,11 @@ Object std_set_val_byte(Object* argv, int argc){
     return nil_Obj;
 }
 
+Object memory_adresse(Object * argv, int argc){
+    printf("%d\n", 42);
+    return (nil_Obj);
+}
+
 #ifndef ONE_FILE
 
 Object __loader(Sulfur_ctx ctx) {
@@ -91,6 +100,7 @@ Object __loader(Sulfur_ctx ctx) {
     add_func_Module(mod, "malloc", &std_malloc, "");
     add_func_Module(mod,"get_byte", &std_get_val_byte,"");
     add_func_Module(mod,"set_byte", &std_set_val_byte,"");
+    add_func_Module(mod,"a", &memory_adresse,"");
 
     return mod;
 }

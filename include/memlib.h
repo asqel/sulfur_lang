@@ -169,7 +169,7 @@ void remove_count();
 
 typedef struct Sulfur_ctx{
     void *memlib_func;
-    void *std_func;
+    Object (**std_func)(Object *, int);
     void *vars;
     memory *MEM;
     int *errno; // len = 4 [is_error,type,error_number,extra]

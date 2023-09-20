@@ -1,6 +1,10 @@
 #ifndef GRAPHIC_GRAPHIC_H
 #define GRAPHIC_GRAPHIC_H
-#include "../../../include/memlib.h"
+#ifndef ONE_FILE
+    #include "../../../build/API/memlib.h"
+#else
+    #include "../../../include/memlib.h"
+#endif
 
 #ifndef ONE_FILE
     extern Sulfur_ctx context;

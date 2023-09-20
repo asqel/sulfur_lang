@@ -12,7 +12,7 @@ Object add_nums(Object* argv, int argc){
         printf("ERRRIR in malloc\n");
         exit(1);
     }
-    int res = *argv[0].val.i + *argv[1].val.i;
+    int res = argv[0].val.i + argv[1].val.i;
     return new_ount(res);
 }
 
