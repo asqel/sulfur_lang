@@ -63,11 +63,11 @@ typedef struct stack{
 
 typedef union Obj_val{
     struct Object*o;
-    char*s;//string {char,...}
-    long long int*i;//ount 
-    long double*f;//floap
-    long double*c;//complex {re,im}
-    char*b;//boolean 
+    char* s;//string {char,...}
+    long long int i;//ount 
+    long double f;//floap
+    long double c[2];//complex {re,im}
+    char b;//boolean 
     class*cl;//class
     class*cl_def;
     Funcdef *funcid;//contain a function identifier
@@ -102,9 +102,9 @@ enum Obj_Type{
 };
 
 
-static Object end_Obj ={Obj_end_t,{.b=&(char){-1}}};
-static Object nil_Obj ={.type = Obj_nil_t, .val.b=&(char){0}};
-static Object not_found_Obj ={.type = Obj_not_found_t, .val.b=&(char){0}};
+static Object end_Obj ={.type = Obj_end_t, .val.b = -1};
+static Object nil_Obj ={.type = Obj_nil_t, .val.b = 0};
+static Object not_found_Obj ={.type = Obj_not_found_t, .val.b = 0};
 
 int Obj_free_val(Object obj);
 
@@ -166,5 +166,14 @@ typedef struct ref_count{
 void add_count();
 
 void remove_count();
+
+typedef struct Sulfur_ctx{
+    void *memlib_func;
+    void *std_func;
+    void *vars;
+    memory *MEM;
+    int *errno; // len = 4 [is_error,type,error_number,extra]
+} Sulfur_ctx;
+
 
 #endif

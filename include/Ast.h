@@ -110,4 +110,7 @@ int Ast_len(Ast*x);
 int print_ast(Ast x);
 
 void free_ast(Ast x);
+
+char *get_op_str(Ast x);
+
 #endif

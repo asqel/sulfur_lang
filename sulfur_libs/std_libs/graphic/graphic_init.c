@@ -2,8 +2,14 @@
 #include "graphic.h"
 
 #ifndef ONE_FILE
-Object __loader(){
+    Sulfur_ctx context;
+#endif
+
+#ifndef ONE_FILE
+Object __loader(Sulfur_ctx ctx){
     Object mod=new_Module();
+    context = ctx;
+
     add_func_Module(mod,"init_graphic",&init_graphic,"");
     add_func_Module(mod,"set_pixel",&set_pixel,"");
     add_func_Module(mod,"show_window",&show_window,"");
@@ -19,8 +25,10 @@ Object __loader(){
 
 }
 #else
-Object __load_graphic(){
+Object __load_graphic(Sulfur_ctx ctx){
     Object mod=new_Module();
+    (void)ctx;
+
     add_func_Module(mod,"init_graphic",&init_graphic,"");
     add_func_Module(mod,"set_pixel",&set_pixel,"");
     add_func_Module(mod,"show_window",&show_window,"");

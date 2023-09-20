@@ -1,6 +1,8 @@
 #ifndef SULFUR_H
 #define SULFUR_H
 
+#include "memlib.h"
+
 #define VERSION "2.4"
 
 typedef struct {
@@ -16,5 +18,7 @@ typedef struct {
 
 sulfur_args_t *parse_main_args(int argc, char** argv);
 int interactive_shell(sulfur_args_t *args);
+
+extern Sulfur_ctx CTX;
 
 #endif

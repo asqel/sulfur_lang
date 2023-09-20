@@ -2,6 +2,10 @@
 #define GRAPHIC_GRAPHIC_H
 #include "../../../include/memlib.h"
 
+#ifndef ONE_FILE
+    extern Sulfur_ctx context;
+#endif
+
 extern int width;
 extern int height;
 

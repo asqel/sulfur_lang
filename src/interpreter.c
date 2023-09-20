@@ -7,6 +7,7 @@
 #include "../sulfur_libs/blt_libs/funccall_su.h"
 #include "../sulfur_libs/blt_libs/list_su.h"
 
+#include "../include/sulfur.h"
 #include "../include/operation.h"
 #include "../include/utilities.h"
 #include "../include/token_class.h"
@@ -18,6 +19,27 @@ memory MEMORY;
 
 ref_count* REFS;
 int REFS_len;
+
+Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
+    if(as != NULL){
+        Object o = (*loader)(CTX);
+        if(o.type !=obj_module_t){
+            printf("ERROR in loading module '%s' as '%s', value return by loader incorrect\n", name, as);
+            exit(1);
+        }
+        add_object(&MEMORY, as, o);
+    }
+    else{
+        Object o=(*loader)(CTX);
+        if(o.type !=obj_module_t){
+            printf("ERROR in loading module %s , value return by loader incorrect\n",name);
+            exit(1);
+        }
+        for(int i=0;i<o.val.module->MEM->len;i++){
+            add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
+        }
+    }
+}
 
 Object import_func(Object*arg,int argc){
     if (argc>2){
@@ -36,13 +58,7 @@ Object import_func(Object*arg,int argc){
             printf("use second argument to import as\n");
             exit(1);
         }
-        Object (*loader)(void)=get_module_loader(arg[0].val.s);
-        Object o=(*loader)();
-        if(o.type !=obj_module_t){
-            printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
-            exit(1);
-        }
-        add_object(&MEMORY,arg[0].val.s,o);
+        add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, arg[0].val.s);
     }
     if (argc==2){
         if (strcmp(arg[1].val.s,"") && !id_acceptable_ptr(arg[1].val.s)){
@@ -50,29 +66,13 @@ Object import_func(Object*arg,int argc){
             exit(1);
         }
         if (strcmp(arg[1].val.s,"")){
-            Object (*loader)(void)=get_module_loader(arg[0].val.s);
-            Object o=(*loader)();
-
-            if(o.type !=obj_module_t){
-                printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
-                exit(1);
-            }
-            add_object(&MEMORY,arg[1].val.s,o);
+            add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, arg[1].val.s);
         }
         else{
-            Object (*loader)(void)=get_module_loader(arg[0].val.s);
-            Object o=(*loader)();
-            if(o.type !=obj_module_t){
-                printf("ERROR in loading module %s , value return by loader incorrect\n",arg[0].val.s);
-                exit(1);
-            }
-            for(int i=0;i<o.val.module->MEM->len;i++){
-                add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
-            }
+            add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, NULL);
         }
-
     }
-
+    return nil_Obj;
 }
 
 
@@ -119,7 +119,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
-            if(*(c.val.b)){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -133,7 +133,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
-            if(*(c.val.b)){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -233,7 +233,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 MEMORY.values[n] = start;
 
             }
-            if(*start.val.i == *end.val.i){
+            if(start.val.i == end.val.i){
                 Obj_free_val(end);
                 p = code[p].value.fo->endfor + 1;
                 remove_loop_count(&loops_count, &loops);
@@ -257,7 +257,7 @@ Object execute(Instruction* code, char* file_name, int len){
 
 
             //positive for 
-            if(*start.val.i < *end.val.i){
+            if(start.val.i < end.val.i){
                 int n = -1;
                 for(int i = 0; i < MEMORY.len; i++){
                     if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
@@ -279,9 +279,9 @@ Object execute(Instruction* code, char* file_name, int len){
                     printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
                     exit(1);
                 }
-                (*MEMORY.values[n].val.i)++;
+                MEMORY.values[n].val.i++;
 
-                if(*end.val.i > *MEMORY.values[n].val.i){
+                if(end.val.i > MEMORY.values[n].val.i){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p=for_p+1;
@@ -317,9 +317,9 @@ Object execute(Instruction* code, char* file_name, int len){
                     printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
                     exit(1);
                 }
-                (*MEMORY.values[n].val.i)--;
+                MEMORY.values[n].val.i--;
 
-                if(*end.val.i < *MEMORY.values[n].val.i){
+                if(end.val.i < MEMORY.values[n].val.i){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p=for_p+1;
@@ -339,7 +339,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object condition = eval_Ast(code[p].value.wh->condition);
             Object c = std_bool(&condition, 1);
             Obj_free_val(condition);
-            if(*c.val.b){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -356,7 +356,7 @@ Object execute(Instruction* code, char* file_name, int len){
             Object condition = eval_Ast(code[while_p].value.wh->condition);
             Object c=std_bool(&condition,1);
             Obj_free_val(condition);
-            if(*c.val.b){
+            if(c.val.b){
                 Obj_free_val(c);
                 p=code[p].value.endwhile+1;
                 continue;

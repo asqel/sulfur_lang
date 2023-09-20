@@ -150,6 +150,8 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `from`    : Used in for-loops to declare the starting value.
 - `to`      : Used in for-loops to declare the ending value.
 - `goto`    : Used to jump to a labeled section.
+- `proceed` : goto next iteration of the loop.
+- `stop`    : break out of a loop earlier.
 
 ## Operatos
 ### Arithmetic operators
@@ -160,6 +162,9 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `^` : power
 - `%` : modulo
 - `\` : floor division
+### Bitwise operators
+- `>>` : right shift bit
+- `<<` : left shift bit
 ### Logical operators
 - `&` : logical AND
 - `|` : logical OR

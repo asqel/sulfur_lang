@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifndef ONE_FILE
+    Sulfur_ctx context;
+#endif
+
 Object is_even(Object* argv, int argc) {
     if (argc != 1) {
         printf("ERROR is_even only take 1 one argument\n");
@@ -12,7 +16,7 @@ Object is_even(Object* argv, int argc) {
         printf("ERROR is_even only take ount argument\n");
         exit(1);
     }
-    return new_boolean((*argv[0].val.i) & 1);
+    return new_boolean(argv[0].val.i & 1);
 }
 
 Object is_odd(Object* argv, int argc) {
@@ -24,7 +28,7 @@ Object is_odd(Object* argv, int argc) {
         printf("ERROR is_even only take ount argument\n");
         exit(1);
     }
-    return new_boolean(! ((*argv[0].val.i) & 1));
+    return new_boolean(! (argv[0].val.i & 1));
 }
 
 Object _cos(Object* argv, int argc) {
@@ -36,7 +40,7 @@ Object _cos(Object* argv, int argc) {
         printf("ERROR cos only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(cos(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(cos(argv[0].type == Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 Object _sin(Object* argv, int argc) {
@@ -48,7 +52,7 @@ Object _sin(Object* argv, int argc) {
         printf("ERROR sin only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(sin(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(sin(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 Object _tan(Object* argv, int argc) {
@@ -60,7 +64,7 @@ Object _tan(Object* argv, int argc) {
         printf("ERROR tan only take ounti or floap argument\n");
         exit(1);
     }
-    return new_floap(tan(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(tan(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 Object _ln(Object* argv, int argc) {
@@ -72,7 +76,7 @@ Object _ln(Object* argv, int argc) {
         printf("ERROR ln only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(log(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(log(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 Object _log(Object* argv, int argc) {
     if (argc != 1) {
@@ -83,7 +87,7 @@ Object _log(Object* argv, int argc) {
         printf("ERROR log only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(log10(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(log10(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 Object _sqrt(Object* argv, int argc) {
@@ -95,7 +99,7 @@ Object _sqrt(Object* argv, int argc) {
         printf("ERROR sqqrt only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(sqrt(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(sqrt(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 Object _ceil(Object* argv, int argc) {
@@ -107,7 +111,7 @@ Object _ceil(Object* argv, int argc) {
         printf("ERROR ceil only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(ceil(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(ceil(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 Object _floor(Object* argv, int argc) {
@@ -119,13 +123,14 @@ Object _floor(Object* argv, int argc) {
         printf("ERROR floor only take ount or floap argument\n");
         exit(1);
     }
-    return new_floap(floor(argv[0].type==Obj_ount_t ? *argv[0].val.i : *argv[0].val.f));
+    return new_floap(floor(argv[0].type==Obj_ount_t ? argv[0].val.i : argv[0].val.f));
 }
 
 
 #ifndef ONE_FILE
-Object __loader() {
+Object __loader(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    context = ctx;
 
     add_func_Module(mod, "is_even", &is_even, "");
     add_func_Module(mod, "is_odd", &is_odd, "");
@@ -145,8 +150,9 @@ Object __loader() {
     return mod;
 }
 #else
-Object __load_math() {
+Object __load_math(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    (void)ctx;
 
     add_func_Module(mod, "is_even", &is_even, "");
     add_func_Module(mod, "is_odd", &is_odd, "");

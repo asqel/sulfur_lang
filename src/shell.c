@@ -8,6 +8,7 @@
 #include "../include/func_interpreter.h"
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../include/sulfur.h"
+#include "../include/make_context.h"
 
 extern void instructions_print(Instruction* code, int code_len);
 
@@ -58,6 +59,7 @@ int interactive_shell(sulfur_args_t *args) {
     init_memory();
     init_stack();
     init_libs("*shell*");
+    make_context();
 
     // main loop
     char *code = calloc(1000, sizeof(char));
@@ -117,7 +119,7 @@ int interactive_shell(sulfur_args_t *args) {
 
     for(int i = 0; i < MEMORY.len; i++){
         free(MEMORY.keys[i]);
-        MEMORY.values[i].type == Obj_boolean_t ? free(MEMORY.values[i].val.b) : 0;
+        Obj_free_val(MEMORY.values[i]);
     }
 
     free(MEMORY.keys);

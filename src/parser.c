@@ -39,8 +39,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_ount_t;
-                e[i-start-offset].root.obj->val.i=malloc(sizeof(long long int));
-                *e[i-start-offset].root.obj->val.i=*tok[i].value.i;
+                e[i-start-offset].root.obj->val.i=*tok[i].value.i;
                 break;
             case str:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
@@ -53,21 +52,18 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_floap_t;
-                e[i-start-offset].root.obj->val.f=malloc(sizeof(long double));
-                *e[i-start-offset].root.obj->val.f=*tok[i].value.f;
+                e[i-start-offset].root.obj->val.f=*tok[i].value.f;
                 break;
             case boolean_t:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_boolean_t;
-                e[i-start-offset].root.obj->val.b=malloc(sizeof(short int));
-                *e[i-start-offset].root.obj->val.b=*tok[i].value.b;
+                e[i-start-offset].root.obj->val.b=*tok[i].value.b;
                 break;
             case comp:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_complex_t;
-                e[i-start-offset].root.obj->val.c=malloc(sizeof(long double)*2);
                 e[i-start-offset].root.obj->val.c[0]=tok[i].value.c[0];
                 e[i-start-offset].root.obj->val.c[1]=tok[i].value.c[1];
                 break;
@@ -616,26 +612,25 @@ Ast*make_ast(Ast*e,int len){
     //make operators
     p=0;
     while(len>1){
-        int n=find_highest_op(e,len);
+       int n=find_highest_op(e,len);
         if(n==-1){
-            printf("len %d %d %d %d %d\n",len,e[0].type,e[1].type,e[2].type, line);
-            printf("ERROR in expression #0\n");
+            printf("ERROR in expression missing operator on line %d\n",line);
             exit(1);
         }
         if(n-1<0){
-            printf("ERROR missing left operand in expression #1\n");
+            printf("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(n+1>=len){
-            printf("ERROR missing right operand in expression #2\n");
+            printf("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(!(e[n-1].isAst || e[n-1].type==Ast_object_t || e[n-1].type==Ast_varcall_t || e[n-1].type == Ast_anonym_func_t)){
-            printf("ERROR missing left operand in expression #3\n");
+            printf("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(!(e[n+1].isAst || e[n+1].type==Ast_object_t || e[n+1].type==Ast_varcall_t || e[n+1].type == Ast_anonym_func_t)){
-            printf("ERROR missing right operand in expression #4\n");
+            printf("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         Ast op_ast;

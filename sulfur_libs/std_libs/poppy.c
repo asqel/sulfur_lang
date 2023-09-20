@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef ONE_FILE
+    Sulfur_ctx context;
+#endif
 
 
 char*po_read_file(char*path){
@@ -37,16 +40,18 @@ Object std_po_read_file(Object* argv, int argc){
 }
 
 #ifndef ONE_FILE
-Object __loader() {
+Object __loader(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    context = ctx;
 
     add_func_Module(mod, "po_read_file", &std_po_read_file, "");
 
     return mod;
 }
 #else
-Object __load_poppy() {
+Object __load_poppy(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    (void)ctx;
 
     add_func_Module(mod, "po_read_file", &std_po_read_file, "");
 

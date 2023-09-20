@@ -69,7 +69,7 @@ Object print_prompt(Object*obj,int n_arg){
         printf("%s",obj->val.s);
     }
     else if(obj->type==Obj_boolean_t){
-        printf(*obj->val.b == 0 ? "0b" : "1b");
+        printf(obj->val.b == 0 ? "0b" : "1b");
     }
     else if(obj->type==Obj_class_t){
         
@@ -78,10 +78,12 @@ Object print_prompt(Object*obj,int n_arg){
         printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
     }
     else if(obj->type==Obj_floap_t){
-        printf("%.*Lf",precision,*obj->val.f);
+        char tmp[30];
+        sprintf(tmp, "%%.%dLf", precision);
+        printf(tmp, obj->val.f);
     }
     else if(obj->type==Obj_list_t){
-        int len=*(obj->val.li->elements[0].val.i);
+        int len=obj->val.li->elements[0].val.i;
         if(len==0){
             printf("[]");
             if (is_flushing){
@@ -108,7 +110,7 @@ Object print_prompt(Object*obj,int n_arg){
         //print_prompt(obj->val.o,);
     }
     else if(obj->type==Obj_ount_t){
-        printf("%lld",*obj->val.i);
+        printf("%lld",obj->val.i);
     }
     else if(obj->type==Obj_typeid_t){
         printf("%s",obj->val.typeid);
@@ -136,7 +138,7 @@ Object println_prompt(Object*obj,int n_arg){
 
 Object std_chr(Object* argv, int argc){
     if(argc == 1 && argv[0].type == Obj_list_t){
-        return std_chr(&argv->val.li->elements[1], *argv->val.li->elements[0].val.i);
+        return std_chr(&argv->val.li->elements[1], argv->val.li->elements[0].val.i);
     }
     if(argc <= 0){
         printf("ERROR std_chr takes at least one arg\n");
@@ -151,7 +153,7 @@ Object std_chr(Object* argv, int argc){
     char* text = malloc(sizeof(char) * (1 + argc));
     for(int i=0; i < argc; i++){ // sataan bouche un coin
 
-        text[i] = *argv[i].val.i;
+        text[i] = argv[i].val.i;
     }
     text[argc] = '\0';
     return new_string(text);
@@ -163,31 +165,31 @@ Object std_bool(Object*obj,int n_arg){
         exit(1);
     }
     if(obj->type==Obj_ount_t){
-        return new_boolean(*obj->val.i != 0);
+        return new_boolean(obj->val.i != 0);
     }
     if(obj->type==Obj_string_t){
         return new_boolean(strlen(obj->val.s));
     }
     if(obj->type==Obj_boolean_t){
-        return new_boolean(*obj->val.b);
+        return new_boolean(obj->val.b);
     }
     if(obj->type == Obj_list_t){
-        return new_boolean(*obj->val.li->elements[0].val.i);
+        return new_boolean(obj->val.li->elements[0].val.i);
     }
     return new_boolean(0);
 }
 
 Object std_ount(Object*obj,int n_arg){
     if(obj->type==Obj_ount_t){
-        return new_ount(*obj->val.i);
+        return new_ount(obj->val.i);
     }
 
     if(obj->type==Obj_floap_t){
-        return new_ount((long long int) *obj->val.f);
+        return new_ount((long long int) obj->val.f);
     }
 
     if(obj->type==Obj_boolean_t){
-        return new_ount((long long int) *obj->val.b);
+        return new_ount((long long int) obj->val.b);
 
     }
     if(obj->type==Obj_string_t){
@@ -197,23 +199,22 @@ Object std_ount(Object*obj,int n_arg){
 }
 Object std_floap(Object*obj,int n_arg){
     if(obj->type==Obj_floap_t){
-        return new_floap(*obj->val.f);
+        return new_floap(obj->val.f);
     }
     Object res;
     res.type=Obj_floap_t;
-    res.val.f=malloc(sizeof(long long int));
 
     if(obj->type==Obj_ount_t){
-        *res.val.f=(long double)*(obj->val.i);
+        res.val.f=(long double)(obj->val.i);
         return res;
     }
 
     if(obj->type==Obj_boolean_t){
-        *res.val.f=(long double)*(obj->val.b);
+        res.val.f=(long double)(obj->val.b);
         return res;
     }
     if(obj->type==Obj_string_t){
-        *res.val.f=atof(obj->val.s);
+        res.val.f = atof(obj->val.s);
         return res;
     }
     return nil_Obj;
@@ -226,7 +227,7 @@ Object std_set_flush(Object* obj, int n_arg){
         exit(1);
     }
     Object x = std_bool(obj, 1);
-    is_flushing = *x.val.b;
+    is_flushing = x.val.b;
     Obj_free_val(x);
     return nil_Obj;
 }
@@ -237,9 +238,7 @@ Object std_list(Object*obj,int n_arg){
         x.type=Obj_list_t;
         x.val.li=malloc(sizeof(list));
         x.val.li->elements=malloc(sizeof(Object));
-        x.val.li->elements[0].type=Obj_ount_t;
-        x.val.li->elements[0].val.i=malloc(sizeof(long long int));
-        *x.val.li->elements[0].val.i=0;
+        x.val.li->elements[0] = new_ount(0);
         add_count(x.val.li,Obj_list_t);
         return x;
     }
@@ -247,9 +246,7 @@ Object std_list(Object*obj,int n_arg){
     x.type=Obj_list_t;
     x.val.li=malloc(sizeof(list));
     x.val.li->elements=malloc(sizeof(Object)*(n_arg+1));
-    x.val.li->elements[0].type=Obj_ount_t;
-    x.val.li->elements[0].val.i=malloc(sizeof(long long int));
-    *x.val.li->elements[0].val.i=n_arg;
+    x.val.li->elements[0]= new_ount(n_arg);
     for(int i=1;i<=n_arg;i++){
         x.val.li->elements[i]=Obj_cpy(obj[i-1]);
     }
@@ -261,16 +258,15 @@ Object std_list(Object*obj,int n_arg){
 Object current_timestamp(Object *obj,int n_arg) {
     Object o;
     o.type=Obj_ount_t;
-    o.val.i=malloc(sizeof(long long int));
 
     #ifdef __profanOS__
-    *o.val.i = c_timer_get_ms();
+    o.val.i = c_timer_get_ms();
     #else
 
     struct timespec te;
     clock_gettime(CLOCK_REALTIME, &te);
     long long milliseconds = te.tv_sec*1000LL + te.tv_nsec/1000000LL;
-    *o.val.i=milliseconds;
+    o.val.i=milliseconds;
     #endif
 
     return o;
@@ -282,10 +278,10 @@ Object sleep(Object *obj,int n_arg){
     if(o.type!=Obj_ount_t){
         return nil_Obj;
     }
-    x=*o.val.i;
-    long long start=*current_timestamp(NULL,0).val.i;
+    x = o.val.i;
+    long long start=current_timestamp(NULL,0).val.i;
     
-    while(*current_timestamp(NULL,0).val.i<start+x){}
+    while(current_timestamp(NULL,0).val.i<start+x){}
     return nil_Obj;
 }
 
@@ -332,30 +328,30 @@ Object get(Object *obj,int n_arg){
     int len=0;
     if (obj[0].type == Obj_string_t){
         len=strlen(obj[0].val.s);
-        if (*index.val.i==-1){
+        if (index.val.i==-1){
             Object res;
             res.type=Obj_ount_t;
             res.val.s=malloc(sizeof(long long int));
             *res.val.s=len;
             return res;
         }
-        if (*index.val.i >= len || *index.val.i<-1){
+        if (index.val.i >= len || index.val.i<-1){
             printf("ERROR get out of range\n");
             exit(1);
         }
         Object res;
         res.type=Obj_string_t;
         res.val.s=malloc(sizeof(char)*2);
-        res.val.s[0]=obj[0].val.s[*index.val.i];
+        res.val.s[0]=obj[0].val.s[index.val.i];
         res.val.s[1]='\0';
         return res;
     }
-    len=*(obj[0].val.li->elements[0].val.i);
-    if (*index.val.i >= len || *index.val.i<-1){
+    len=obj[0].val.li->elements[0].val.i;
+    if (index.val.i >= len || index.val.i <- 1){
         printf("ERROR get out of range\n");
         exit(1);
     }
-    return obj[0].val.li->elements[*index.val.i+1];
+    return obj[0].val.li->elements[index.val.i+1];
 
 }
 
@@ -374,12 +370,12 @@ Object set(Object *obj,int n_arg){
     }
     int index;
     if(obj[1].type == Obj_ount_t){
-        index =1+ * obj[1].val.i;
+        index =1+ obj[1].val.i;
     }
     if(obj[1].type == Obj_floap_t){
-        index = 1+(int)*obj[1].val.f;
+        index = 1 + (int)obj[1].val.f;
     }
-    if (index > *obj[0].val.li->elements[0].val.i || index<1){
+    if (index > obj[0].val.li->elements[0].val.i || index<1){
         printf("ERROR set out of range\n");
         exit(1);
     }
@@ -388,16 +384,16 @@ Object set(Object *obj,int n_arg){
 }
 
 
-Object comp(Object* argv, int argc){
+Object std_comp(Object* argv, int argc){
     if(argc == 1){
         if(argv[0].type == Obj_ount_t){
-            return new_complex(*argv[0].val.i,0);
+            return new_complex(argv[0].val.i,0);
         }
         if(argv[0].type == Obj_floap_t){
-            return new_complex(*argv[0].val.f,0);
+            return new_complex(argv[0].val.f,0);
         }
         if(argv[0].type == Obj_boolean_t){
-            return new_complex(*argv[0].val.b,0);
+            return new_complex(argv[0].val.b,0);
         }
     }
     if(argc == 2){
@@ -409,7 +405,7 @@ Object comp(Object* argv, int argc){
         }
         Object re = std_floap(&argv[0],1);
         Object im = std_floap(&argv[1],1);
-        Object c = new_complex(*re.val.f, *im.val.f);
+        Object c = new_complex(re.val.f, im.val.f);
         Obj_free_val(re);
         Obj_free_val(im);
         return im;
@@ -462,7 +458,7 @@ Object set_precision(Object* args, int argc){
         printf("ERROR set_precision only takes ount as arg\n");
         exit(1);
     }
-    precision=*args[0].val.i;
+    precision=args[0].val.i;
     return nil_Obj;
 }
 
@@ -492,13 +488,13 @@ Object get_methods(Object* argv, int argc){
 }
 
 Object pop(Object* argv, int argc){
-    if(*argv[0].val.li->elements[0].val.i == 0){
+    if(argv[0].val.li->elements[0].val.i == 0){
         printf("ERROR cannot pop on empty list\n");
         exit(1);
     }
     int len = get_list_len(argv[0]);
     Obj_free_val(argv[0].val.li->elements[len]);
-    (*argv[0].val.li->elements[0].val.i)--;
+    argv[0].val.li->elements[0].val.i--;
     argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * len);
 }
 
@@ -562,7 +558,7 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY,"methods",&get_methods,"");
     add_func(&MEMORY, "pop",&pop,"");
 
-    srand(*current_timestamp(NULL,0).val.i);
+    srand(current_timestamp(NULL,0).val.i);
     add_func(&MEMORY, "rand",&std_rand,"");
 
     add_func(&MEMORY, "__print_memory__", &std_print_memory, "");

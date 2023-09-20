@@ -60,7 +60,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
-            if(*(c.val.b)){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -74,7 +74,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
-            if(*(c.val.b)){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -175,7 +175,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
 
             }
 
-            if(*start.val.i == *end.val.i){
+            if(start.val.i == end.val.i){
                 Obj_free_val(end);
                 p = code[p].value.fo->endfor + 1;
                 remove_loop_count(&loops_count, &loops);
@@ -199,7 +199,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
 
 
             //positive for 
-            if(*start.val.i < *end.val.i){
+            if(start.val.i < end.val.i){
                 int n = -1;
                 for(int i=0; i < STACK.MEM[STACK.len - 1].len; i++){
                     if(!strcmp(STACK.MEM[STACK.len - 1].keys[i],code[for_p].value.fo->var_name)){
@@ -221,9 +221,9 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                     printf("ERROR in for cant convert loop var to ount\n");
                     exit(1);
                 }
-                (*MEMORY.values[n].val.i)++;
+                MEMORY.values[n].val.i++;
 
-                if(*end.val.i > *MEMORY.values[n].val.i){
+                if(end.val.i > MEMORY.values[n].val.i){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p = for_p + 1;
@@ -259,9 +259,9 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                     printf("ERROR in for cant convert loop var to ount\n");
                     exit(1);
                 }
-                (*MEMORY.values[n].val.i)--;
+                MEMORY.values[n].val.i--;
 
-                if(*end.val.i < *MEMORY.values[n].val.i){
+                if(end.val.i < MEMORY.values[n].val.i){
                     Obj_free_val(start);
                     Obj_free_val(end);
                     p=for_p+1;
@@ -281,7 +281,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
             Object condition = func_eval_Ast(code[p].value.wh->condition);
             Object c=std_bool(&condition,1);
             Obj_free_val(condition);
-            if(*c.val.b){
+            if(c.val.b){
                 Obj_free_val(c);
                 p++;
                 continue;
@@ -298,7 +298,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
             Object condition = func_eval_Ast(code[while_p].value.wh->condition);
             Object c=std_bool(&condition,1);
             Obj_free_val(condition);
-            if(*c.val.b){
+            if(c.val.b){
                 Obj_free_val(c);
                 p=code[p].value.endwhile+1;
                 continue;
@@ -364,6 +364,7 @@ Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack){
                 printf("ERROR function has same name as variable or another function\n");
                 exit(1);
 
+            break;
             }
             p++;
         }

@@ -63,11 +63,11 @@ typedef struct stack{
 
 typedef union Obj_val{
     struct Object*o;
-    char*s;//string {char,...}
-    long long int*i;//ount 
-    long double*f;//floap
-    long double*c;//complex {re,im}
-    char*b;//boolean 
+    char* s;//string {char,...}
+    long long int i;//ount 
+    long double f;//floap
+    long double c[2];//complex {re,im}
+    char b;//boolean 
     class*cl;//class
     class*cl_def;
     Funcdef *funcid;//contain a function identifier
@@ -151,5 +151,13 @@ Object get_Obj_mem(memory MEMORY, char* name);
 
 
 void*realloc_c(void*mem,long long int old_size,long long int new_size);
+
+typedef struct Sulfur_ctx{
+    void *memlib_func;
+    void *std_func;
+    void *vars;
+    memory *MEM;
+    int *errno; // len = 4 [is_error,type,error_number,extra]
+} Sulfur_ctx;
 
 #endif

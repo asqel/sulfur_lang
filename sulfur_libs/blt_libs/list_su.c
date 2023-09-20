@@ -5,15 +5,15 @@ Module list_module;
 char* list_methods = "append";
 
 Object append_list(Object*obj,int n_arg){
-    int len = *(obj[0].val.li->elements[0].val.i);
+    int len = obj[0].val.li->elements[0].val.i;
     obj[0].val.li->elements = realloc(obj->val.li->elements,(len+2)*sizeof(Object));
     obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
-    (*obj[0].val.li->elements[0].val.i)++;
+    obj[0].val.li->elements[0].val.i++;
     return Obj_cpy(obj[0]);
 }
 
 Object clear_list(Object*obj,int n_arg){
-    Obj_free_array(obj[0].val.li->elements, *obj[0].val.li->elements[0].val.i);
+    Obj_free_array(obj[0].val.li->elements, obj[0].val.li->elements[0].val.i);
     obj->val.li->elements = malloc(sizeof(Object));
     obj->val.li->elements[0] = new_ount(0);
     return nil_Obj;
