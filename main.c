@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "include/sulfur.h"
 #include "include/lexer.h"
 #include "include/memlib.h"
 #include "include/parser.h"
 #include "include/interpreter.h"
 #include "include/func_interpreter.h"
-#include "include/sulfur.h"
+#include "include/make_context.h"
 
 #include "sulfur_libs/blt_libs/std.h"
 
@@ -36,6 +37,8 @@ void show_version() {
 extern ref_count* REFS;
 extern int REFS_len;
 
+extern int precision;
+
 extern void instructions_print(Instruction* code, int code_len);
 
 int execute_file(sulfur_args_t *args) {
@@ -64,6 +67,7 @@ int execute_file(sulfur_args_t *args) {
     init_memory();
     init_stack(); 
     init_libs(args->filepath);  
+    make_context();
 
     execute(code, args->filepath, instruction_len);
 

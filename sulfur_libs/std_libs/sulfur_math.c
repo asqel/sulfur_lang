@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifndef ONE_FILE
+    Sulfur_ctx context;
+#endif
+
 Object is_even(Object* argv, int argc) {
     if (argc != 1) {
         printf("ERROR is_even only take 1 one argument\n");
@@ -124,8 +128,9 @@ Object _floor(Object* argv, int argc) {
 
 
 #ifndef ONE_FILE
-Object __loader() {
+Object __loader(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    context = ctx;
 
     add_func_Module(mod, "is_even", &is_even, "");
     add_func_Module(mod, "is_odd", &is_odd, "");
@@ -145,8 +150,9 @@ Object __loader() {
     return mod;
 }
 #else
-Object __load_math() {
+Object __load_math(Sulfur_ctx ctx) {
     Object mod = new_Module();
+    (void)ctx;
 
     add_func_Module(mod, "is_even", &is_even, "");
     add_func_Module(mod, "is_odd", &is_odd, "");

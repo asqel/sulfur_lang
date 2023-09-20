@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "../include/utilities.h"
+#include "../include/memlib.h"
 #include <limits.h>
 
 //used for abs_path
@@ -358,10 +359,11 @@ void *get_module_loader(char* filename) {
 }
 
 #ifdef ONE_FILE
-extern Object __load_math();
-extern Object __load_graphic();
-extern Object __load_poppy();
-extern Object __load_lilypad();
+
+extern Object __load_math(Sulfur_ctx ctx);
+extern Object __load_graphic(Sulfur_ctx ctx);
+extern Object __load_poppy(Sulfur_ctx ctx);
+extern Object __load_lilypad(Sulfur_contex ctx);
 
 void* get_standard_module(char* filename){
     if(!strcmp(filename, "math")){

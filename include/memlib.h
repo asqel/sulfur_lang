@@ -167,4 +167,13 @@ void add_count();
 
 void remove_count();
 
+typedef struct Sulfur_ctx{
+    void *memlib_func;
+    void *std_func;
+    void *vars;
+    memory *MEM;
+    int *errno; // len = 4 [is_error,type,error_number,extra]
+} Sulfur_ctx;
+
+
 #endif
