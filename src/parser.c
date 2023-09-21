@@ -782,6 +782,7 @@ int count_elseelif(Token*tok,int p){
 }
 
 Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, int* n_inst, int* p, int len, int *result){
+    while (1) {
     int old_n_inst= *n_inst;
     //make if
     line = tok[*p].line;
@@ -853,7 +854,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             }
             if(n == *p){
                 (*p)++;
-                return inst;
+                continue;
             }
             ast_and_len val=tok_to_Ast(tok,*p,n);
             Ast*x=make_ast(val.value, val.len);
@@ -865,6 +866,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             return inst;
             
         }
+    }
 }
 
 //to parse everything pass your tokens ,-1,-1,NULL,a pointer that will ccount tthe length of instructions

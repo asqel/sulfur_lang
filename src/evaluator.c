@@ -20,7 +20,10 @@ Object eval_Ast(Ast*x){
             printf("ERROR function '%s' not found\n",x->root.fun->name);
             exit(1);
         }
-
+        if(func.type != Obj_funcid_t){
+            printf("ERROR can't call a non function Object '%s'\n",x->root.fun->name);
+            exit(1);
+        }
         if(func.val.funcid->is_builtin){
             Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
 

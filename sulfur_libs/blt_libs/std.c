@@ -257,31 +257,30 @@ Object std_list(Object*obj,int n_arg){
 
 Object current_timestamp(Object *obj,int n_arg) {
     Object o;
-    o.type=Obj_ount_t;
+    o.type = Obj_ount_t;
 
     #ifdef __profanOS__
-    o.val.i = c_timer_get_ms();
+        o.val.i = c_timer_get_ms();
     #else
-
-    struct timespec te;
-    clock_gettime(CLOCK_REALTIME, &te);
-    long long milliseconds = te.tv_sec*1000LL + te.tv_nsec/1000000LL;
-    o.val.i=milliseconds;
+        struct timespec te;
+        clock_gettime(CLOCK_REALTIME, &te);
+        long long milliseconds = te.tv_sec * 1000LL + te.tv_nsec / 1000000LL;
+        o.val.i = milliseconds;
     #endif
 
     return o;
 }
 
 Object sleep(Object *obj,int n_arg){
-    long long int x=0;
-    Object o=std_ount(&obj[0],1);
-    if(o.type!=Obj_ount_t){
+    long long int x = 0;
+    Object o = std_ount(&obj[0], 1);
+    if(o.type != Obj_ount_t){
         return nil_Obj;
     }
     x = o.val.i;
-    long long start=current_timestamp(NULL,0).val.i;
+    long long start = current_timestamp(NULL, 0).val.i;
     
-    while(current_timestamp(NULL,0).val.i<start+x){}
+    while(current_timestamp(NULL, 0).val.i < start + x){}
     return nil_Obj;
 }
 
@@ -290,21 +289,21 @@ Object var_exists(Object* args, int n_arg){
         printf("var_exists takes at least one arg");
         exit(1);
     }
-    for(int i=0; i<n_arg; i++){
+    for(int i = 0; i < n_arg; i++){
         if(args[i].type != Obj_string_t){
             printf("var_exists takes only strings as arg");
             exit(1);
         }
     }
-    for(int i=0; i<n_arg; i++){
-        int found=0;
-        for(int k=0; k<MEMORY.len; k++){
-            if(!strcmp(MEMORY.keys[k],args[i].val.s)){
-                found=1;
+    for(int i=0; i < n_arg; i++){
+        int found = 0;
+        for(int k = 0; k < MEMORY.len; k++){
+            if(!strcmp(MEMORY.keys[k], args[i].val.s)){
+                found = 1;
                 break;
             }
         }
-        if(! found){
+        if(!found){
             return new_boolean(0);
         }
     }
@@ -312,7 +311,7 @@ Object var_exists(Object* args, int n_arg){
 }
 
 Object get(Object *obj,int n_arg){
-    if (n_arg!=2){
+    if (n_arg != 2){
         printf("ERROR get only takes 2 arguments\n");
         exit(1);
     }
@@ -320,38 +319,38 @@ Object get(Object *obj,int n_arg){
         printf("ERROR get only take list or string as first argument\n");
         exit(1);
     }
-    Object index=std_ount(&(obj[1]),1);
+    Object index = std_ount(&(obj[1]), 1);
     if (index.type == Obj_nil_t){
         printf("ERROR get only take a ount-convetible as second argument\n");
         exit(1);
     }
-    int len=0;
+    int len = 0;
     if (obj[0].type == Obj_string_t){
-        len=strlen(obj[0].val.s);
-        if (index.val.i==-1){
+        len = strlen(obj[0].val.s);
+        if (index.val.i == -1){
             Object res;
-            res.type=Obj_ount_t;
-            res.val.s=malloc(sizeof(long long int));
-            *res.val.s=len;
+            res.type = Obj_ount_t;
+            res.val.s = malloc(sizeof(long long int));
+            *res.val.s = len;
             return res;
         }
-        if (index.val.i >= len || index.val.i<-1){
+        if (index.val.i >= len || index.val.i < -1){
             printf("ERROR get out of range\n");
             exit(1);
         }
         Object res;
-        res.type=Obj_string_t;
-        res.val.s=malloc(sizeof(char)*2);
-        res.val.s[0]=obj[0].val.s[index.val.i];
-        res.val.s[1]='\0';
+        res.type = Obj_string_t;
+        res.val.s = malloc(sizeof(char)*2);
+        res.val.s[0] = obj[0].val.s[index.val.i];
+        res.val.s[1] = '\0';
         return res;
     }
-    len=obj[0].val.li->elements[0].val.i;
-    if (index.val.i >= len || index.val.i <- 1){
+    len = obj[0].val.li->elements[0].val.i;
+    if (index.val.i >= len || index.val.i < -1){
         printf("ERROR get out of range\n");
         exit(1);
     }
-    return obj[0].val.li->elements[index.val.i+1];
+    return obj[0].val.li->elements[index.val.i + 1];
 
 }
 
@@ -548,7 +547,6 @@ memory init_std(memory MEMORY,char*path){
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
     add_obj_str(&MEMORY,"__dir_path__",d);
     add_obj_str(&MEMORY,"__os__",__os__);
-    add_obj_str(&MEMORY,"__version__",VERSION);
     free(d);
     free(path0);
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
@@ -563,5 +561,9 @@ memory init_std(memory MEMORY,char*path){
 
     add_func(&MEMORY, "__print_memory__", &std_print_memory, "");
     add_func(&MEMORY, "__set_flush__", &std_set_flush, "");
+    add_obj_str(&MEMORY,"__version__",VERSION);
+    add_obj_str(&MEMORY,"__sub_version__",SUB_VERSION);
+    add_obj_str(&MEMORY,"__complete_version__",COMPLETE_VERSION);
+
     return MEMORY;
 }

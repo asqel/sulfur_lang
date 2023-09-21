@@ -144,6 +144,7 @@ memory*add_func(memory *MEMORY, char *name,Object (*func)(Object*, int),char *de
     MEMORY->values[MEMORY->len - 1].type = Obj_funcid_t;
     MEMORY->values[MEMORY->len - 1].val.funcid = malloc(sizeof(Funcdef));
     *MEMORY->values[MEMORY->len - 1].val.funcid = new_blt_func(func,desc);
+    add_count(MEMORY->values[MEMORY->len - 1].val.funcid, Obj_funcid_t);
     return MEMORY;
 }
 
@@ -333,7 +334,7 @@ void remove_count(void* address, int type){
                 if(type == Obj_funcid_t){
                     Funcdef* f = ((Funcdef*)address);
                     if(f->is_builtin){
-                        free(f->description);
+                        //free(f->description);
                         free(f);
                     }
                 }

@@ -428,5 +428,6 @@ Object execute(Instruction* code, char* file_name, int len){
 
         
     }
+    free(loops);
     return nil_Obj;
 }
