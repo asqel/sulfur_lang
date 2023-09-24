@@ -88,9 +88,9 @@ void init_memory(){
 void init_libs(char*path){
     MEMORY = init_std(MEMORY, path);
     add_func(&MEMORY, "import", &import_func, ""); 
-    MEMORY = init_string(MEMORY, path);
-    MEMORY = init_funccall(MEMORY, path);
-    MEMORY = init_list(MEMORY, path);
+    add_object(&MEMORY, "_string", init_string(&MEMORY, path));
+    add_object(&MEMORY, "_list", init_list(&MEMORY, path));
+    add_object(&MEMORY, "_funccall", init_funccall(&MEMORY, path));
 }
 
 void add_loop_count(int index, int *loops_count, int **loops){

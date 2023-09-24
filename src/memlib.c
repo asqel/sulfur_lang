@@ -61,6 +61,9 @@ int Obj_free_val(Object obj){
         case Obj_funcid_t:
             remove_count(obj.val.funcid, Obj_funcid_t);
             break;
+        case obj_module_t:
+            remove_count(obj.val.module, obj_module_t);
+            break;
         case Obj_typeid_t:
             free(obj.val.typeid);
             break;
@@ -182,6 +185,7 @@ Object new_Module(){
     o.type=obj_module_t;
     o.val.module=malloc(sizeof(Module));
     *o.val.module=m;
+    add_count(o.val.module, obj_module_t);
     return o;
 }
 
@@ -248,6 +252,7 @@ Object Obj_cpy(Object o){
         case obj_module_t:
             res.type=obj_module_t;
             res.val.module = o.val.module;
+            add_count(res.val.module, obj_module_t);
             return res;
         case Obj_complex_t:
             return new_complex(o.val.c[0], o.val.c[1]);
@@ -337,6 +342,19 @@ void remove_count(void* address, int type){
                         //free(f->description);
                         free(f);
                     }
+                }
+                if(type == obj_module_t){
+                    Object o;
+                    o.type = type;
+                    o.val.module = address;
+                    for(int i = 0; i < o.val.module->MEM->len; i++){
+                        free(o.val.module->MEM->keys[i]);
+                        Obj_free_val(o.val.module->MEM->values[i]);
+                    }
+                    free(o.val.module->MEM->keys);
+                    free(o.val.module->MEM->values);
+                    free(o.val.module->MEM);
+                    free(o.val.module);
                 }
                 for(int k = i + 1; k < REFS_len; k++){
                     REFS[k - 1] = REFS[k];

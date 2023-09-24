@@ -19,7 +19,7 @@ Object clear_list(Object*obj,int n_arg){
     return nil_Obj;
 }
 
-memory init_list(memory MEMORY,char*path){
+Object init_list(memory *MEMORY,char*path){
     char* module_name = "list";
 
     Object mod = new_Module();
@@ -31,6 +31,6 @@ memory init_list(memory MEMORY,char*path){
     add_func_Module(mod, "clear", &clear_list, "");
 
     list_module = *mod.val.module;
-    return MEMORY;
+    return mod;
 
 }
