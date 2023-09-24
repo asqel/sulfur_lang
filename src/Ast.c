@@ -153,7 +153,9 @@ int print_ast(Ast x){
             }
             printf(")] ");
             return 0;
-
+        case Ast_syntax_t:
+            printf("Sy %c%c ", SYNTAX[x.root.sy][0], SYNTAX[x.root.sy][1]);
+            return 0;
     }
 }
 

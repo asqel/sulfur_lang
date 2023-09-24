@@ -67,7 +67,6 @@ Object eval_Ast(Ast*x){
         }
         else{
             printf("ERROR in Ast\n");
-            printf(" %d ",x->type);
             exit(1);
         }
     }

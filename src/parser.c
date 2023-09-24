@@ -846,11 +846,21 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             return inst;
         }
         else{
+            if(tok[*p].type == end_token.type){
+                (*n_inst)++;
+                inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+                inst[*n_inst - 1].line = line;
+                inst[*n_inst - 1].type = inst_pass_t;
+                return inst;
+            }
             int n=find_semicol(tok,*p);
             if(n==-1){
                 token_print(tok[*p - 1],"n");
-                printf("ERROR unexpected token on line %d\n",tok[*p].line);
+                printf("ERROR unexpected token on line %d %d %d\n",tok[*p].line, tok[*p].type, *p);
                 exit(1);
+            }
+            if(*p + 1 == n){
+                return inst;
             }
             if(n == *p){
                 (*p)++;

@@ -20,6 +20,10 @@ memory MEMORY;
 ref_count* REFS;
 int REFS_len;
 
+Instruction *current_instructions = NULL;
+int *current_index = NULL;
+int instruction_len = 0;
+
 Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
     if(as != NULL){
         Object o = (*loader)(CTX);
@@ -108,6 +112,9 @@ Object execute(Instruction* code, char* file_name, int len){
     int p = 0;
     int *loops = malloc(sizeof(int));
     int loops_count = 0; 
+    current_instructions = code;
+    current_index = &p;
+    instruction_len = len;
     while(p < len){
         if(code[p].type == inst_pass_t){
             p++;
