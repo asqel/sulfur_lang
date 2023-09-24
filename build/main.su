@@ -1,0 +1,28 @@
+/*
+_ : section to return
+__ : first arg
+___ : second arg
+____ : return value
+*/
+goto func_a_end;
+func_a::
+
+a = 0;
+b = 0;
+if (type(__) == "ount"){
+    a = __;
+}
+if (type(___) == "ount"){
+    b = ___;
+}
+____ = a + b;
+jump(_);
+
+func_a_end::
+
+_ = "here";
+__ = 3;
+___ = 4;
+goto func_a;
+here::
+println(____)

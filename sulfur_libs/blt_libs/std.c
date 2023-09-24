@@ -12,6 +12,7 @@
 #include "../../include/memlib.h"
 #include "../../include/utilities.h"
 #include "../../include/sulfur.h"
+#include "../../include/interpreter.h"
 
 #ifdef __profanOS__
     #include <syscall.h>
@@ -29,7 +30,6 @@
     char* __os__="UNKNOWN";
 #endif
 
-extern memory MEMORY;
 
 int precision = 5;
 int base_precision = 6;
@@ -518,31 +518,72 @@ Object std_print_memory(Object* argv, int argc){
     return nil_Obj;
 }
 
+Object std_jump(Object *argv, int argc){
+    if (argc != 1){
+        printf("ERROR jump only takes 1 arg\n");
+        exit(1);
+    }
+    if (argv[0].type != Obj_string_t){
+        printf("ERROR jump only take a string as arg\n");
+        exit(1);
+    }
+    char *jump_to = argv[0].val.s;
+    int n = -1;
+    //search down
+    for(int i = *current_index + 1; i < instruction_len; i++){
+        if(current_instructions[i].type == inst_section_t){
+            if(!strcmp(jump_to, current_instructions[i].value.section)){
+                n = i;
+                break;
+            }
+        }
+    }
+    if(n == -1){
+        //search up
+        for(int i = *current_index - 1; i >= 0; i--){
+            if(current_instructions[i].type == inst_section_t){
+                if(!strcmp(jump_to, current_instructions[i].value.section)){
+                    n = i;
+                    break;
+                }
+            }
+        }
+    }
+    if(n == -1){
+        printf("section %s doesnt exists\n", jump_to);
+        exit(1);
+    }
+    *current_index = n;
+    return nil_Obj;
+}
+
 
 memory init_std(memory MEMORY,char*path){
-    add_object(&MEMORY,"nil",nil_Obj);
-    add_object(&MEMORY,"_",nil_Obj);
-    add_object(&MEMORY,"__",nil_Obj);
-    add_object(&MEMORY,"___",nil_Obj);
-    add_func(&MEMORY,"print",&print_prompt,"");
-    add_func(&MEMORY,"println",&println_prompt,"");
-    add_func(&MEMORY,"bool",&std_bool,"");
-    add_func(&MEMORY,"input",&read_prompt,"");
-    add_func(&MEMORY,"ount",&std_ount,"");
-    add_func(&MEMORY,"floap",&std_floap,"");
-    add_func(&MEMORY,"list",&std_list,"");
-    add_func(&MEMORY,"time",&current_timestamp,"");
-    add_func(&MEMORY,"sleep",&sleep,"");
+    add_object(&MEMORY, "nil", nil_Obj);
+    add_object(&MEMORY, "_", nil_Obj);
+    add_object(&MEMORY, "__", nil_Obj);
+    add_object(&MEMORY, "___", nil_Obj);
+    add_object(&MEMORY, "____", nil_Obj);
+    add_object(&MEMORY, "_____", std_list(NULL, 0));
+    add_func(&MEMORY, "print", &print_prompt,"");
+    add_func(&MEMORY, "println", &println_prompt,"");
+    add_func(&MEMORY, "bool", &std_bool,"");
+    add_func(&MEMORY, "input", &read_prompt,"");
+    add_func(&MEMORY, "ount", &std_ount,"");
+    add_func(&MEMORY, "floap", &std_floap,"");
+    add_func(&MEMORY, "list", &std_list,"");
+    add_func(&MEMORY, "time", &current_timestamp,"");
+    add_func(&MEMORY, "sleep", &sleep,"");
     /*depracated*/
-    add_func(&MEMORY,"get",&get,"");
+    add_func(&MEMORY, "get", &get,"");
     /*depracated*/
-    add_func(&MEMORY,"set",&set,"");
-    add_func(&MEMORY,"type",&type,"");
-    add_func(&MEMORY,"__set_precision__",&set_precision,"");
-    add_func(&MEMORY,"__get_precision__",&get_precision,"");
-    char*path0=abs_path();
+    add_func(&MEMORY, "set", &set,"");
+    add_func(&MEMORY, "type", &type,"");
+    add_func(&MEMORY, "__set_precision__", &set_precision,"");
+    add_func(&MEMORY, "__get_precision__", &get_precision,"");
+    char *path0 = abs_path();
     back_slash_to_path(path0);
-    char *d= uti_dirname(path0);
+    char *d = uti_dirname(path0);
     add_obj_str(&MEMORY,"__path__",path);
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
     add_obj_str(&MEMORY,"__dir_path__",d);
@@ -564,6 +605,6 @@ memory init_std(memory MEMORY,char*path){
     add_obj_str(&MEMORY,"__version__",VERSION);
     add_obj_str(&MEMORY,"__sub_version__",SUB_VERSION);
     add_obj_str(&MEMORY,"__complete_version__",COMPLETE_VERSION);
-
+    add_func(&MEMORY, "jump", &std_jump, "");
     return MEMORY;
 }
