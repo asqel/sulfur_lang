@@ -523,9 +523,13 @@ Object std_jump(Object *argv, int argc){
         printf("ERROR jump only takes 1 arg\n");
         exit(1);
     }
-    if (argv[0].type != Obj_string_t){
-        printf("ERROR jump only take a string as arg\n");
+    if (argv[0].type != Obj_string_t && argv[0].type != Obj_ount_t){
+        printf("ERROR jump only take a string or a ount as arg\n");
         exit(1);
+    }
+    if (argv[0].type == Obj_ount_t){
+        *current_index = argv[0].val.i;
+        return nil_Obj;
     }
     char *jump_to = argv[0].val.s;
     int n = -1;
@@ -557,6 +561,9 @@ Object std_jump(Object *argv, int argc){
     return nil_Obj;
 }
 
+Object std_current_instruction(Object *argv, int argc){
+    return new_ount(*current_index);
+}
 
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
@@ -605,6 +612,7 @@ memory init_std(memory MEMORY,char*path){
     add_obj_str(&MEMORY,"__version__",VERSION);
     add_obj_str(&MEMORY,"__sub_version__",SUB_VERSION);
     add_obj_str(&MEMORY,"__complete_version__",COMPLETE_VERSION);
+    add_func(&MEMORY, "__get_index__", &std_current_instruction, "");
     add_func(&MEMORY, "jump", &std_jump, "");
     return MEMORY;
 }

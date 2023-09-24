@@ -4,25 +4,25 @@ __ : first arg
 ___ : second arg
 ____ : return value
 */
+
+func_a = __get_index__() + 1;
 goto func_a_end;
-func_a::
-
-a = 0;
-b = 0;
-if (type(__) == "ount"){
-    a = __;
-}
-if (type(___) == "ount"){
-    b = ___;
-}
-____ = a + b;
-jump(_);
-
+    
+    a = 0;
+    b = 0;
+    if (type(__) == "ount"){
+        a = __;
+    }
+    if (type(___) == "ount"){
+        b = ___;
+    }
+    ____ = a + b;
+    jump(_);
+    
 func_a_end::
 
-_ = "here";
 __ = 3;
 ___ = 4;
-goto func_a;
-here::
+_ = __get_index__() + 1;
+jump(func_a);
 println(____)
