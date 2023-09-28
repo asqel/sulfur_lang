@@ -3,6 +3,9 @@
 #include "parser.h"
 #include "memlib.h"
 
+extern Instruction *current_instructions;
+extern int *current_index;
+extern int instruction_len;
 
 extern memory MEMORY;
 

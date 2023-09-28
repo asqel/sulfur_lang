@@ -81,7 +81,6 @@ int execute_file(sulfur_args_t *args) {
         printf("Press enter to quit\n");
         getchar();
     }
-
     for(int i = 0; i < MEMORY.len; i++){
         free(MEMORY.keys[i]);
         Obj_free_val(MEMORY.values[i]);
@@ -95,6 +94,7 @@ int execute_file(sulfur_args_t *args) {
     free(MEMORY.keys);
     free(MEMORY.values);
     free(REFS);
+    free(text);
 
     return 0;
 }
@@ -119,4 +119,5 @@ int main(int argc,char **argv){
     } else {
         return interactive_shell(args);
     }
+    free(args);
 }

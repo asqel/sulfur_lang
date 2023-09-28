@@ -70,8 +70,33 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 						return inst;
                     }
                     else{
-                        printf("ERROR missing '{' after for-statement on line %d after for\n",tok[n].line);
-                        exit(1);
+                        ast_and_len val = tok_to_Ast(tok, *p + 4, n2);
+                        Ast *x = make_ast(val.value, val.len);
+                        val = tok_to_Ast(tok, n2 + 1, n);
+                        Ast *x2 = make_ast(val.value, val.len);
+
+                        (*n_inst)++;
+                        inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+                        inst[*n_inst - 1].type = inst_for_t;
+                        inst[*n_inst - 1].value.fo = malloc(sizeof(For));
+                        
+                        inst[*n_inst - 1].value.fo->var_name = malloc(sizeof(char) * (1 + strlen(tok[id_idx].value.s)));
+                        strcpy(inst[*n_inst - 1].value.fo->var_name, tok[id_idx].value.s);
+                        
+                        inst[*n_inst - 1].value.fo->start = x;
+                        inst[*n_inst - 1].value.fo->end = x2;
+
+                        int for_idx = *n_inst - 1;
+
+                        int result = 0;
+                        *p = n + 1;
+                        inst = parse_next_inst(tok, start, end, inst, n_inst, p, len, &result);
+                        (*n_inst)++;
+                        inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+                        inst[*n_inst - 1].type = inst_endfor_t;
+                        inst[*n_inst - 1].value.endfor = for_idx;
+                        inst[for_idx].value.fo->endfor = *n_inst - 1;
+						return inst;
                     }
                 }
 

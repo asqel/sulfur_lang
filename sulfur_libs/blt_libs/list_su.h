@@ -5,6 +5,6 @@
 extern Module list_module;
 extern char* list_methods;
 
-memory init_list(memory MEMORY,char*path);
+Object init_list(memory *MEMORY,char*path);
 
 #endif

@@ -6,6 +6,6 @@ extern Module funccall_module;
 extern char* funccall_methods;
 
 
-memory init_funccall(memory MEMORY,char*path);
+Object init_funccall(memory *MEMORY,char*path);
 
 #endif

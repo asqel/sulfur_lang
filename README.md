@@ -274,3 +274,4 @@ and from the automated [repository](https://github.com/elydre/sulfur_lang/releas
 - `_` : A variable guaranteed to exist, set to nil by default.
 - `__` : A variable guaranteed to exist, set to nil by default.
 - `___` : A variable guaranteed to exist, set to nil by default.
+- `____` : A variable guaranteed to exist, set to nil by default.
