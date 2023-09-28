@@ -1,5 +1,6 @@
 #include "../include/memlib.h"
 #include "../include/utilities.h"
+#include "../sulfur_libs/blt_libs/std.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,6 +61,9 @@ int Obj_free_val(Object obj){
         case Obj_funcid_t:
             remove_count(obj.val.funcid, Obj_funcid_t);
             break;
+        case obj_module_t:
+            remove_count(obj.val.module, obj_module_t);
+            break;
         case Obj_typeid_t:
             free(obj.val.typeid);
             break;
@@ -91,7 +95,10 @@ void Obj_print(Object obj){
             break;
         case Obj_ount_t:
             printf("Obj_i:[%lld]", obj.val.i);
-    
+            break;
+        case Obj_funcid_t:
+            printf("Obj_func[%p]",obj.val.funcid);
+            break;
         default:
             break;
     }
@@ -118,7 +125,7 @@ void*get_obj_pointer(Object o){
     }
 }
 
-Funcdef new_blt_func(Object (*func)(Object*,int),char*desc){
+Funcdef new_blt_func(Object (*func)(Object*, int), char *desc){
     Funcdef f;
     f.arg_names=NULL;
     f.code=NULL;
@@ -129,21 +136,22 @@ Funcdef new_blt_func(Object (*func)(Object*,int),char*desc){
     return f;
 }
 
-memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc){
-    MEMORY->len+=1;
-    MEMORY->keys=realloc_c(MEMORY->keys,sizeof(char*)*(MEMORY->len-1),sizeof(char*)*MEMORY->len);
+memory*add_func(memory *MEMORY, char *name,Object (*func)(Object*, int),char *desc){
+    MEMORY->len += 1;
+    MEMORY->keys = realloc_c(MEMORY->keys, sizeof(char*) * (MEMORY->len - 1), sizeof(char*) * MEMORY->len);
 
-    MEMORY->keys[MEMORY->len-1]=malloc(sizeof(char)*(1+strlen(name)));
-    strcpy(MEMORY->keys[MEMORY->len-1],name);  
+    MEMORY->keys[MEMORY->len-1] = malloc(sizeof(char) * (1 + strlen(name)));
+    strcpy(MEMORY->keys[MEMORY->len - 1], name);  
 
-    MEMORY->values=realloc_c(MEMORY->values,sizeof(Object)*(MEMORY->len-1),sizeof(Object)*MEMORY->len);
-    MEMORY->values[MEMORY->len-1].type=Obj_funcid_t;
-    MEMORY->values[MEMORY->len-1].val.funcid=malloc(sizeof(Funcdef));
-    *MEMORY->values[MEMORY->len-1].val.funcid=new_blt_func(func,desc);
+    MEMORY->values = realloc_c(MEMORY->values,sizeof(Object) * (MEMORY->len - 1),sizeof(Object) * MEMORY->len);
+    MEMORY->values[MEMORY->len - 1].type = Obj_funcid_t;
+    MEMORY->values[MEMORY->len - 1].val.funcid = malloc(sizeof(Funcdef));
+    *MEMORY->values[MEMORY->len - 1].val.funcid = new_blt_func(func,desc);
+    add_count(MEMORY->values[MEMORY->len - 1].val.funcid, Obj_funcid_t);
     return MEMORY;
 }
 
-memory*add_object(memory*MEMORY,char*name,Object x){
+memory*add_object(memory *MEMORY, char *name, Object x){
     MEMORY->len++;
     MEMORY->keys = realloc(MEMORY->keys, sizeof(char*) * (MEMORY->len));
 
@@ -159,7 +167,7 @@ memory*add_object(memory*MEMORY,char*name,Object x){
 memory*add_obj_str(memory*MEMORY,char*name,char*val){
     Object x;
     x.type = Obj_string_t;
-    x.val.s = malloc(sizeof(char)*(1+strlen(val)));
+    x.val.s = malloc(sizeof(char) * (1 + strlen(val)));
     strcpy(x.val.s, val);
     return add_object(MEMORY, name, x);
 
@@ -177,9 +185,9 @@ Object new_Module(){
     o.type=obj_module_t;
     o.val.module=malloc(sizeof(Module));
     *o.val.module=m;
+    add_count(o.val.module, obj_module_t);
     return o;
 }
-
 
 void add_func_Module(Object mod, char *name, Object (*func)(Object *, int), char *desc){
     add_func(mod.val.module->MEM,name,func,desc);
@@ -189,7 +197,6 @@ void add_func_Module(Object mod, char *name, Object (*func)(Object *, int), char
 void add_Object_Module(Object mod, char*name,Object x){
     add_object(mod.val.module->MEM,name,x);
 }
-
 
 Object new_ount(long long int value){
     Object o;
@@ -220,7 +227,7 @@ Object new_boolean(int value){
     o.val.b = value ? 1:0;
     return o;
 }
-#include "../sulfur_libs/blt_libs/std.h"
+
 Object Obj_cpy(Object o){
     Object res;
     switch (o.type){
@@ -245,6 +252,7 @@ Object Obj_cpy(Object o){
         case obj_module_t:
             res.type=obj_module_t;
             res.val.module = o.val.module;
+            add_count(res.val.module, obj_module_t);
             return res;
         case Obj_complex_t:
             return new_complex(o.val.c[0], o.val.c[1]);
@@ -253,12 +261,12 @@ Object Obj_cpy(Object o){
     }
 }
 
-
 Object new_complex(long double re, long double im){
     Object o;
     o.type = Obj_complex_t;
     o.val.c[0] = re;
     o.val.c[1] = im;
+    sizeof(Object);
     return o;
 }
 
@@ -284,7 +292,6 @@ Object get_Obj_mem(memory MEMORY, char* name){
     }
     return not_found_Obj;
 }
-
 
 void Obj_free_array(Object* objs, int len){
     for(int i = 0; i < len; i++){
@@ -332,15 +339,28 @@ void remove_count(void* address, int type){
                 if(type == Obj_funcid_t){
                     Funcdef* f = ((Funcdef*)address);
                     if(f->is_builtin){
-                        free(f->description);
+                        //free(f->description);
                         free(f);
                     }
+                }
+                if(type == obj_module_t){
+                    Object o;
+                    o.type = type;
+                    o.val.module = address;
+                    for(int i = 0; i < o.val.module->MEM->len; i++){
+                        free(o.val.module->MEM->keys[i]);
+                        Obj_free_val(o.val.module->MEM->values[i]);
+                    }
+                    free(o.val.module->MEM->keys);
+                    free(o.val.module->MEM->values);
+                    free(o.val.module->MEM);
+                    free(o.val.module);
                 }
                 for(int k = i + 1; k < REFS_len; k++){
                     REFS[k - 1] = REFS[k];
                 }
                 REFS_len--;
-                REFS = realloc(REFS, sizeof(ref_count)*REFS_len);
+                REFS = realloc(REFS, sizeof(ref_count) * REFS_len);
             }
             return ;
         }

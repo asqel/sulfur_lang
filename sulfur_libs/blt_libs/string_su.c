@@ -161,7 +161,7 @@ Object str_set(Object* argv, int argc){
     return new_string(argv[0].val.s);
 }
 
-memory init_string(memory MEMORY,char*path){
+Object init_string(memory *MEMORY,char*path){
     char* module_name = "string";
 
     Object mod = new_Module();
@@ -185,6 +185,6 @@ memory init_string(memory MEMORY,char*path){
     //snake_case_toCamelCase
     //function to add upper case every each space like "salut ici " -> "Salut Ici"
     string_module = *mod.val.module;
-    return MEMORY;
+    return mod;
 
 }

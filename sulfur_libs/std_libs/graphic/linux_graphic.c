@@ -2,7 +2,11 @@
 #elif __APPLE__
 #elif __linux__
 
-#include "../../../include/memlib.h"
+#ifndef ONE_FILE
+    #include "../../../build/API/memlib.h"
+#else
+    #include "../../../include/memlib.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>

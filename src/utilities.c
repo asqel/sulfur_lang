@@ -363,7 +363,7 @@ void *get_module_loader(char* filename) {
 extern Object __load_math(Sulfur_ctx ctx);
 extern Object __load_graphic(Sulfur_ctx ctx);
 extern Object __load_poppy(Sulfur_ctx ctx);
-extern Object __load_lilypad(Sulfur_contex ctx);
+extern Object __load_lilypad(Sulfur_ctx ctx);
 
 void* get_standard_module(char* filename){
     if(!strcmp(filename, "math")){

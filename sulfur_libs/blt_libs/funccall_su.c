@@ -19,7 +19,7 @@ Object funccall_call(Object* argv, int argc){
     }
 }
 
-memory init_funccall(memory MEMORY,char*path){
+Object init_funccall(memory *MEMORY,char*path){
     char* module_name = "funccall";
 
     Object mod = new_Module();
@@ -30,6 +30,6 @@ memory init_funccall(memory MEMORY,char*path){
     add_func_Module(mod,"call",&funccall_call,"");
 
     funccall_module = *mod.val.module;
-    return MEMORY;
+    return mod;
 
 }

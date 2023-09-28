@@ -4,6 +4,8 @@
 #include "memlib.h"
 
 #define VERSION "2.4"
+#define SUB_VERSION "0001"
+#define COMPLETE_VERSION (VERSION "." SUB_VERSION)
 
 typedef struct {
     int show_mem;

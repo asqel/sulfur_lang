@@ -1,6 +1,5 @@
 #ifndef MEMLIB_H
 #define MEMLIB_H
-#include <string.h>
 
 struct Object;
 
@@ -14,25 +13,6 @@ typedef struct Module{
     char*filename;
 }Module;
 
-/*every blt function should be definied like this but inn theory it's not important
-{
-    ret_type: NULL
-    nbr_ret_type: 0
-    arg_types: NULL
-    arg_names: NULL
-    nbr_of_args: -1
-    is_builtin: 1
-    func_p: pointer to the builtin function
-    code: NULL
-    description: a string for the description of the function if there is one
-    
-}
-or you can just set is_builtin to 1 and not set the others
-
-the builtin function written in c has to to take 2 argument: an array of Object and the length of this array
-if the function number of args=0 a NULL pointer is passed
-return type must be Object
-*/
 typedef struct Funcdef{
     char**ret_type;// list of types that can be returned by the function
     int nbr_ret_type;//len of ret_type
@@ -105,59 +85,39 @@ extern Object end_Obj;
 extern Object nil_Obj;
 extern Object not_found_Obj;
 
-void Obj_free_val(Object obj);
-
-void*get_obj_pointer(Object o);
-
-
-void Objs_print(Object*obj,int len);
-void Obj_print(Object obj);
-
-//name will be copied
-Funcdef new_blt_func(Object (*func)(Object*,int),char*desc);
-
-
-memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc);
-
-memory*add_object(memory*MEMORY,char*name,Object x);
-
-memory*add_obj_str(memory*MEMORY,char*name,char*val);
-
-
-
-Object new_Module();
-
-
-void add_func_Module(Object mod, char *name, Object (*func)(Object *, int), char *desc);
-
-void add_Object_Module(Object mod, char*name,Object x);
-
-
-Object new_ount(long long int value);
-
-Object new_floap(long double value);
-
-//the string will be copied *
-Object new_string(char * value);
-
-
-Object new_boolean(int value);
-
-Object Obj_cpy(Object o);
-
-int is_muttable(Object o);
-
-Object get_Obj_mem(memory MEMORY, char* name);
-
-
-void*realloc_c(void*mem,long long int old_size,long long int new_size);
-
 typedef struct Sulfur_ctx{
-    void *memlib_func;
-    void *std_func;
+    void *(**memlib_func)();
+    void *(**std_func)();
     void *vars;
     memory *MEM;
     int *errno; // len = 4 [is_error,type,error_number,extra]
 } Sulfur_ctx;
+
+extern Sulfur_ctx context;
+
+#define Obj_free_val        ((int (*)(Object))context.memlib_func[0])
+#define get_obj_pointer     ((void *(*)(Object))context.memlib_func[1])
+#define Objs_print          ((void (*)(Object *, int))context.memlib_func[2])
+#define Obj_print           ((void (*)(Object))context.memlib_func[3])
+#define new_blt_func        ((Funcdef (*)(Object (*)(Object*, int), char *))context.memlib_func[4])
+#define add_func            ((memory *(*)(memory *, char *,Object (*func)(Object*, int),char *))context.memlib_func[5])
+#define add_object          ((memory *(*)(memory *, char *, Object))context.memlib_func[6])
+#define add_obj_str         ((memory *(*)(memory *, char *, char *))context.memlib_func[7])
+#define new_Module          ((Object (*)())context.memlib_func[8])
+#define add_func_Module     ((void (*)(Object, char *, Object (*)(Object *, int), char *))context.memlib_func[9])
+#define add_Object_Module   ((void (*)(Object, char *, Object))context.memlib_func[10])
+#define new_ount            ((Object (*)(long long int))context.memlib_func[11])
+#define new_floap           ((Object (*)(long double))context.memlib_func[12])
+#define new_complex         ((Object (*)(long double, long double))context.memlib_func[13])
+#define new_string          ((Object (*)(char *))context.memlib_func[14])
+#define new_boolean         ((Object (*)(int))context.memlib_func[15])
+#define Obj_cpy             ((Object (*)(Object))context.memlib_func[16])
+#define is_muttable         ((int (*)(Object))context.memlib_func[17])
+#define get_Obj_mem         ((Object (*)(memory, char *))context.memlib_func[18])
+#define Obj_free_array      ((void (*)(Object *, int))context.memlib_func[19])
+#define get_list_len        ((int (*)(Object))context.memlib_func[20])
+#define add_count           ((void (*)(void *, int))context.memlib_func[21])
+#define remove_count        ((void (*)(void *, int))context.memlib_func[22])
+
 
 #endif
