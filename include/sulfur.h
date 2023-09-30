@@ -11,6 +11,7 @@ typedef struct {
     int show_mem;
     int show_parse;
     int show_lexe;
+    int show_lexe_include;
 
     int help;
     int version;

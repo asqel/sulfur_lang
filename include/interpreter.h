@@ -7,6 +7,8 @@ extern Instruction *current_instructions;
 extern int *current_index;
 extern int instruction_len;
 
+extern Instruction **__instructions_ptr;
+
 extern memory MEMORY;
 
 void init_memory();
