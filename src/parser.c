@@ -864,7 +864,8 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
                     exit(1);
                 }
                 if(*p + 1 == n){
-                    return inst;
+                    (*p)++;
+                    continue;
                 }
                 if(n == *p){
                     (*p)++;
