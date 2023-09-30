@@ -846,6 +846,10 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             return inst;
         }
         else{
+            if(tok[*p].type == syntax && *tok[*p].value.t == semicolon){
+                (*p)++;
+                continue;
+            }
             if(tok[*p].type == end_token.type){
                 (*n_inst)++;
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
