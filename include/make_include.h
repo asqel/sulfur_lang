@@ -4,6 +4,6 @@
 #include "sulfur.h"
 #include "token_class.h"
 
-Token *make_include(Token *toks, int *len, sulfur_args_t *args);
+Token *make_include(Token *toks, int *len, char *path_arg);
 
 #endif

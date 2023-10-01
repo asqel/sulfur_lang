@@ -565,13 +565,19 @@ Object std_current_instruction(Object *argv, int argc){
     return new_ount(*current_index);
 }
 
+//
+Object std_call_sec(Object *argv, int argc){
+
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
     add_object(&MEMORY, "__", nil_Obj);
     add_object(&MEMORY, "___", nil_Obj);
     add_object(&MEMORY, "____", nil_Obj);
-    add_object(&MEMORY, "_____", std_list(NULL, 0));
+    add_object(&MEMORY, "_____", nil_Obj);
+    add_object(&MEMORY, "______", nil_Obj);
     add_func(&MEMORY, "print", &print_prompt,"");
     add_func(&MEMORY, "println", &println_prompt,"");
     add_func(&MEMORY, "bool", &std_bool,"");

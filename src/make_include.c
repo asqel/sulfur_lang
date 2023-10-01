@@ -4,9 +4,9 @@
 #include "../include/utilities.h"
 #include "../include/lexer.h"
 
-Token *make_include(Token *toks, int *len, sulfur_args_t *args){
+Token *make_include(Token *toks, int *len, char *path_arg){
 	int p = 0;
-	char *dir_path = uti_dirname(args->filepath);
+	char *dir_path = uti_dirname(path_arg);
 	while (p < *len){
 		if (toks[p].type == keyword && *toks[p].value.t == include_t){
 			if (p + 1 < *len && toks[p + 1].type == str){
@@ -22,11 +22,12 @@ Token *make_include(Token *toks, int *len, sulfur_args_t *args){
 				}
 				char *text = read_file(path);
 				if(!text){
-					printf("ERROR on include file '%' doesn't exists\n",path);
+					printf("ERROR on include file '%s' doesn't exists\n",path);
 					exit(1);
 				}
 				Token *l = lexe(text);
     			int len2 = token_len(l);
+    			l = make_include(l, &len2, path);
 				free(path);
 				Token *new_tok = malloc(sizeof(Token) * ((*len - 2) + len2 + 1));
 				int k = 0;
@@ -44,6 +45,7 @@ Token *make_include(Token *toks, int *len, sulfur_args_t *args){
 				free(l);
 				free(text);
 				toks = new_tok;
+				*len = (*len - 2) + len2;
 			}
 			else{
 				toks[p].type = identifier;
