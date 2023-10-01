@@ -1,0 +1,3 @@
+include "//test/test.su"
+
+println("hello from main");

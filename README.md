@@ -99,6 +99,19 @@ while (i < 10) {
     i += 1;
 }
 ```
+### include
+include "path to file"
+
+include will juste copy and paste the code of the file into the current file after lexing
+you can put '//' in front of the file for a relative path
+
+DONT DO CIRCULAR INCLUDE (when 'a' include 'b' and 'b' include 'a')
+
+#### example :
+```
+include "/my_libs/hello.su"
+include "//relative_file.su"
+```
 
 ### goto / sections 
 goto section_name // go to that section
@@ -152,6 +165,7 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `goto`    : Used to jump to a labeled section.
 - `proceed` : goto next iteration of the loop.
 - `stop`    : break out of a loop earlier.
+- `include`
 
 ## Operatos
 ### Arithmetic operators
@@ -275,3 +289,4 @@ and from the automated [repository](https://github.com/elydre/sulfur_lang/releas
 - `__` : A variable guaranteed to exist, set to nil by default.
 - `___` : A variable guaranteed to exist, set to nil by default.
 - `____` : A variable guaranteed to exist, set to nil by default.
+

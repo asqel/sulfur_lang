@@ -1,0 +1,2 @@
+include "//a/a.su"
+println("hello from another file");

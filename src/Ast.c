@@ -100,6 +100,10 @@ char* get_op_as_str(int type){
             return "<<";
         case Ast_rshift_t:
             return ">>";
+        case Ast_plus_assign_t:
+            return "+=";
+        case Ast_minus_assign_t:
+            return "-=";
     }
 }
 
@@ -124,6 +128,8 @@ int print_ast(Ast x){
         case Ast_assign_t:
         case Ast_lshift_t:
         case Ast_rshift_t:
+        case Ast_plus_assign_t:
+        case Ast_minus_assign_t:
         case Ast_dot_t:
             if(x.left!=NULL){
                 printf("{");

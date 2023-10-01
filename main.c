@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "include/make_include.h"
 #include "include/sulfur.h"
 #include "include/lexer.h"
 #include "include/memlib.h"
@@ -49,9 +50,14 @@ int execute_file(sulfur_args_t *args) {
         return 1;
     }
     Token *l = lexe(text);
-    int len = token_len(l); 
+    int len = token_len(l);
 
     if (args->show_lexe)
+        tokens_print(l, "\n");
+
+    l = make_include(l, &len, args->filepath);
+    
+    if (args->show_lexe_include)
         tokens_print(l, "\n");
 
     int instruction_len = 0;

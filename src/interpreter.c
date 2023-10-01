@@ -24,6 +24,8 @@ Instruction *current_instructions = NULL;
 int *current_index = NULL;
 int instruction_len = 0;
 
+Instruction **__instructions_ptr = NULL;
+
 Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
     if(as != NULL){
         Object o = (*loader)(CTX);
