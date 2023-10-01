@@ -58,7 +58,6 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 						inst[*n_inst - 1].value.fo->end = x2;
 
 						int for_idx = *n_inst - 1;
-
 						inst = parse(tok, n + 2, k, inst, n_inst);
 
 						(*n_inst)++;

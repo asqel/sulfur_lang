@@ -18,6 +18,7 @@ sulfur_args_t *parse_main_args(int argc, char **argv) {
     args->show_mem   = 0;
     args->show_parse = 0;
     args->show_lexe  = 0;
+    args->show_lexe_include  = 0;
 
     args->help       = 0;
     args->version    = 0;
@@ -33,6 +34,8 @@ sulfur_args_t *parse_main_args(int argc, char **argv) {
                     args->show_parse = 1;
                 } else if (strcmp(argv[i] + 2, "show-lexe") == 0) {
                     args->show_lexe = 1;
+                } else if (strcmp(argv[i] + 2, "show-lexe-include") == 0) {
+                    args->show_lexe_include = 1;
                 } else if (strcmp(argv[i] + 2, "help") == 0) {
                     args->help = 2;
                 } else if (strcmp(argv[i] + 2, "version") == 0) {
@@ -52,6 +55,9 @@ sulfur_args_t *parse_main_args(int argc, char **argv) {
                             break;
                         case 'l':
                             args->show_lexe = 1;
+                            break;
+                        case 'i':
+                            args->show_lexe_include = 1;
                             break;
                         case 'h':
                             args->help = 2;

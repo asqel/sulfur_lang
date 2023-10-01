@@ -782,105 +782,107 @@ int count_elseelif(Token*tok,int p){
 }
 
 Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, int* n_inst, int* p, int len, int *result){
-    while (1) {
-    int old_n_inst= *n_inst;
-    //make if
-    line = tok[*p].line;
-    inst = make_if(tok, start, end, inst, n_inst, p, len);
-    if(*n_inst != old_n_inst)
-        return inst;
-    //make for
-    line = tok[*p].line;
-    inst = make_for(tok, start, end, inst, n_inst, p, len);
-    if(*n_inst != old_n_inst)
-        return inst;
-    //make return
-    line = tok[*p].line;
-    inst = make_return(tok, start, end, inst, n_inst, p, len);
-    if(*n_inst != old_n_inst)
-        return inst;
-    //make while
-    line = tok[*p].line;
-    inst = make_while(tok, start, end, inst, n_inst, p, len);
-    if(*n_inst != old_n_inst)
-        return inst;
-    if(tok[*p].type == identifier && *p + 1 < len){
-            if(tok[*p + 1].type == syntax && *tok[*p + 1].value.t == colon && *p + 2 < len){
-                if(tok[*p + 2].type == syntax && *tok[*p + 2].value.t == colon){
-                    (*n_inst)++;
-                    inst = realloc(inst, sizeof(Instruction) * (*n_inst));
-                    inst[*n_inst - 1].type = inst_section_t;
-                    inst[*n_inst - 1].value.section = malloc(sizeof(char) * (1 + strlen(tok[*p].value.s)));
-                    strcpy(inst[*n_inst - 1].value.section, tok[*p].value.s);
-                    *p += 3;
-                    return inst;
+    while (cond_parse(start,end,len,*p)) {
+        int old_n_inst= *n_inst;
+        //make if
+        line = tok[*p].line;
+        inst = make_if(tok, start, end, inst, n_inst, p, len);
+        if(*n_inst != old_n_inst)
+            return inst;
+        //make for
+        line = tok[*p].line;
+        inst = make_for(tok, start, end, inst, n_inst, p, len);
+        if(*n_inst != old_n_inst)
+            return inst;
+        //make return
+        line = tok[*p].line;
+        inst = make_return(tok, start, end, inst, n_inst, p, len);
+        if(*n_inst != old_n_inst)
+            return inst;
+        //make while
+        line = tok[*p].line;
+        inst = make_while(tok, start, end, inst, n_inst, p, len);
+        if(*n_inst != old_n_inst)
+            return inst;
+        if(tok[*p].type == identifier && *p + 1 < len){
+                if(tok[*p + 1].type == syntax && *tok[*p + 1].value.t == colon && *p + 2 < len){
+                    if(tok[*p + 2].type == syntax && *tok[*p + 2].value.t == colon){
+                        (*n_inst)++;
+                        inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+                        inst[*n_inst - 1].type = inst_section_t;
+                        inst[*n_inst - 1].value.section = malloc(sizeof(char) * (1 + strlen(tok[*p].value.s)));
+                        strcpy(inst[*n_inst - 1].value.section, tok[*p].value.s);
+                        *p += 3;
+                        return inst;
+                    }
                 }
             }
-        }
-        //make goto
-        if(tok[*p].type == keyword && *tok[*p].value.t == goto_t){
-            if(!(*p + 1 < len && tok[*p + 1].type == identifier)){
-                printf("missing identifier after goto on line %d",tok[*p].line);
-                exit(1);
-            }
-            (*n_inst)++;
-            inst = realloc(inst, sizeof(Instruction) * (*n_inst));
-            inst[*n_inst - 1].type = inst_goto_t;
-            inst[*n_inst - 1].value.goto_sec = malloc(sizeof(char) * (1 + strlen(tok[*p + 1].value.s)));
-            strcpy(inst[*n_inst - 1].value.section,tok[*p + 1].value.s);
-            *p += 2;
-            return inst;
-        }
-        if(tok[*p].type == keyword && *tok[*p].value.t == proceed_t){
-            (*n_inst)++;
-            inst=realloc(inst,sizeof(Instruction) * (*n_inst));
-            inst[*n_inst-1].type = inst_proceed_t;
-            *p += 1;
-            return inst;
-        }
-        if(tok[*p].type == keyword && *tok[*p].value.t == stop_t){
-            (*n_inst)++;
-            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-            inst[*n_inst-1].type = inst_stop_t;
-            *p += 1;
-            return inst;
-        }
-        else{
-            if(tok[*p].type == syntax && *tok[*p].value.t == semicolon){
-                (*p)++;
-                continue;
-            }
-            if(tok[*p].type == end_token.type){
+            //make goto
+            if(tok[*p].type == keyword && *tok[*p].value.t == goto_t){
+                if(!(*p + 1 < len && tok[*p + 1].type == identifier)){
+                    printf("missing identifier after goto on line %d",tok[*p].line);
+                    exit(1);
+                }
                 (*n_inst)++;
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
-                inst[*n_inst - 1].line = line;
-                inst[*n_inst - 1].type = inst_pass_t;
+                inst[*n_inst - 1].type = inst_goto_t;
+                inst[*n_inst - 1].value.goto_sec = malloc(sizeof(char) * (1 + strlen(tok[*p + 1].value.s)));
+                strcpy(inst[*n_inst - 1].value.section,tok[*p + 1].value.s);
+                *p += 2;
                 return inst;
             }
-            int n=find_semicol(tok,*p);
-            if(n==-1){
-                token_print(tok[*p - 1],"n");
-                printf("ERROR unexpected token on line %d %d %d\n",tok[*p].line, tok[*p].type, *p);
-                exit(1);
-            }
-            if(*p + 1 == n){
+            if(tok[*p].type == keyword && *tok[*p].value.t == proceed_t){
+                (*n_inst)++;
+                inst=realloc(inst,sizeof(Instruction) * (*n_inst));
+                inst[*n_inst-1].type = inst_proceed_t;
+                *p += 1;
                 return inst;
             }
-            if(n == *p){
-                (*p)++;
-                continue;
+            if(tok[*p].type == keyword && *tok[*p].value.t == stop_t){
+                (*n_inst)++;
+                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                inst[*n_inst-1].type = inst_stop_t;
+                *p += 1;
+                return inst;
             }
-            ast_and_len val=tok_to_Ast(tok,*p,n);
-            Ast*x=make_ast(val.value, val.len);
-            (*n_inst)++;
-            inst=realloc(inst,sizeof(Instruction)*(*n_inst));
-            inst[*n_inst-1].type=inst_expr_t;
-            inst[*n_inst-1].value.expr=x;
-            *p = n + 1;
-            return inst;
-            
-        }
+            else{
+                if(tok[*p].type == syntax && *tok[*p].value.t == semicolon){
+                    (*p)++;
+                    continue;
+                }
+                if(tok[*p].type == end_token.type){
+                    (*n_inst)++;
+                    inst = realloc(inst, sizeof(Instruction) * (*n_inst));
+                    inst[*n_inst - 1].line = line;
+                    inst[*n_inst - 1].type = inst_pass_t;
+                    return inst;
+                }
+                int n=find_semicol(tok,*p);
+                if(n==-1){
+                    token_print(tok[*p - 1],"n");
+                    printf("ERROR unexpected token on line %d %d %d\n",tok[*p].line, tok[*p].type, *p);
+                    exit(1);
+                }
+                if(*p + 1 == n){
+                    (*p)++;
+                    continue;
+                }
+                if(n == *p){
+                    (*p)++;
+                    continue;
+                }
+                ast_and_len val=tok_to_Ast(tok,*p,n);
+                Ast*x=make_ast(val.value, val.len);
+                (*n_inst)++;
+                inst=realloc(inst,sizeof(Instruction)*(*n_inst));
+                inst[*n_inst-1].type=inst_expr_t;
+                inst[*n_inst-1].value.expr=x;
+                *p = n + 1;
+                return inst;
+
+            }
     }
+    return inst;
 }
 
 //to parse everything pass your tokens ,-1,-1,NULL,a pointer that will ccount tthe length of instructions
