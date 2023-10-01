@@ -57,8 +57,12 @@ void instruction_free(Instruction code){
             free(code.value.fo->start);
             free(code.value.fo->var_name);
             break;
-        default:
+        case inst_expr_t:
+            free_ast(*code.value.expr);
+            free(code.value.expr);
             break;
+        default:
+            printf("Error: instruction_free: unknown instruction type %d\n", code.type);
+            exit(1);
     }
-
 }
