@@ -389,11 +389,15 @@ Ast*make_ast(Ast*e,int len){
                         a[k].v=realloc(a[k].v,sizeof(Ast)*(a[k].l));
                         a[k].v[a[k].l-1]=to_parse[i];
                     }
+                    free(to_parse);
 
                     funccall f;
                     f.args=malloc(sizeof(Ast)*(k+1));
+                    Ast*tmp;
                     for(int i=0;i<=k;i++){
-                        f.args[i]=*make_ast(a[i].v,a[i].l);
+                        tmp=make_ast(a[i].v, a[i].l);
+                        f.args[i]=*tmp;
+                        free(tmp);
                     }
                     f.name=e[opening_par-1].root.varcall;
                     f.nbr_arg=k+1;
@@ -408,11 +412,9 @@ Ast*make_ast(Ast*e,int len){
                     e[opening_par-1].root.fun=malloc(sizeof(funccall));
                     *e[opening_par-1].root.fun=f;
                     p++;
+                    free(a);
                     continue;
-
                 }
-
-
             }
             else{
                 p++;
@@ -421,9 +423,6 @@ Ast*make_ast(Ast*e,int len){
         else{
             p++;
         }
-
-
-
     }
 
     //make expr '(...)'
@@ -459,6 +458,7 @@ Ast*make_ast(Ast*e,int len){
             }
 
             Ast*expr=make_ast(to_parse,to_parse_len);
+            // free(to_parse);
             e[op_par]=*expr;
             free(expr);
             e[op_par].isAst=1;
@@ -547,6 +547,7 @@ Ast*make_ast(Ast*e,int len){
             e=realloc(e,sizeof(Ast)*len);
             p++;
         }
+
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS&&p-1>=0&&(e[p-1].type==Ast_op_t || (e[p-1].type == Ast_syntax_t && e[p-1].root.sy == colon))){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
                 printf("ERROR missing operand after '+'(unary) in expression\n");
@@ -563,9 +564,8 @@ Ast*make_ast(Ast*e,int len){
             len--;
             e=realloc(e,sizeof(Ast)*len);
             p++;
-
-
         }
+
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS&&p-1>=0&&(e[p-1].type==Ast_op_t || (e[p-1].type == Ast_syntax_t && e[p-1].root.sy == colon))){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
                 printf("ERROR missing operand after '-'(unary) in expression\n");
@@ -582,9 +582,8 @@ Ast*make_ast(Ast*e,int len){
             len--;
             e=realloc(e,sizeof(Ast)*len);
             p++;
-
-
         }
+
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS && p==0){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
                 printf("ERROR missing operand after '-'(unary) in expression\n");
@@ -605,8 +604,7 @@ Ast*make_ast(Ast*e,int len){
         }
         else{
             p++;
-        }
-        
+        }   
     }
 
     //make operators
@@ -655,11 +653,6 @@ Ast*make_ast(Ast*e,int len){
         e=e2;
     }
     return e;
-
-    
-
-
-
 }
 
 
