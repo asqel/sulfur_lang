@@ -120,10 +120,9 @@ Object execute(Instruction* code, char* file_name, int len){
     while(p < len){
         if(code[p].type == inst_pass_t){
             p++;
-            continue;
         }
-        
-        if(code[p].type == inst_if_t){
+
+        else if(code[p].type == inst_if_t){
             Object condition = eval_Ast(code[p].value.i->condition);
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
@@ -135,9 +134,9 @@ Object execute(Instruction* code, char* file_name, int len){
             }
             Obj_free_val(c);
             p = code[p].value.i->endif_p + 1;
-            continue;
         }
-        if(code[p].type == inst_elif_t){
+
+        else if(code[p].type == inst_elif_t){
             Object condition = eval_Ast(code[p].value.el->condition);
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
@@ -149,35 +148,35 @@ Object execute(Instruction* code, char* file_name, int len){
             }
             Obj_free_val(c);
             p = code[p].value.el->endif_p + 1;
-            continue;
         }
-        if(code[p].type == inst_else_t){
-            p++;
-            continue;
-        }
-        if(code[p].type == inst_endif){
-            p = code[p].value.endifelse + 1;
-            continue;
 
-        }
-        if(code[p].type == inst_endifelse){
+        else if(code[p].type == inst_else_t){
             p++;
-            continue;
         }
-        if(code[p].type == inst_return_t){
+
+        else if(code[p].type == inst_endif){
+            p = code[p].value.endifelse + 1;
+        }
+
+        else if(code[p].type == inst_endifelse){
+            p++;
+        }
+
+        else if(code[p].type == inst_return_t){
             return eval_Ast(code[p].value.ret);
         }
 
-        if(code[p].type == inst_expr_t){
+        else if(code[p].type == inst_expr_t){
             Object x = eval_Ast(code[p].value.expr);
             Obj_free_val(x);
             p++;
-            continue;
         }
-        if(code[p].type == inst_section_t){
+
+        else if(code[p].type == inst_section_t){
             p++;
         }
-        if(code[p].type == inst_goto_t){
+
+        else if(code[p].type == inst_goto_t){
             int n=-1;
             //search down
             for(int i = p + 1; i < len; i++){
@@ -206,7 +205,8 @@ Object execute(Instruction* code, char* file_name, int len){
             p = n;
             continue;
         }
-        if(code[p].type == inst_for_t){
+
+        else if(code[p].type == inst_for_t){
             add_loop_count(p, &loops_count, &loops);
             Object start = eval_Ast(code[p].value.fo->start);
             Object old_start = start;
@@ -251,7 +251,8 @@ Object execute(Instruction* code, char* file_name, int len){
             Obj_free_val(end);
             p++;
         }
-        if(code[p].type == inst_endfor_t){
+
+        else if(code[p].type == inst_endfor_t){
             int for_p = code[p].value.endfor;
 
             Object start = eval_Ast(code[for_p].value.fo->start);
@@ -343,40 +344,38 @@ Object execute(Instruction* code, char* file_name, int len){
             }
             
         }
-        if(code[p].type == inst_while_t){
+
+        else if(code[p].type == inst_while_t){
             add_loop_count(p, &loops_count, &loops);
             Object condition = eval_Ast(code[p].value.wh->condition);
             Object c = std_bool(&condition, 1);
             Obj_free_val(condition);
-            if(c.val.b){
+            if (c.val.b) {
                 Obj_free_val(c);
                 p++;
-                continue;
-            }
-            else{
+            } else {
                 Obj_free_val(c);
                 p = code[p].value.wh->endwhile + 1;
                 remove_loop_count(&loops_count, &loops);
-                continue;
             }
         }
-        if(code[p].type == inst_endwhile_t){
+
+        else if (code[p].type == inst_endwhile_t){
             int while_p = code[p].value.endwhile;
             Object condition = eval_Ast(code[while_p].value.wh->condition);
             Object c=std_bool(&condition,1);
             Obj_free_val(condition);
-            if(c.val.b){
+            if (c.val.b) {
                 Obj_free_val(c);
                 p=code[p].value.endwhile+1;
-                continue;
-            }
-            else{
+            } else{
                 Obj_free_val(c);
                 remove_loop_count(&loops_count, &loops);
                 p++;
             }
         }
-        if(code[p].type == inst_proceed_t){
+
+        else if(code[p].type == inst_proceed_t){
             if(loops_count){
                 int index = loops[loops_count - 1];
                 if(code[index].type == inst_while_t){
@@ -389,9 +388,9 @@ Object execute(Instruction* code, char* file_name, int len){
             else{
                 p = 0;
             }
-            continue;
         }
-        if(code[p].type == inst_stop_t){
+
+        else if (code[p].type == inst_stop_t){
             if(loops_count){
                 int index = loops[loops_count - 1];
                 if(code[index].type == inst_while_t){
@@ -404,9 +403,9 @@ Object execute(Instruction* code, char* file_name, int len){
             else{
                 p = len;
             }
-            continue;
         }
-        if(code[p].type==inst_funcdef_t){
+
+        else if (code[p].type==inst_funcdef_t){
             int n=-1;
             for(int i=0;i<MEMORY.len;i++){
                 if(!strcmp(MEMORY.keys[i],code[p].value.fc->info.name)){
@@ -425,7 +424,6 @@ Object execute(Instruction* code, char* file_name, int len){
                 f.val.funcid->nbr_of_args = code[p].value.fc->args_len;
                 add_object(&MEMORY, code[p].value.fc->info.name, f);
                 p++;
-                continue;
             }
             else{
                 printf("ERROR function has same name as variable or another function\n");
@@ -435,7 +433,10 @@ Object execute(Instruction* code, char* file_name, int len){
             p++;
         }
 
-        
+        else {
+            printf("ERROR in execute unknown instruction type %d\n", code[p].type);
+            exit(1);
+        }
     }
     free(loops);
     return nil_Obj;

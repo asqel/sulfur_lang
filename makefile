@@ -10,6 +10,12 @@ linux:
 	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -fno-builtin-printf -ldl
 	make stdlibs_linux
 
+linux_safe:
+	mkdir -p build
+	mkdir -p build/libs
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -fno-builtin-printf -ldl -g -fsanitize=address
+	make stdlibs_linux
+
 profan:
 	python3 profan_build.py
 
