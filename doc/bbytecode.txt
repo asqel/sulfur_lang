@@ -1,0 +1,30 @@
+constants:
+    array of constants used by ASTs or instruction
+    example:
+        constants = [3.5, "a string", 42, 0b, $i, "i"]
+
+
+PASS:
+    0x00 
+
+FOR:
+    0x01 64bits(var name idx in constants) 64bits(start AST idx) 64bits(end AST idx) 64bits(END_FOR idx)
+
+END_FOR:
+    0x02 64bits(FOR idx)
+
+WHILE
+    0x01 64bits(start AST idx) 64bits(END_WHILE idx)
+
+END_WHILE:
+    0x02 64bits(WHILE idx)
+
+PROCEED:
+    0x03 0x01 64bits(FOR / WHILE idx) 
+
+STOP:
+    0x03 0x01 64bits(END_FOR / END_WHILE idx) 
+
+GOTO:
+    0x03 0x00 64bits(label name idx in constants)
+    

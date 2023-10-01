@@ -372,10 +372,10 @@ void* get_standard_module(char* filename){
     if(!strcmp(filename, "graphic")){
         return &__load_graphic;
     }
-    if(!strcmp(filename, "math")){
+    if(!strcmp(filename, "poppy")){
         return &__load_poppy;
     }
-    if(!strcmp(filename, "math")){
+    if(!strcmp(filename, "lilypad")){
         return &__load_lilypad;
     }
     return NULL;

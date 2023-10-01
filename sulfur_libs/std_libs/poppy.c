@@ -48,7 +48,7 @@ Object __loader(Sulfur_ctx ctx) {
     Object mod = new_Module();
     context = ctx;
 
-    add_func_Module(mod, "po_read_file", &std_po_read_file, "");
+    add_func_Module(mod, "read_file", &std_po_read_file, "");
 
     return mod;
 }
@@ -57,7 +57,7 @@ Object __load_poppy(Sulfur_ctx ctx) {
     Object mod = new_Module();
     (void)ctx;
 
-    add_func_Module(mod, "po_read_file", &std_po_read_file, "");
+    add_func_Module(mod, "read_file", &std_po_read_file, "");
 
     return mod;
 }
