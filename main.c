@@ -55,7 +55,7 @@ int execute_file(sulfur_args_t *args) {
     if (args->show_lexe)
         tokens_print(l, "\n");
 
-    l = make_include(l, &len, args);
+    l = make_include(l, &len, args->filepath);
     
     if (args->show_lexe_include)
         tokens_print(l, "\n");
