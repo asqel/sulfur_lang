@@ -886,19 +886,20 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
 }
 
 //to parse everything pass your tokens ,-1,-1,NULL,a pointer that will ccount tthe length of instructions
-Instruction*parse(Token*tok,int start,int end,Instruction*inst,int*n_inst){
-
-    int len=token_len(tok);
-    int p=0;
+Instruction *parse(Token *tok, int start, int end, Instruction *inst, int *n_inst) {
+    int len = token_len(tok);
     int result = 0;
-    if(start!=-1){
-        p=start;
+    int p = 0;
+
+    if (start != -1) {
+        p = start;
     }
-    if(inst==NULL){
-        Instruction*inst=malloc(sizeof(Instruction));
+
+    if (inst == NULL) {
+        Instruction *inst=malloc(sizeof(Instruction));
     }
-    while(cond_parse(start,end,len,p)){
-        
+
+    while (cond_parse(start,end,len,p)) {
         //les else et les elif sont gerer par la partie if make du parser
         if(tok[p].type==keyword&&(*tok[p].value.t==elif_t||*tok[p].value.t==else_t)){
             printf("ERROR expected if instruction above on line %d\n",tok[p].line);
