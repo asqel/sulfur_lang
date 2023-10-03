@@ -813,14 +813,14 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
         //make goto
         if(tok[*p].type == keyword && *tok[*p].value.t == goto_t){
             if(!(*p + 1 < len && tok[*p + 1].type == identifier)){
-                printf("missing identifier after goto on line %d",tok[*p].line);
+                printf("missing identifier after goto on line %d\n",tok[*p].line);
                 exit(1);
             }
             (*n_inst)++;
             inst = realloc(inst, sizeof(Instruction) * (*n_inst));
             inst[*n_inst - 1].type = inst_goto_t;
             inst[*n_inst - 1].value.goto_sec = malloc(sizeof(char) * (1 + strlen(tok[*p + 1].value.s)));
-            strcpy(inst[*n_inst - 1].value.section,tok[*p + 1].value.s);
+            strcpy(inst[*n_inst - 1].value.goto_sec,tok[*p + 1].value.s);
             *p += 2;
             return inst;
         }

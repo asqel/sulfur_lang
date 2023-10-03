@@ -101,6 +101,7 @@ Object eval_Ast(Ast*x){
         }
         if(x->type==Ast_plus_assign_t){
             Ast ast;
+			ast.isAst = 1;
             ast.type = Ast_assign_t;
             ast.left = x->left;
             ast.right = malloc(sizeof(Ast));
@@ -114,6 +115,7 @@ Object eval_Ast(Ast*x){
         }
         if(x->type == Ast_minus_assign_t){
             Ast ast;
+			ast.isAst = 1;
             ast.type = Ast_assign_t;
             ast.left = x->left;
             ast.right = malloc(sizeof(Ast));
@@ -123,7 +125,6 @@ Object eval_Ast(Ast*x){
             Object o = eval_Ast(&ast);
             free(ast.right);
             return o;
-            
         }
         if(x->type==Ast_leq_t){
             Object a=eval_Ast(x->left);
