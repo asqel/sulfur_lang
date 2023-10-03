@@ -27,4 +27,36 @@ STOP:
 
 GOTO:
     0x03 0x00 64bits(label name idx in constants)
-    
+
+
+
+ast -> push / operation
+
+    +       -> push a; push b; add;
+a       b   -> stack_max_len=2 (bc. 2 push)
+
+            +       -> push a; push b; mul; push c; add;
+    *           c   -> constants = ["a", "b", "c"] 
+a       b           ->     ________________________________________________________
+                           |              |              |    |              |    |
+(64bits)0x03 (64bits)0x05  0x01 0x01 0x00 0x01 0x01 0x01 0x04 0x01 0x01 0x02 0x03
+
+
+
+AST : 64bits(stack max len) 64bits(AST_instruction len) ast_instructions;
+
+ast_instructions:
+    push : 0x01 (0x01/0x02 (varcall / constants idx)) 64bits(idx)
+        ex: push a; = 0x01 0x01 (64bits)0x00   (constants = ["a", 90])
+        ex: push 90; = 0x01 0x02 (64bits)0x01   (constants = ["a", 90])
+        ex: push "a"; = 0x01 0x02 (64bits)0x00  (constants = ["a", 90])
+
+
+    push_funccall : 0x02 64bits(func_name(constants idx)) 64bits(nbr arg) args(as constants idxs(64 bits))
+        ex: push_funccall println("hi !"); = 0x02 0x00 0x01 0x01 (constants = ["println","hi !"])
+                                                  ^^^^ ^^^^ ^^^^
+                        var_name(constants idx) /       |      \ arg[0](constants idx)
+                                                    nbr of args
+    add: 0x03
+    sub: 0x03
+    mul: 0x04

@@ -113,7 +113,8 @@ void remove_loop_count(int *loops_count, int **loops){
 Object execute(Instruction* code, char* file_name, int len){
     int p = 0;
     int *loops = malloc(sizeof(int));
-    int loops_count = 0; 
+    *loops = 0;
+    int loops_count = 1; 
     current_instructions = code;
     current_index = &p;
     instruction_len = len;
@@ -124,7 +125,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         
         if(code[p].type == inst_if_t){
-            Object condition = eval_Ast(code[p].value.i->condition);
+            Object condition = Obj_cpy(eval_Ast(code[p].value.i->condition));
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
@@ -138,7 +139,7 @@ Object execute(Instruction* code, char* file_name, int len){
             continue;
         }
         if(code[p].type == inst_elif_t){
-            Object condition = eval_Ast(code[p].value.el->condition);
+            Object condition = Obj_cpy(eval_Ast(code[p].value.el->condition));
             Object old_cond = condition;
             Object c = std_bool(&condition, 1);
             Obj_free_val(old_cond);
@@ -169,7 +170,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
 
         if(code[p].type == inst_expr_t){
-            Object x = eval_Ast(code[p].value.expr);
+            Object x = Obj_cpy(eval_Ast(code[p].value.expr));
             Obj_free_val(x);
             p++;
             continue;
@@ -208,12 +209,12 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_for_t){
             add_loop_count(p, &loops_count, &loops);
-            Object start = eval_Ast(code[p].value.fo->start);
+            Object start = Obj_cpy(eval_Ast(code[p].value.fo->start));
             Object old_start = start;
             start = std_ount(&start, 1);
             Obj_free_val(old_start);
 
-            Object end=eval_Ast(code[p].value.fo->end);
+            Object end = Obj_cpy(eval_Ast(code[p].value.fo->end));
             Object old_end = end;
             end = std_ount(&end, 1);
             Obj_free_val(old_end);
@@ -254,12 +255,12 @@ Object execute(Instruction* code, char* file_name, int len){
         if(code[p].type == inst_endfor_t){
             int for_p = code[p].value.endfor;
 
-            Object start = eval_Ast(code[for_p].value.fo->start);
+            Object start = Obj_cpy(eval_Ast(code[for_p].value.fo->start));
             Object old_start = start;
             start = std_ount(&start, 1);
             Obj_free_val(old_start);
 
-            Object end=eval_Ast(code[for_p].value.fo->end);
+            Object end = Obj_cpy(eval_Ast(code[for_p].value.fo->end));
             Object old_end = end;
             end=std_ount(&end, 1);
             Obj_free_val(old_end);
@@ -345,7 +346,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_while_t){
             add_loop_count(p, &loops_count, &loops);
-            Object condition = eval_Ast(code[p].value.wh->condition);
+            Object condition = Obj_cpy(eval_Ast(code[p].value.wh->condition));
             Object c = std_bool(&condition, 1);
             Obj_free_val(condition);
             if(c.val.b){
@@ -362,8 +363,8 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_endwhile_t){
             int while_p = code[p].value.endwhile;
-            Object condition = eval_Ast(code[while_p].value.wh->condition);
-            Object c=std_bool(&condition,1);
+            Object condition = Obj_cpy(eval_Ast(code[while_p].value.wh->condition));
+            Object c = std_bool(&condition,1);
             Obj_free_val(condition);
             if(c.val.b){
                 Obj_free_val(c);
@@ -377,14 +378,12 @@ Object execute(Instruction* code, char* file_name, int len){
             }
         }
         if(code[p].type == inst_proceed_t){
-            if(loops_count){
-                int index = loops[loops_count - 1];
-                if(code[index].type == inst_while_t){
-                    p = code[index].value.wh->endwhile;
-                }
-                else if(code[index].type == inst_for_t){
-                    p = code[index].value.fo->endfor;
-                }
+            int index = loops[loops_count - 1];
+            if(code[index].type == inst_while_t){
+                p = code[index].value.wh->endwhile;
+            }
+            else if(code[index].type == inst_for_t){
+                p = code[index].value.fo->endfor;
             }
             else{
                 p = 0;
@@ -392,20 +391,19 @@ Object execute(Instruction* code, char* file_name, int len){
             continue;
         }
         if(code[p].type == inst_stop_t){
-            if(loops_count){
-                int index = loops[loops_count - 1];
-                if(code[index].type == inst_while_t){
-                    p = code[index].value.wh->endwhile + 1;
-                }
-                else if(code[index].type == inst_for_t){
-                    p = code[index].value.fo->endfor + 1;
-                }
+            int index = loops[loops_count - 1];
+            if(code[index].type == inst_while_t){
+                p = code[index].value.wh->endwhile + 1;
+            }
+            else if(code[index].type == inst_for_t){
+                p = code[index].value.fo->endfor + 1;
             }
             else{
                 p = len;
             }
             continue;
         }
+        //TODO maybe one day implement this asqel
         if(code[p].type==inst_funcdef_t){
             int n=-1;
             for(int i=0;i<MEMORY.len;i++){
