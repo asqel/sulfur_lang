@@ -1,7 +1,21 @@
 constants:
     array of constants used by ASTs or instruction
+    always contains nil as 1st constant, $i as 2nd, 0b as 3rd and 1b as 4th
     example:
         constants = [3.5, "a string", 42, 0b, $i, "i"]
+    for a ountt:
+        0x49 64bits(for int value)
+    for a string:
+        0x53 (chars of the string as 1byte each NULL terminated)
+    for a floap:
+        0x46 64bits(convert floap to double and memcpy)
+
+    
+
+Asts:
+    array of index of asts in the bytecode
+    example:
+        Asts = [0,10] # made by the interpreter
 
 
 PASS:
@@ -28,6 +42,9 @@ STOP:
 GOTO:
     0x03 0x00 64bits(label name idx in constants)
 
+END_AST / END_CONSTANTS / END_INSTRUCTION:
+    0x00 0x00 0x00 0x00 0x00 0x00 (indicate definition of all ast is finished)
+
 
 
 ast -> push / operation
@@ -52,11 +69,24 @@ ast_instructions:
         ex: push "a"; = 0x01 0x02 (64bits)0x00  (constants = ["a", 90])
 
 
-    push_funccall : 0x02 64bits(func_name(constants idx)) 64bits(nbr arg) args(as constants idxs(64 bits))
-        ex: push_funccall println("hi !"); = 0x02 0x00 0x01 0x01 (constants = ["println","hi !"])
-                                                  ^^^^ ^^^^ ^^^^
-                        var_name(constants idx) /       |      \ arg[0](constants idx)
-                                                    nbr of args
-    add: 0x03
-    sub: 0x03
-    mul: 0x04
+    push_funccall : 
+                    push each arg from right to left (f(a, b , c) -> push c push b oush c)
+                    0x02 64bits(func_name idx in constants) 64bits(nbr of arg)
+    add : 0x03
+    sub : 0x03
+    mul : 0x04
+
+
+
+################ bytecode file format #################
+
+magical number      |   0x2e 0x53 0x63 0x2e
+constants section   |   64bits(nbr of constants)
+                    |   constants
+                    |   0x00 0x00 0x00 0x00 0x00 0x00
+asts section        |   64bits(nbr of ast)
+                    |   asts
+                    |   0x00 0x00 0x00 0x00 0x00 0x00
+instructions sec    |   64(bits nbr of instructions)
+                    |   instructions
+                    |   0x00 0x00 0x00 0x00 0x00 0x00

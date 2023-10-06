@@ -90,6 +90,23 @@ Object memory_adresse(Object * argv, int argc){
     return (nil_Obj);
 }
 
+#include <stdio.h>
+
+#ifdef _WIN32
+    #include <windows.h>
+    #define CLEAR system("cls")
+#elif __profanOS__
+    #define CLEAR printf("\033[2J")
+#else
+    #include <stdlib.h>
+    #define CLEAR system("clear")
+#endif
+
+Object clearConsole(Object *argv, int argc) {
+    CLEAR;
+    return nil_Obj;
+}
+
 #ifndef ONE_FILE
 
 Object __loader(Sulfur_ctx ctx) {
@@ -115,6 +132,7 @@ Object __load_lilypad(Sulfur_ctx ctx) {
     add_func_Module(mod, "malloc", &std_malloc, "");
     add_func_Module(mod,"get_byte", &std_get_val_byte,"");
     add_func_Module(mod,"set_byte", &std_set_val_byte,"");
+    add_func_Module(mod,"clear", &clearConsole,"");
 
     return mod;
 }

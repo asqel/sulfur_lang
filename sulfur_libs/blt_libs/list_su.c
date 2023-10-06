@@ -19,6 +19,19 @@ Object clear_list(Object*obj,int n_arg){
     return nil_Obj;
 }
 
+Object list_reverse(Object *argv, int argc){
+    int len = get_list_len(argv[0]);
+    Object temp;
+    if (len < 2)
+        return nil_Obj;
+    for(int i = 0; i < len / 2; i++){
+        temp = argv[0].val.li->elements[i + 1];
+        argv[0].val.li->elements[i + 1] = argv[0].val.li->elements[len - i]; 
+        argv[0].val.li->elements[len - i] = temp;
+    }
+    return nil_Obj;
+}
+
 Object init_list(memory *MEMORY,char*path){
     char* module_name = "list";
 
@@ -29,6 +42,7 @@ Object init_list(memory *MEMORY,char*path){
 
     add_func_Module(mod, "append", &append_list, "");
     add_func_Module(mod, "clear", &clear_list, "");
+    add_func_Module(mod, "reverse", &list_reverse, "");
 
     list_module = *mod.val.module;
     return mod;
