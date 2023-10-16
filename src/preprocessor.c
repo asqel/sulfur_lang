@@ -8,7 +8,7 @@ int is_there_brack_elif(int from, char *input) {
     int i = from + 1;
     if (input[from] == '\0')
         return 0;
-    while (input[i] == '\0' || input[i] == ' ' || input[i] == '\n' || input[i] == '\t' || input[i] == '\r') {
+    while (input[i] == ' ' || input[i] == '\n' || input[i] == '\t' || input[i] == '\r') {
         i++;
     }
     if(input[i] == '{' || input[i] == '(')
@@ -57,6 +57,7 @@ char *add_semicolon(char *input) {
             text[t_index++] = ';';
     }
     text[t_index] = '\0';
+    text = realloc(text, t_index + 1000);
 
     return text;
 }

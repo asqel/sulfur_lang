@@ -41,6 +41,8 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 					new_tok[k++] = toks[i];
 				}
 				new_tok[(*len - 2) + len2] = toks[*len];
+				free_tok_val(toks[p]);		// free the value of the include keyword
+				free_tok_val(toks[p + 1]);	// free the value of the include path
 				free(toks);
 				free(l);
 				free(text);
