@@ -44,7 +44,7 @@ println("this for will be start at 0 and go to 100 but ends at the first number 
 
 for(i from 0 to 100){
 	println(i)
-	if(i % 9 == 0 & i > 30){
+	if(i % 9 == 0 && i > 30){
 		stop
 	}
 }

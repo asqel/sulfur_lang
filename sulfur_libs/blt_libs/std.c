@@ -568,6 +568,17 @@ Object std_call_sec(Object *argv, int argc){
 
 }
 
+Object std_dirname(Object *argv, int argc){
+    if (argc != 1){
+        printf("ERROR dirname onlyy takes 1 argument\n");
+        exit(1);
+    }
+    char *path = uti_dirname(argv[0].val.s);
+    Object res = new_string(path);
+    free(path);
+    return res;
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
@@ -597,9 +608,12 @@ memory init_std(memory MEMORY,char*path){
     char *d = uti_dirname(path0);
     add_obj_str(&MEMORY,"__path__",path);
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
-    add_obj_str(&MEMORY,"__dir_path__",d);
+    add_obj_str(&MEMORY,"__interpreter_dir_path__",d);
     add_obj_str(&MEMORY,"__os__",__os__);
     free(d);
+    free(path0);
+    path0 = uti_dirname(path);
+    add_obj_str(&MEMORY, "__dir_path__", path0);
     free(path0);
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
     add_func(&MEMORY,"var_exists",&var_exists,"");
@@ -618,5 +632,6 @@ memory init_std(memory MEMORY,char*path){
     add_obj_str(&MEMORY,"__complete_version__",COMPLETE_VERSION);
     add_func(&MEMORY, "__get_index__", &std_current_instruction, "");
     add_func(&MEMORY, "jump", &std_jump, "");
+    add_func(&MEMORY, "dirname", &std_dirname, "");
     return MEMORY;
 }

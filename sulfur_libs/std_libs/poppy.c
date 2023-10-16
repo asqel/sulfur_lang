@@ -11,8 +11,10 @@
 #endif
 
 
-char*po_read_file(char*path){
+char *po_read_file(char*path){
     FILE*f=fopen(path,"r");
+    if(!f)
+        return NULL;
     char*text=malloc(sizeof(char));
     int n=1;
     char c=fgetc(f);
@@ -38,9 +40,29 @@ Object std_po_read_file(Object* argv, int argc){
         exit(1);
     }
     char * text = po_read_file(argv[0].val.s);
+    if (!text)
+        return nil_Obj;
     Object res = new_string(text);
     free(text);
     return res;
+}
+
+Object std_po_write_file(Object *argv, int argc){
+    char *path = NULL;
+    if (argc != 2){
+        printf("poppy::write_file takes only 2 arguments\n");
+        exit(1);
+    }
+    if (argv[0].type != Obj_string_t || argv[1].type != Obj_string_t){
+        printf("poppy::write_file takes only string argument\n");
+        exit(1);
+    }
+    path = argv[0].val.s;
+    FILE *f = fopen(path, "w");
+    if (!f)
+        return new_ount(1);
+    fwrite(argv[1].val.s, 1, strlen(argv[1].val.s), f);
+    return nil_Obj;
 }
 
 #ifndef ONE_FILE
@@ -49,6 +71,7 @@ Object __loader(Sulfur_ctx ctx) {
     context = ctx;
 
     add_func_Module(mod, "read_file", &std_po_read_file, "");
+    add_func_Module(mod, "write_file", &std_po_write_file, "");
 
     return mod;
 }
@@ -58,6 +81,7 @@ Object __load_poppy(Sulfur_ctx ctx) {
     (void)ctx;
 
     add_func_Module(mod, "read_file", &std_po_read_file, "");
+    add_func_Module(mod, "write_file", &std_po_write_file, "");
 
     return mod;
 }
