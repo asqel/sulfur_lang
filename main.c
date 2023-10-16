@@ -32,7 +32,7 @@ void show_help(char *name, int full) {
 }
 
 void show_version() {
-    printf("Sulfur %s, Under the GNU-GPL v3.0\nBy @asqel and other stupid people\n", VERSION);
+    printf("Sulfur %s (%s), Under the GNU-GPL v3.0\nBy @asqel and other stupid people\n", VERSION, SUB_VERSION);
 }
 
 extern ref_count* REFS;

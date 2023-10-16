@@ -99,6 +99,12 @@ int interactive_shell(sulfur_args_t *args) {
         // execute
         execute(insts, "*shell*", instruction_len);
 
+        // free memory
+        for(int i = 0; i < len; i++){
+            free_tok_val(l[i]);
+        }
+        free(l);
+
         // clean up
         decl = 0;
     }

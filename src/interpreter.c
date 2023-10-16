@@ -165,7 +165,7 @@ Object execute(Instruction* code, char* file_name, int len){
             return eval_Ast(code[p].value.ret);
         }
 
-        if(code[p].type == inst_expr_t){
+        else if(code[p].type == inst_expr_t){
             Object x = Obj_cpy(eval_Ast(code[p].value.expr));
             Obj_free_val(x);
             p++;
@@ -373,7 +373,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 p++;
             }
         }
-        if(code[p].type == inst_proceed_t){
+        else if(code[p].type == inst_proceed_t){
             int index = loops[loops_count - 1];
             if(code[index].type == inst_while_t){
                 p = code[index].value.wh->endwhile;
@@ -385,7 +385,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 p = 0;
             }
         }
-        if(code[p].type == inst_stop_t){
+        else if(code[p].type == inst_stop_t){
             int index = loops[loops_count - 1];
             if(code[index].type == inst_while_t){
                 p = code[index].value.wh->endwhile + 1;
@@ -398,7 +398,7 @@ Object execute(Instruction* code, char* file_name, int len){
             }
         }
         //TODO maybe one day implement this asqel
-        if(code[p].type==inst_funcdef_t){
+        else if(code[p].type==inst_funcdef_t){
             int n=-1;
             for(int i=0;i<MEMORY.len;i++){
                 if(!strcmp(MEMORY.keys[i],code[p].value.fc->info.name)){
