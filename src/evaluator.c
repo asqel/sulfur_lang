@@ -124,7 +124,6 @@ Object eval_Ast(Ast*x){
             Object o = Obj_cpy(eval_Ast(&ast));
             free(ast.right);
             return o;
-            
         }
         if(x->type==Ast_leq_t){
             Object a = Obj_cpy(eval_Ast(x->left));

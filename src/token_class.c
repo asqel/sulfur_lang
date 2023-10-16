@@ -10,7 +10,7 @@ Token nil_token={-1,nil,{.i=&(long long int){0}}};
 Token end_token={-1,end,{.i=&(long long int){1}}};
 
 
-char DIGITS[10]="1234567890";
+char DIGITS[11]="1234567890";
 
 char OPS[22][3]={"+","*","-","/","^","%","\\","||","&&","!","=","==","+=","-=","!=","<=",">=","<",">","<<",">>"};
 int ops_len=22;
