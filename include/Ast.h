@@ -51,6 +51,7 @@ typedef struct Ast{
         anonym_func* ano_func;
         list_comprehension* li;
         expr_funccall* ex;
+        long long int constant[2];
     }root;
     struct Ast*left;
     struct Ast*right;

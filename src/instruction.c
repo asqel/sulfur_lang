@@ -13,6 +13,7 @@ int inst_to_str(Instruction*i){
     if(i->type==inst_expr_t){
        printf("Expr:[]");
     }
+	return 0;
 }
 
 void instruction_free_array(Instruction *code, int len){
@@ -56,9 +57,26 @@ void instruction_free(Instruction code){
             free_ast(*code.value.fo->start);
             free(code.value.fo->start);
             free(code.value.fo->var_name);
+            free(code.value.fo);
             break;
+        case inst_expr_t:
+            free_ast(*code.value.expr);
+            free(code.value.expr);
+            break;
+		case inst_goto_t:
+			free(code.value.goto_sec);
+			break;
+		case inst_section_t:
+			free(code.value.section);
+			break;
+		case inst_pass_t:
+        case inst_else_t:
+        case inst_stop_t:
+		case inst_proceed_t:
+            break;//nothing
         default:
-            break;
+            printf("Error: no way to free type %d\n"
+					"please add it to instruction_free\n", code.type);
+            exit(1);
     }
-
 }

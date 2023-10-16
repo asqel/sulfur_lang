@@ -239,7 +239,6 @@ Object std_list(Object*obj,int n_arg){
         x.val.li=malloc(sizeof(list));
         x.val.li->elements=malloc(sizeof(Object));
         x.val.li->elements[0] = new_ount(0);
-        add_count(x.val.li,Obj_list_t);
         return x;
     }
     Object x;
@@ -250,7 +249,6 @@ Object std_list(Object*obj,int n_arg){
     for(int i=1;i<=n_arg;i++){
         x.val.li->elements[i]=Obj_cpy(obj[i-1]);
     }
-    add_count(x.val.li,Obj_list_t);
 
     return x;
 }
@@ -565,13 +563,19 @@ Object std_current_instruction(Object *argv, int argc){
     return new_ount(*current_index);
 }
 
+//
+Object std_call_sec(Object *argv, int argc){
+
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
     add_object(&MEMORY, "__", nil_Obj);
     add_object(&MEMORY, "___", nil_Obj);
     add_object(&MEMORY, "____", nil_Obj);
-    add_object(&MEMORY, "_____", std_list(NULL, 0));
+    add_object(&MEMORY, "_____", nil_Obj);
+    add_object(&MEMORY, "______", nil_Obj);
     add_func(&MEMORY, "print", &print_prompt,"");
     add_func(&MEMORY, "println", &println_prompt,"");
     add_func(&MEMORY, "bool", &std_bool,"");

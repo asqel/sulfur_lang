@@ -101,7 +101,7 @@ extern int keyword_len;
 extern Token nil_token;
 extern Token end_token;
 
-extern char DIGITS[10];
+extern char DIGITS[11];
 
 extern char OPS[22][3];
 extern int ops_len;

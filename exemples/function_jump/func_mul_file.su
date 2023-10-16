@@ -1,0 +1,11 @@
+
+func_mul = __get_index__();
+func_mul::
+	__return_value = 1;
+	if(__arg1 != nil){
+		__return_value = __return_value * __arg1;
+	}
+	if(__arg2 != nil){
+		__return_value =  __return_value * __arg2;
+	}
+	jump(__return_idx);

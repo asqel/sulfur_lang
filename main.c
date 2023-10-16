@@ -32,7 +32,7 @@ void show_help(char *name, int full) {
 }
 
 void show_version() {
-    printf("Sulfur %s, Under the GNU-GPL v3.0\nBy @asqel and other stupid people\n", VERSION);
+    printf("Sulfur %s (%s), Under the GNU-GPL v3.0\nBy @asqel and other stupid people\n", VERSION, SUB_VERSION);
 }
 
 extern ref_count* REFS;
@@ -55,13 +55,13 @@ int execute_file(sulfur_args_t *args) {
     if (args->show_lexe)
         tokens_print(l, "\n");
 
-    l = make_include(l, &len, args);
+    l = make_include(l, &len, args->filepath);
     
     if (args->show_lexe_include)
         tokens_print(l, "\n");
 
     int instruction_len = 0;
-    Instruction*code = parse(l, -1, -1, NULL, &instruction_len);
+    Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
 
     if (args->show_parse) {
         instructions_print(code, instruction_len);
@@ -105,25 +105,31 @@ int execute_file(sulfur_args_t *args) {
     return 0;
 }
 
-int main(int argc,char **argv){
+int main(int argc,char **argv) {
     back_slash_to_path(argv[0]);
     
     sulfur_args_t *args = parse_main_args(argc, argv);
+    int exit_code;
 
     if (args->help) {
         show_help(argv[0], args->help == 2);
-        return args->help == 1;
+        exit_code = args->help == 1;
+        free(args);
+        return exit_code;
     }
 
     if (args->version) {
         show_version();
+        free(args);
         return 0;
     }
     
     if (args->filepath) {
-        return execute_file(args);
+        exit_code = execute_file(args);
     } else {
-        return interactive_shell(args);
+        exit_code = interactive_shell(args);
     }
     free(args);
+
+    return exit_code;
 }

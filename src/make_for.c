@@ -50,10 +50,10 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 						inst = realloc(inst, sizeof(Instruction) * (*n_inst));
 						inst[*n_inst - 1].type = inst_for_t;
 						inst[*n_inst - 1].value.fo = malloc(sizeof(For));
-						
+
 						inst[*n_inst - 1].value.fo->var_name = malloc(sizeof(char) * (1 + strlen(tok[id_idx].value.s)));
 						strcpy(inst[*n_inst - 1].value.fo->var_name, tok[id_idx].value.s);
-						
+
 						inst[*n_inst - 1].value.fo->start = x;
 						inst[*n_inst - 1].value.fo->end = x2;
 

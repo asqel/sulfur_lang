@@ -161,6 +161,18 @@ Object str_set(Object* argv, int argc){
     return new_string(argv[0].val.s);
 }
 
+Object std_reverse(Object *argv, int argc){
+    int len = strlen(argv[0].val.s);
+    char *res_str = malloc(sizeof(char) * (1 + len));
+    for(int i = 0; i < len; i++){
+        res_str[i] = argv[0].val.s[len - i - 1];
+    }
+    res_str[len] = '\0';
+    Object res = new_string(res_str);
+    free(res_str);
+    return res;
+}
+
 Object init_string(memory *MEMORY,char*path){
     char* module_name = "string";
 
@@ -181,6 +193,8 @@ Object init_string(memory *MEMORY,char*path){
     add_func_Module(mod,"set",&str_set,"");
     add_func_Module(mod,"escape",&str_convert_escape,""); // transforme \t to ttabs \n to line feed
     add_func_Module(mod,"esc",&str_convert_escape,"");
+    add_func_Module(mod,"reverse",&std_reverse, "");
+    add_func_Module(mod,"rev",&std_reverse, "");
     //CamelCaseTo_snake_case
     //snake_case_toCamelCase
     //function to add upper case every each space like "salut ici " -> "Salut Ici"

@@ -24,9 +24,11 @@ endwhile{
 
 */
 
+typedef unsigned char Byte_su_t;
+
 
 typedef struct Bytecode_t{
-    unsigned char* bytes;
+    Byte_su_t* bytes;
     int len;
 
 }Bytecode_t;

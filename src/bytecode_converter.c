@@ -1,40 +1,81 @@
 #include "../include/bytecode_converter.h"
 #include "../include/instruction.h"
+#include <stdarg.h>
 
 
+Bytecode_t *bytecode_append_char(Bytecode_t *code, int n, ...){
+    va_list args;
+    va_start(args, n);
 
-void free_bytecode(Bytecode_t code){
-    free(code.bytes);
+    code->bytes = realloc(code->bytes, code->len + n);
+
+    for (int i = 0; i < n; i++) {
+        unsigned int arg = va_arg(args, unsigned int);
+        code->bytes[code->len + i] = (unsigned char)arg;
+    }
+
+    va_end(args);
+    return code;
 }
 
-Bytecode_t cat_bytecode(Bytecode_t code1, Bytecode_t code2, char* separator){
-    int separator_len = strlen(separator);
-    unsigned char* code = malloc(sizeof(char) * (code1.len + code2.len + separator_len));
-    for(int i = 0; i < code1.len; i++){
-        code[i] = code1.bytes[1];
+Bytecode_t *bytecode_append_llint(Bytecode_t *code, int n, ...){
+    va_list args;
+    va_start(args, n);
+
+    code->bytes = realloc(code->bytes, code->len + n);
+
+    for (int i = 0; i < n; i++) {
+        int arg = va_arg(args, long long int);
+        memcpy(&code->bytes[code->len + i * sizeof(long long int)], &arg, sizeof(long long int));
     }
-    for(int i = 0; i < separator_len; i++){
-        code[i + code1.len] = separator[i];
-    }
-    for(int i = 0; i < code2.len; i++){
-        code[i + code1.len + separator_len] = code2.bytes[i];
-    }
-    Bytecode_t byte;
-    byte.bytes = code;
-    byte.len = code1.len + code2.len + separator_len;
-    return byte;
+
+    va_end(args);
+    return code;
 }
 
-Bytecode_t end_for_to_bytecode(Instruction inst){
+Bytecode_t Ast_to_bytecode(Ast x){
     Bytecode_t code;
-    code.bytes = malloc(sizeof(char) * 9);//1 byte for 0x3 and byte for the index
-    code.len = 9;
-    unsigned long long int idx = inst.value.endfor;
-
-
+    code.bytes = malloc(1 * (8 * 2));
+    code.len = 1 * (8 * 2);
+    long long int stack_len = 0;
+    long long int ast_len = 0;
+    memcpy(code.bytes, &stack_len, 8);
+    memcpy(&(code.bytes[8]), &ast_len, 8);
+    //TODO finish this
 }
 
+void free_bytecode(Bytecode_t x){
+    free(x.bytes);
+}
 
-Bytecode_t inst_to_bytecode(Instruction* code, int len){
-    unsigned char* bytes = malloc(sizeof(unsigned char));
+Bytecode_t Constants_to_bytecode(Object *argv, int argc){
+    Bytecode_t code;
+    code.bytes = malloc(1);
+    code.len = 0;
+    for (int i = 0; i < argc; i++){
+        if (argv[i].type == Obj_ount_t){
+            bytecode_append_char(&code, 1, (char) 0x49);
+            code.bytes = realloc(code.bytes, code.len + 8);
+            memcpy(code.bytes + code.len, &argv[i].val.i, 8);
+            code.len += 8;
+        }
+        else if (argv[i].type == Obj_string_t){
+            bytecode_append_char(&code, 1, (char) 0x53);
+            int len = strlen(argv[i].val.s);
+            code.bytes = realloc(code.bytes, code.len + len + 1);
+            memcpy(code.bytes + code.len, argv[i].val.s, len + 1);
+            code.len += len + 1;
+        }
+        else if (argv[i].type == Obj_floap_t){
+            bytecode_append_char(&code, 1, (char) 0x46);
+            code.bytes = realloc(code.bytes, code.len + 8);
+            double floap_val = (double)argv[i].val.f;
+            memcpy(code.bytes + code.len, &floap_val, 8);
+            code.len += 8;
+        }
+        else{
+            printf("ERROR cant convert constant to bytecode type nbr %d arg %d\n", argv[i].type, i);
+        }
+    }
+    return code;
 }
