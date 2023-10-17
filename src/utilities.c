@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string.h>
 #include <math.h>
 #include "../include/utilities.h"
 #include "../include/memlib.h"
@@ -13,6 +14,7 @@
 #include <mach-o/dyld.h>
 #else
 #include <unistd.h>
+#include <linux/limits.h>
 #endif
 
 #ifdef __profanOS__
@@ -110,7 +112,7 @@ char* uti_dirname(char*v){
         }
     }
     if(n==-1){
-        return NULL;
+        return strdup(" ");
     }
     char old = v[n];
     v[n] = '\0';

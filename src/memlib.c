@@ -366,3 +366,26 @@ void remove_count(void* address, int type){
         }
     }
 }
+
+char *Obj_type_as_str(short int type){
+    if (type == Obj_string_t)
+        return "string";
+    if (type == Obj_ount_t)
+        return "ount";
+    if (type == Obj_floap_t)
+        return "floap";
+    if (type == Obj_boolean_t)
+        return "boolean";
+    if (type == Obj_list_t)
+        return "list";
+    if (type == Obj_funcid_t)
+        return "funcid";
+    if (type == Obj_complex_t)
+        return "complex";
+    if (type == Obj_nil_t)
+        return "nil";
+    if (type == obj_module_t)
+        return "module";
+    return "";
+
+}

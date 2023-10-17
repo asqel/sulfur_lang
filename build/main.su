@@ -1,2 +1,1 @@
-import("poppy","");
-println(read_file(__dir_path__ + "/main.su"));
+println(get_env())
