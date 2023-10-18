@@ -180,8 +180,8 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `>>` : right shift bit
 - `<<` : left shift bit
 ### Logical operators
-- `&` : logical AND
-- `|` : logical OR
+- `&&` : logical AND
+- `||` : logical OR
 - `!` : logical NOT
 ### acces members operators
 - `.` : dot used to acces module members or methods

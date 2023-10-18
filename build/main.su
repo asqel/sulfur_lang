@@ -1,1 +1,1 @@
-println("pas un seul byte ne va leak ^^")
+println(get_env())

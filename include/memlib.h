@@ -173,7 +173,10 @@ typedef struct Sulfur_ctx{
     void *vars;
     memory *MEM;
     int *errno; // len = 4 [is_error,type,error_number,extra]
+    char **argv; // args passed after filename can be NULL
+    int argc;
 } Sulfur_ctx;
 
+char *Obj_type_as_str(short int type);
 
 #endif

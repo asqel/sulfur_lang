@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../include/sulfur.h"
 
@@ -24,6 +25,8 @@ sulfur_args_t *parse_main_args(int argc, char **argv) {
     args->version    = 0;
 
     args->filepath   = NULL;
+
+    int end = 0;
 
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -72,13 +75,24 @@ sulfur_args_t *parse_main_args(int argc, char **argv) {
                 }
             }
         } else {
-            if (args->filepath) {
-                printf("Too many arguments\n");
-                args->help = 1;
-            } else {
-                args->filepath = argv[i];
-            }
+            end = i;
+            break;
         }
+    }
+    if (end < argc && end != 0) {
+        args->filepath = argv[end];
+    }
+    int start_args = end + 1;
+    int args_len = argc - start_args;
+    if (args_len > 0){
+        CTX.argc = args_len;
+        CTX.argv = malloc(sizeof(char*) * args_len);
+        for (int i = start_args; i < argc; i++) {
+            CTX.argv[i - start_args] = strdup(argv[i]);
+        }
+    } else {
+        CTX.argc = 0;
+        CTX.argv = NULL;
     }
     return args;
 }

@@ -78,10 +78,10 @@ while(p < len){
                 if(code.get(i) == "]"){
                     count += 1
                 }
-                if(code.get(i) == "[" & count > 0){
+                if(code.get(i) == "[" && count > 0){
                     count += -1
                 }
-                elif(code.get(i) == "[" & count == 0){
+                elif(code.get(i) == "[" && count == 0){
                     opening_idx = i
                     i = -1
                 }
@@ -105,10 +105,10 @@ while(p < len){
                 if(code.get(i) == "["){
                     count += 1
                 }
-                if(code.get(i) == "]" & count > 0){
+                if(code.get(i) == "]" && count > 0){
                     count += -1
                 }
-                elif(code.get(i) == "]" & count == 0){
+                elif(code.get(i) == "]" && count == 0){
                     opening_idx = i
                     i = len
                 }

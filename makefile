@@ -39,7 +39,7 @@ linux_all:
 linux_one_file:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic/*.c -o build/sulfur -lm -fno-builtin-printf -lX11 -D ONE_FILE -g -fsanitize=address
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic/*.c -o build/sulfur -lm -fno-builtin-printf -lX11 -D ONE_FILE
 
 help:
 	@echo win: build the interpreter and the built-in libs for windows

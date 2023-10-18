@@ -568,6 +568,104 @@ Object std_call_sec(Object *argv, int argc){
 
 }
 
+Object std_dirname(Object *argv, int argc){
+    if (argc != 1){
+        printf("ERROR dirname onlyy takes 1 argument\n");
+        exit(1);
+    }
+    char *path = uti_dirname(argv[0].val.s);
+    Object res = new_string(path);
+    free(path);
+    return res;
+}
+
+Object get_program_args(Object *argv, int argc) {
+    Object x;
+    x.type = Obj_list_t;
+    x.val.li = malloc(sizeof(list));
+    x.val.li->elements = malloc(sizeof(Object)*(CTX.argc + 1));
+    x.val.li->elements[0]= new_ount(CTX.argc);
+    for(int i=1;i <= CTX.argc;i++){
+        x.val.li->elements[i] = new_string(CTX.argv[i - 1]);
+    }
+    return x;
+}
+
+Object std_get_env(Object *argv, int argc) {
+    if (argc > 1) {
+        for (int i = 0; i < argc; i++) {
+            if (argv[i].type != Obj_string_t) {
+                printf("ERROR get_env only takes strings as args\n");
+                exit(1);
+            }
+        }
+        
+        Object res;
+        res.type=Obj_list_t;
+        res.val.li = malloc(sizeof(list));
+        res.val.li->elements = malloc(sizeof(Object) * (argc + 1));
+        res.val.li->elements[0] = new_ount(argc);
+        for (int i = 1; i <= argc; i++) {
+            char *s = getenv(argv[i - 1].val.s);
+            res.val.li->elements[i] = nil_Obj;
+            if (s != NULL)
+                res.val.li->elements[i] = new_string(s);
+        }
+        return res;
+    }
+    if (argc == 0) {
+        printf("ERROR get_env only takes at least one arg\n");
+        exit(1);
+    }
+    if (argv[0].type != Obj_string_t) {
+        printf("ERROR get_env only takes strings as args\n");
+        exit(1);
+    }
+    char *s = getenv(argv[0].val.s);
+    if (s == NULL) {
+        return nil_Obj;
+    }
+    return new_string(s);
+}
+
+Object std_var_val(Object *argv, int argc) {
+    if (argc == 0) {
+        printf("ERROR var_val takes at least one arg\n");
+        exit(1);
+    }
+    if (argc == 1) {
+        if (argv[0].type != Obj_string_t) {
+            printf("ERROR var_val only takes strings as args\n");
+            exit(1);
+        }
+        Object x = get_Obj_mem(*CTX.MEM, argv[0].val.s);
+        if (x.type != Obj_not_found_t)
+            return Obj_cpy(x);
+        printf("ERROR var_val var '%s' not found\n", argv[0].val.s);
+        exit(1);
+    }
+    for (int i = 0; i < argc; i++) {
+        if (argv[i].type != Obj_string_t) {
+            printf("ERROR var_val only takes strings as args\n");
+            exit(1);
+        }
+    }
+    Object res;
+    res.type=Obj_list_t;
+    res.val.li = malloc(sizeof(list));
+    res.val.li->elements = malloc(sizeof(Object) * (argc + 1));
+    res.val.li->elements[0] = new_ount(argc);
+    for (int i = 1; i <= argc; i++) {
+        Object s = get_Obj_mem(*CTX.MEM, argv[i - 1].val.s);
+        if (s.type == Obj_not_found_t) {
+            printf("ERROR var_val var '%s' not found\n", argv[i].val.s);
+            exit(1);
+        }
+        res.val.li->elements[i] = Obj_cpy(s);
+    }
+    return res;
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
@@ -597,9 +695,12 @@ memory init_std(memory MEMORY,char*path){
     char *d = uti_dirname(path0);
     add_obj_str(&MEMORY,"__path__",path);
     add_obj_str(&MEMORY,"__interpreter_path__",path0);
-    add_obj_str(&MEMORY,"__dir_path__",d);
+    add_obj_str(&MEMORY,"__interpreter_dir_path__",d);
     add_obj_str(&MEMORY,"__os__",__os__);
     free(d);
+    free(path0);
+    path0 = uti_dirname(path);
+    add_obj_str(&MEMORY, "__dir_path__", path0);
     free(path0);
     add_object(&MEMORY,"__base_precision__",new_ount(base_precision));
     add_func(&MEMORY,"var_exists",&var_exists,"");
@@ -618,5 +719,9 @@ memory init_std(memory MEMORY,char*path){
     add_obj_str(&MEMORY,"__complete_version__",COMPLETE_VERSION);
     add_func(&MEMORY, "__get_index__", &std_current_instruction, "");
     add_func(&MEMORY, "jump", &std_jump, "");
+    add_func(&MEMORY, "dirname", &std_dirname, "");
+    add_func(&MEMORY, "get_args", &get_program_args, "");
+    add_func(&MEMORY, "get_env", &std_get_env, "");
+    add_func(&MEMORY, "var_val", &std_var_val, "");
     return MEMORY;
 }

@@ -44,6 +44,14 @@ Bytecode_t Ast_to_bytecode(Ast x){
     //TODO finish this
 }
 
+Bytecode_t bytecode_add_char_arr(Bytecode_t x, unsigned char *bytes, int n){
+    x.bytes = realloc(x.bytes, x.len + n);
+    for (int i = 0; i < n; i++){
+        x.bytes[x.len++] = bytes[i];
+    }
+    return x;
+}
+
 void free_bytecode(Bytecode_t x){
     free(x.bytes);
 }
@@ -77,5 +85,7 @@ Bytecode_t Constants_to_bytecode(Object *argv, int argc){
             printf("ERROR cant convert constant to bytecode type nbr %d arg %d\n", argv[i].type, i);
         }
     }
+    unsigned char end[6] = {0, 0, 0, 0, 0, 0};
+    code = bytecode_add_char_arr(code, end, 6);
     return code;
 }

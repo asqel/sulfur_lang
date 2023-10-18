@@ -116,7 +116,9 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                 }
                 (*n_inst)++;
                 inst = realloc(inst,sizeof(Instruction) * (*n_inst));
-                inst[*n_inst-1].type = inst_endifelse;
+                inst[*n_inst - 1].type = inst_endifelse;
+                inst[*n_inst - 1].value.endifelse = if_index;
+                printf("le if %d\n",if_index);
                 for(int i = 0; i < endif_n; i++){
                     inst[endifelse_ps[i]].value.endifelse = *n_inst - 1;
                 }

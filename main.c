@@ -130,6 +130,11 @@ int main(int argc,char **argv) {
         exit_code = interactive_shell(args);
     }
     free(args);
+    
+    for (int i = 0; i < CTX.argc; i++) {
+        free(CTX.argv[i]);
+    }
+    free(CTX.argv);
 
     return exit_code;
 }
