@@ -77,6 +77,8 @@ int execute_file(sulfur_args_t *args) {
 
     execute(code, args->filepath, instruction_len);
 
+    
+
     precision = base_precision;
     if (args->show_mem) {
         printf("\n\nMEMORY:%d\n",MEMORY.len);
@@ -99,6 +101,13 @@ int execute_file(sulfur_args_t *args) {
 
     free(MEMORY.keys);
     free(MEMORY.values);
+
+    ///print refs
+    //printf("            total %d\n", REFS_len);
+    //for(int i = 0; i <  REFS_len; i++) {
+    //    printf("        %p count %d type %d\n", REFS[i].address, REFS[i].count, REFS[i].type);
+    //}
+    
     free(REFS);
     free(text);
 
@@ -106,6 +115,9 @@ int execute_file(sulfur_args_t *args) {
 }
 
 int main(int argc,char **argv) {
+
+    init_dyn_libs();
+
     back_slash_to_path(argv[0]);
     
     sulfur_args_t *args = parse_main_args(argc, argv);
@@ -135,6 +147,8 @@ int main(int argc,char **argv) {
         free(CTX.argv[i]);
     }
     free(CTX.argv);
+
+    free_dyn_libs();
 
     return exit_code;
 }

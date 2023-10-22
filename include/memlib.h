@@ -59,22 +59,25 @@ typedef struct stack{
     int len;
 }stack;
 
-
+typedef struct Custom_obj {
+    char *type_name;
+    void *data;
+}Custom_obj;
 
 typedef union Obj_val{
-    struct Object*o;
-    char* s;//string {char,...}
+    struct Object *o;
+    char *s;//string {char,...}
     long long int i;//ount 
     long double f;//floap
     long double c[2];//complex {re,im}
     char b;//boolean 
-    class*cl;//class
-    class*cl_def;
+    class *cl;//class
+    class *cl_def;
     Funcdef *funcid;//contain a function identifier
-    char*typeid;//contain a type
-    Module*module;
-    list*li;
-
+    char *typeid;//contain a type
+    Module *module;
+    list *li;
+    Custom_obj *cst_obj;
 }Obj_val;
 
 typedef struct Object{
@@ -98,7 +101,8 @@ enum Obj_Type{
     Obj_class_t,
     obj_module_t,
     Obj_class_def_t,
-    Obj_class_instance_t
+    Obj_class_instance_t,
+    Obj_custom_obj_t
 };
 
 
@@ -168,7 +172,7 @@ void add_count();
 void remove_count();
 
 typedef struct Sulfur_ctx{
-    void *memlib_func;
+    void *(**memlib_func)();
     Object (**std_func)(Object *, int);
     void *vars;
     memory *MEM;
@@ -178,5 +182,7 @@ typedef struct Sulfur_ctx{
 } Sulfur_ctx;
 
 char *Obj_type_as_str(short int type);
+
+memory*add_object_cpy(memory *MEMORY, char *name, Object x);
 
 #endif

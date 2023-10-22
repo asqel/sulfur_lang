@@ -1,43 +1,23 @@
-//init var
-__arg1 = nil;
-__arg2 = nil;
-__arg3 = nil;
-__arg4 = list();
-__return_idx = 0;
-__return_value = nil;
 
 goto function_declaration_end
 
-//put functions here
-//you can call the function with its name
+include "//func_mul_file.su"
 
 func_add::
-	__return_value = 0;
+	__ret_val = 0;
 	if(__arg1 != nil){
-		__return_value +=__arg1;
+		__ret_val +=__arg1;
 	}
 	if(__arg2 != nil){
-		__return_value +=__arg2;
+		__ret_val +=__arg2;
 	}
-	jump(__return_idx);
-//function ends here
+	jump(__ret_sec);
 
-include "//func_mul_file.su"
 
 function_declaration_end::
 
+call_sec("func_add", __get_index__(), 10, 5, nil)
+println(__ret_val)
 
-//call a function
-//set args
-__arg1 = 10;
-__arg2 = 5;
-//set return idx
-__return_idx = __get_index__() + 1
-goto func_add // or jump("func_add");
-println(__return_value)
-
-__arg1 = 5;
-__arg2 = 5;
-__return_idx = __get_index__() + 1
-goto func_mul
-println(__return_value)
+call_sec("func_mul", __get_index__(), 10, 5, nil)
+println(__ret_val)

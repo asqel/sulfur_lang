@@ -21,12 +21,14 @@ stdlibs_win:
 	gcc -shared sulfur_libs/std_libs/graphic/win_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c build/API/memlib.c -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
 	gcc -shared sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.dll -lm -fno-builtin-printf
 	gcc -shared sulfur_libs/std_libs/poppy.c build/API/memlib.c -o build/libs/poppy.dll -lm -fno-builtin-printf 
+	gcc -shared sulfur_libs/std_libs/why.c build/API/memlib.c -o build/libs/why.dll -lm -fno-builtin-printf 
 
 stdlibs_linux:
 	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.so -lm -fno-builtin-printf
 	gcc -shared -fPIC sulfur_libs/std_libs/graphic/linux_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
 	gcc -shared -fPIC sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.so -lm -fno-builtin-printf
 	gcc -shared -fPIC sulfur_libs/std_libs/poppy.c build/API/memlib.c -o build/libs/poppy.so -lm -fno-builtin-printf 
+	gcc -shared -fPIC sulfur_libs/std_libs/why.c build/API/memlib.c -o build/libs/why.so -lm -fno-builtin-printf 
 
 win_all:
 	make win
@@ -61,3 +63,14 @@ help:
 	@echo help: show this message
 	@echo
 	@echo linux_one_file : build sulfur with the std_libs in one file
+
+
+
+fast:
+	@make linux_one_file
+	@echo start
+	@./build/sulfur build/main.su
+	@echo end
+
+run_fast:
+	./build/sulfur -m build/main.su

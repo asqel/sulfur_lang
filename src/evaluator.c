@@ -7,6 +7,7 @@
 #include "../sulfur_libs/blt_libs/string_su.h"
 #include "../sulfur_libs/blt_libs/funccall_su.h"
 #include "../sulfur_libs/blt_libs/list_su.h"
+#include "../sulfur_libs/blt_libs/complex.h"
 
 extern Object execute(Instruction*code,char*file_name,int len);
 
@@ -21,8 +22,17 @@ Object eval_Ast(Ast*x){
             exit(1);
         }
         if(func.type != Obj_funcid_t){
-            printf("ERROR can't call a non function Object '%s'\n",x->root.fun->name);
-            exit(1);
+            if (func.type == obj_module_t) {
+                func = get_Obj_mem(*func.val.module->MEM, "__call");
+                if(func.type == Obj_not_found_t){
+                    printf("ERROR function '%s' not found\n",x->root.fun->name);
+                    exit(1);
+                }
+            }
+            else {
+                printf("ERROR can't call a non function Object '%s'\n",x->root.fun->name);
+                exit(1);
+            }
         }
         if(func.val.funcid->is_builtin){
             Object*a=malloc(sizeof(Object)*x->root.fun->nbr_arg);
@@ -261,7 +271,7 @@ Object eval_Ast(Ast*x){
             return o;
         }
         if(x->type == Ast_assign_t){
-            Object right = Obj_cpy(eval_Ast(x->right));
+            Object right = eval_Ast(x->right);
             if(x->left->type == Ast_varcall_t){
                 for(int i = 0; i<MEMORY.len; i++){
                     if(!strcmp(x->left->root.varcall, MEMORY.keys[i])){
@@ -337,41 +347,51 @@ Object eval_Ast(Ast*x){
             }
         }
         if(x->type == Ast_dot_t){
-            Object a = Obj_cpy(eval_Ast(x->left));
+            Object a = eval_Ast(x->left);
             if(a.type == obj_module_t){
-                if(x->right->type == Ast_varcall_t){
-                    Object res = get_Obj_mem(*a.val.module->MEM, x->right->root.varcall);
-                    return res;
-                }
-                if(x->right->type != Ast_funccall_t){
-                    printf("ERROR wrong right operand on dot('.') operator\n");
-                    exit(1);
-                }
-                Object func = get_Obj_mem(*a.val.module->MEM, x->right->root.fun->name);
-                if(func.type == Obj_not_found_t){
-                    printf("ERROR function '%s' not found in module '%s'\n", x->root.fun->name, *a.val.module->filename);
-                    exit(1);
-                }
-                if(func.val.funcid->is_builtin){
-                    Object*arg = malloc(sizeof(Object) * x->right->root.fun->nbr_arg);
-                    for(int i=0;i<x->right->root.fun->nbr_arg;i++){
-                        arg[i] = Obj_cpy(eval_Ast(&x->right->root.fun->args[i]));
-
+                if (x->right->type == Ast_funccall_t){
+                    Object func = get_Obj_mem(*a.val.module->MEM, x->right->root.fun->name);
+                    if (func.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
+                        exit(1);
                     }
-                    Object res = (*func.val.funcid->func_p)(arg, x->right->root.fun->nbr_arg);
-                    Obj_free_array(arg, x->right->root.fun->nbr_arg);
-                    Obj_free_val(a);
-                    return res;
-                }
-                else{
-                    Object *a = malloc(sizeof(Object)*x->root.fun->nbr_arg);
-                    for(int i = 0; i < x->root.fun->nbr_arg; i++){
-                        a[i] = Obj_cpy(eval_Ast(&x->root.fun->args[i]));
-
+                    if (func.type != Obj_funcid_t) {
+                        if (func.type == obj_module_t) {
+                            func = get_Obj_mem(*func.val.module->MEM, "__call");
+                            if(func.type == Obj_not_found_t){
+                                printf("ERROR function '%s' not found\n",x->root.fun->name);
+                                exit(1);
+                            }
+                        }
+                        else {
+                            printf("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
+                            exit(1);
+                        }
                     }
-                    Object res = func_execute(func.val.funcid, a, x->root.fun->nbr_arg, 1);
-                    Obj_free_array(a, x->root.fun->nbr_arg);
-                    return res;
+                    if(func.val.funcid->is_builtin){
+                        if(x->right->root.fun->nbr_arg){
+                            Object*arg = malloc(sizeof(Object) * (x->right->root.fun->nbr_arg));
+                            for(int i=0; i < x->right->root.fun->nbr_arg; i++){
+                                arg[i] = Obj_cpy(eval_Ast(&x->right->root.fun->args[i]));
+                            }
+                            Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg);
+                            Obj_free_array(arg, x->right->root.fun->nbr_arg);
+                            return res;
+                        }
+                        else{
+                            Object res = (*func.val.funcid->func_p)(NULL,0);
+                            return res;
+                        }
+                    }
+
+                }
+                else if(x->right->type == Ast_varcall_t){
+                    Object var = get_Obj_mem(*a.val.module->MEM, x->right->root.varcall);
+                    if (var.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
+                        exit(1);
+                    }
+                    return var;
                 }
             }
             if(a.type == Obj_string_t){
@@ -383,20 +403,19 @@ Object eval_Ast(Ast*x){
                     }
                     if(func.val.funcid->is_builtin){
                         if(x->right->root.fun->nbr_arg){
-                            Object*arg=malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
+                            Object*arg = malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
                             for(int i=0; i < x->right->root.fun->nbr_arg; i++){
-                                arg[i + 1] = eval_Ast(&x->right->root.fun->args[i]);
-
+                                arg[i + 1] = Obj_cpy(eval_Ast(&x->right->root.fun->args[i]));
                             }
                             arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
                             Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
-
                             return res;
                         }
                         else{
-                            Object res = (*func.val.funcid->func_p)(&a,1);
-                            Obj_free_val(a);
+                            Object arg = Obj_cpy(a);
+                            Object res = (*func.val.funcid->func_p)(&arg,1);
+                            Obj_free_val(arg);
                             return res;
                         }
                     }
@@ -405,7 +424,44 @@ Object eval_Ast(Ast*x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*string_module.MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of string",x->right->root.varcall);
+                        printf("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
+                        exit(1);
+                    }
+                    return var;
+                }
+                
+            }
+            if(a.type == Obj_complex_t){
+                if (x->right->type == Ast_funccall_t){
+                    Object func = get_Obj_mem(*complex_module.MEM, x->right->root.fun->name);
+                    if (func.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of complex\n",x->right->root.fun->name);
+                        exit(1);
+                    }
+                    if(func.val.funcid->is_builtin){
+                        if(x->right->root.fun->nbr_arg){
+                            Object*arg = malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
+                            for(int i=0; i < x->right->root.fun->nbr_arg; i++){
+                                arg[i + 1] = Obj_cpy(eval_Ast(&x->right->root.fun->args[i]));
+                            }
+                            arg[0] = Obj_cpy(a);
+                            Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
+                            Obj_free_array(arg, 1 + x->right->root.fun->nbr_arg);
+                            return res;
+                        }
+                        else{
+                            Object arg = Obj_cpy(a);
+                            Object res = (*func.val.funcid->func_p)(&arg,1);
+                            Obj_free_val(arg);
+                            return res;
+                        }
+                    }
+
+                }
+                else if(x->right->type == Ast_varcall_t){
+                    Object var = get_Obj_mem(*complex_module.MEM, x->right->root.varcall);
+                    if (var.type == Obj_not_found_t){
+                        printf("ERROR function '%s' not exist in methods of complex\n",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
@@ -416,15 +472,14 @@ Object eval_Ast(Ast*x){
                 if (x->right->type == Ast_funccall_t){
                     Object func = get_Obj_mem(*funccall_module.MEM, x->right->root.fun->name);
                     if (func.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of funccall\n",x->right->root.fun->name);
+                        printf("ERROR function '%s' not exist in methods of funcid\n",x->right->root.fun->name);
                         exit(1);
                     }
                     if(func.val.funcid->is_builtin){
                         if(x->right->root.fun->nbr_arg){
-                            Object*arg=malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
+                            Object*arg = malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
                             for(int i=0; i < x->right->root.fun->nbr_arg; i++){
                                 arg[i + 1] = Obj_cpy(eval_Ast(&x->right->root.fun->args[i]));
-
                             }
                             arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
@@ -443,7 +498,7 @@ Object eval_Ast(Ast*x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*funccall_module.MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of funccall",x->right->root.varcall);
+                        printf("ERROR function '%s' not exist in methods of function",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
@@ -461,7 +516,6 @@ Object eval_Ast(Ast*x){
                             Object*arg = malloc(sizeof(Object) * (1 + x->right->root.fun->nbr_arg));
                             for(int i=0; i < x->right->root.fun->nbr_arg; i++){
                                 arg[i + 1] = Obj_cpy(eval_Ast(&x->right->root.fun->args[i]));
-
                             }
                             arg[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(arg,x->right->root.fun->nbr_arg +1 );
@@ -540,6 +594,44 @@ Object eval_Ast(Ast*x){
                 Obj_free_val(a);
                 Obj_free_val(b);
                 return res;
+            }
+            if(a.type == Obj_complex_t){
+                int index = -1;
+                if (x->right->type == Ast_varcall_t) {
+                    if (!strcmp("re", x->right->root.varcall) || !strcmp("Re", x->right->root.varcall))
+                        index = 0;
+                    else if (!strcmp("RE", x->right->root.varcall) || !strcmp("rE", x->right->root.varcall))
+                        index = 0;
+                    else if (!strcmp("im", x->right->root.varcall) || !strcmp("Im", x->right->root.varcall))
+                        index = 1;
+                    else if (!strcmp("IM", x->right->root.varcall) || !strcmp("iM", x->right->root.varcall))
+                        index = 1;
+                }
+                else {
+                    Object b = eval_Ast(x->right);
+                    if (b.type == Obj_ount_t && (b.val.i == 1 || b.val.i == 0))
+                        index = b.val.i;
+                    else if (b.type == Obj_boolean_t && (b.val.b == 1 || b.val.b == 0))
+                        index = (int)b.val.i;
+                    else if (b.type == Obj_floap_t && ((int)b.val.f == 1 || (int)b.val.f == 0))
+                        index = (int)b.val.f;
+                    else if (b.type == Obj_string_t) {
+                        if (!strcmp("re", b.val.s) || !strcmp("Re", b.val.s))
+                            index = 0;
+                        else if (!strcmp("RE", b.val.s) || !strcmp("rE", b.val.s))
+                            index = 0;
+                        else if (!strcmp("im", b.val.s) || !strcmp("Im", b.val.s))
+                            index = 1;
+                        else if (!strcmp("IM", b.val.s) || !strcmp("iM", b.val.s))
+                            index = 1;
+                    }
+                }
+
+                if (index == -1) {
+                    printf("ERROR complex wrong operand for ':'\n");
+                    exit(1);
+                }
+                return new_ount(a.val.c[index]);
             }
             else{
                 printf("cannot use ':'\n");

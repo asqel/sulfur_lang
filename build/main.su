@@ -1,1 +1,5 @@
-println(get_env())
+a = 3 + 7*$i
+println(a:rE)
+println(a:"re")
+println(a.re())
+println(a:0)

@@ -5,6 +5,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef ONE_FILE
     Sulfur_ctx context;
@@ -67,8 +68,8 @@ Object std_po_write_file(Object *argv, int argc){
 
 #ifndef ONE_FILE
 Object __loader(Sulfur_ctx ctx) {
-    Object mod = new_Module();
     context = ctx;
+    Object mod = new_Module();
 
     add_func_Module(mod, "read_file", &std_po_read_file, "");
     add_func_Module(mod, "write_file", &std_po_write_file, "");

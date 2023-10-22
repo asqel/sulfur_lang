@@ -11,8 +11,8 @@
 
 #ifndef ONE_FILE
 Object __loader(Sulfur_ctx ctx){
-    Object mod = new_Module();
     context = ctx;
+    Object mod = new_Module();
 
     add_func_Module(mod,"init_graphic",&init_graphic,"");
     add_func_Module(mod,"set_pixel",&set_pixel,"");

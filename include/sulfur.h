@@ -24,4 +24,13 @@ int interactive_shell(sulfur_args_t *args);
 
 extern Sulfur_ctx CTX;
 
+extern void **DYN_LIBS;
+extern int DYN_LIBS_COUNT;
+
+void init_dyn_libs();
+
+void add_dyn_lib(void *lib);
+
+void free_dyn_libs();
+
 #endif
