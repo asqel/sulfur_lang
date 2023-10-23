@@ -3,11 +3,13 @@
 
 #include <type.h>
 
-#define get_func_addr ((int (*)(int, int)) *(int *) 0x1ffffb)
-
+#define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
+
 #define RAND_MAX 0x7fffffff
 #define srand(seed) ((void) seed)
+
+#define get_func_addr ((uint32_t (*)(uint32_t, uint32_t)) *(uint32_t *) 0x1ffffb)
 
 #define calloc(nmemb, lsize) calloc_func(nmemb, lsize, 0)
 #define malloc(size) malloc_func(size, 0)
