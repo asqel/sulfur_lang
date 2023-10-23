@@ -68,7 +68,7 @@ typedef struct {
 typedef struct {
     char *path;     // path to file
     sid_t sid;      // sector id (can be null)
-    
+
     int argc;       // argument count
     char **argv;    // argument list
 
@@ -165,7 +165,10 @@ typedef size_t rsize_t;
 
 typedef struct FILE {
     char *filename;
-    char *mode;
+    uint32_t mode;
+
+    char *buffer;
+    int   buffer_size;
 
     int   file_pos;
     int   type;
