@@ -164,6 +164,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
 
         else if(code[p].type == inst_return_t){
+            free(loops);
             return eval_Ast(code[p].value.ret);
         }
 

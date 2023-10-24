@@ -8,7 +8,6 @@
 
 #ifndef ONE_FILE
     Sulfur_ctx context;
-    #include "../../build/API/std_func.h"
 #else
     #include "../blt_libs/std.h"
 #endif

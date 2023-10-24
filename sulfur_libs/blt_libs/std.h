@@ -35,7 +35,7 @@ Object set(Object *obj,int n_arg);
 
 Object std_comp(Object* argv, int argc);
 
-Object type(Object* obj, int n_arg);
+Object std_type(Object* obj, int n_arg);
 
 Object set_precision(Object* args, int argc);
 

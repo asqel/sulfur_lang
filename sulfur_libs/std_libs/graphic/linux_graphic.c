@@ -20,9 +20,15 @@ int screen;
 Display *display;
 Window window;
 
+void to_free_graphic() {
+    XDestroyWindow(display, window);
+    XCloseDisplay(display);
+}
+
 
 Object init_graphic(Object *argv, int *argc)
 {
+    add_to_call(&to_free_graphic);
     display = XOpenDisplay(NULL);
     if (NULL == display)
         return new_ount(-1);

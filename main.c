@@ -76,7 +76,7 @@ int execute_file(sulfur_args_t *args) {
     make_context();
 
     execute(code, args->filepath, instruction_len);
-
+    call_to_call_and_free();
     
 
     precision = base_precision;
@@ -122,6 +122,8 @@ int main(int argc,char **argv) {
     
     sulfur_args_t *args = parse_main_args(argc, argv);
     int exit_code;
+
+    init_to_call();
 
     if (args->help) {
         show_help(argv[0], args->help == 2);

@@ -9,6 +9,8 @@
 
 #ifndef ONE_FILE
     Sulfur_ctx context;
+#else
+    #include "../blt_libs/std.h"
 #endif
 
 Object is_even(Object* argv, int argc) {

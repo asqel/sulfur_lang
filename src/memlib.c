@@ -226,7 +226,7 @@ Object new_string(char * value){
     return o;
 }
 
-Object new_boolean(int value){
+Object new_boolean(S_ount_t value){
     Object o;
     o.type=Obj_boolean_t;
     o.val.b = value ? 1:0;
@@ -427,4 +427,26 @@ memory*add_object_cpy(memory *MEMORY, char *name, Object x){
     MEMORY->values[MEMORY->len-1] = x;
     return MEMORY;
 
+}
+
+
+void (**TO_CALL)();
+int TO_CALL_LEN;
+
+void init_to_call() {
+    TO_CALL = malloc(sizeof(void (*)()));
+    TO_CALL_LEN = 0;
+}
+
+void add_to_call(void (*func)()) {
+    TO_CALL_LEN++;
+    TO_CALL = realloc(TO_CALL, sizeof(void (*)())* TO_CALL_LEN);
+    TO_CALL[TO_CALL_LEN - 1] = func;
+}
+
+void call_to_call_and_free() {
+    for(int i = 0; i < TO_CALL_LEN; i++) {
+        (*TO_CALL[i])();
+    }
+    free(TO_CALL);
 }

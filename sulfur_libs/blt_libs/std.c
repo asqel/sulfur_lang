@@ -417,7 +417,7 @@ Object std_comp(Object* argv, int argc){
 }
 
 
-Object type(Object* obj, int n_arg) {
+Object std_type(Object* obj, int n_arg) {
     if (n_arg!=1){
         printf("ERROR type only take one arg\n");
         exit(1);
@@ -791,7 +791,7 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY, "get", &get,"");
     /*depracated*/
     add_func(&MEMORY, "set", &set,"");
-    add_func(&MEMORY, "type", &type,"");
+    add_func(&MEMORY, "type", &std_type,"");
     add_func(&MEMORY, "__set_precision__", &set_precision,"");
     add_func(&MEMORY, "__get_precision__", &get_precision,"");
     char *path0 = abs_path();
