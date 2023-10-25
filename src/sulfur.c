@@ -28,7 +28,9 @@ void add_dyn_lib(void *lib) {
 }
 
 void free_dyn_libs() {
-    #ifdef _WIN32
+    #ifdef ONE_FILE
+        //nothing dont import dlfcn
+    #elif _WIN32
         for (int i = 0; i < DYN_LIBS_COUNT; i++) {
             FreeLibrary(DYN_LIBS[i]);
         }
