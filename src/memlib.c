@@ -87,10 +87,18 @@ void Obj_print(Object obj){
             printf("Obj_b:[%s]", obj.val.b!=0?"1b":"0b");
             break;
         case Obj_complex_t:
-            printf("Obj_c:[%Lf+%Lfi]",obj.val.c[0],obj.val.c[1]);
+            #ifdef __profanOS__
+                printf("Obj_c:[%g+%gi]", obj.val.c[0], obj.val.c[1]);
+            #else
+                printf("Obj_c:[%Lf+%Lfi]", obj.val.c[0],obj.val.c[1]);
+            #endif
             break;
         case Obj_floap_t:
-            printf("Obj_f:[%Lf]", obj.val.f);
+            #ifdef __profanOS__
+                printf("Obj_f:[%g]", obj.val.f);
+            #else
+                printf("Obj_f:[%Lf]", obj.val.f);
+            #endif
             break;
         case Obj_ount_t:
             printf("Obj_i:[%lld]", obj.val.i);

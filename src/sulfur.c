@@ -13,7 +13,7 @@
 #endif
 
 
-void **DYN_LIBS;
+void **DYN_LIBS = NULL;
 int DYN_LIBS_COUNT;
 
 void init_dyn_libs() {
@@ -28,22 +28,19 @@ void add_dyn_lib(void *lib) {
 }
 
 void free_dyn_libs() {
-    #ifdef ONE_FILE
-        //nothing dont import dlfcn
-    #elif _WIN32
-        for (int i = 0; i < DYN_LIBS_COUNT; i++) {
-            FreeLibrary(DYN_LIBS[i]);
-        }
-        if (DYN_LIBS) {
-            free(DYN_LIBS);
-        }
-    #elif __APPLE || __linux__
-        for (int i = 0; i < DYN_LIBS_COUNT; i++) {
-            dlclose(DYN_LIBS[i]);
-        }
-        if (DYN_LIBS) {
-            free(DYN_LIBS);
-        }
+    #ifndef ONE_FILE
+        #ifdef _WIN32
+            for (int i = 0; i < DYN_LIBS_COUNT; i++) {
+                FreeLibrary(DYN_LIBS[i]);
+            }
+        #elif __APPLE || __linux__
+            for (int i = 0; i < DYN_LIBS_COUNT; i++) {
+                dlclose(DYN_LIBS[i]);
+            }
+            
+        #endif
     #endif
+    if (DYN_LIBS) {
+        free(DYN_LIBS);
+    }
 }
-
