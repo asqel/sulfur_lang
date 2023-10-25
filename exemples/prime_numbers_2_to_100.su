@@ -1,5 +1,5 @@
 t0 = time();
-for (i from 2 to 100){
+for (i from 3000 to 10000){
 	is_prime = 1b
 	for(k from 2 to i / 2 + 1){
 		if (!(i % k)){

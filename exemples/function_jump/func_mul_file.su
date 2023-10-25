@@ -1,11 +1,10 @@
 
-func_mul = __get_index__();
 func_mul::
-	__return_value = 1;
+	__ret_val = 1
 	if(__arg1 != nil){
-		__return_value = __return_value * __arg1;
+		__ret_val = __ret_val * __arg1
 	}
 	if(__arg2 != nil){
-		__return_value =  __return_value * __arg2;
+		__ret_val = __ret_val * __arg2
 	}
-	jump(__return_idx);
+	jump(__ret_sec)

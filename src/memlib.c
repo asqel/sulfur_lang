@@ -6,7 +6,6 @@
 #include <stdio.h>
 
 
-
 //return 1 if they are the same
 //else 0
 //they are the same if they have same type and same value pointed by the .value
@@ -116,6 +115,10 @@ void*get_obj_pointer(Object o){
             return NULL;
         case Obj_funcid_t:
             return o.val.funcid;
+        case obj_module_t:
+            return o.val.module;
+        case Obj_custom_obj_t:
+            return o.val.cst_obj;
         case Obj_ount_t:
             return NULL;
         case Obj_string_t:
@@ -160,6 +163,8 @@ memory*add_object(memory *MEMORY, char *name, Object x){
 
     MEMORY->values = realloc(MEMORY->values, sizeof(Object) * MEMORY->len);
     MEMORY->values[MEMORY->len-1] = x;
+    if (is_muttable(x))
+        add_count(get_obj_pointer(x), x.type);
     return MEMORY;
 
 }
@@ -180,12 +185,12 @@ Object new_Module(){
     m.MEM->keys=malloc(sizeof(char*));
     m.MEM->len=0;
     m.MEM->values=malloc(sizeof(Object));
+    m.filename = NULL;
 
     Object o;
     o.type=obj_module_t;
     o.val.module=malloc(sizeof(Module));
     *o.val.module=m;
-    add_count(o.val.module, obj_module_t);
     return o;
 }
 
@@ -221,7 +226,7 @@ Object new_string(char * value){
     return o;
 }
 
-Object new_boolean(int value){
+Object new_boolean(S_ount_t value){
     Object o;
     o.type=Obj_boolean_t;
     o.val.b = value ? 1:0;
@@ -275,6 +280,7 @@ int is_muttable(Object o){
         case Obj_list_t:
         case Obj_funcid_t:
         case obj_module_t:
+        case Obj_custom_obj_t:
             return 1;
 
         default:
@@ -320,6 +326,7 @@ void add_count(void* address, int type){
             return ;
         }
     }
+    
     REFS_len++;
     REFS = realloc(REFS, sizeof(ref_count) * REFS_len);
     REFS[REFS_len-1].address = address;
@@ -334,16 +341,23 @@ void remove_count(void* address, int type){
             if(REFS[i].count == 0){
                 if(type == Obj_list_t){
                     Obj_free_array(((list*)address)->elements, ((list*)address)->elements[0].val.i);
+                    // when freeing the elements the REFS change position
+                    for(int k = 0; k < REFS_len; k++){
+                        if (REFS[k].address == address) {
+                            i = k;
+                            break;
+                        }
+                    }
                     free(address);
                 }
-                if(type == Obj_funcid_t){
+                else if(type == Obj_funcid_t){
                     Funcdef* f = ((Funcdef*)address);
                     if(f->is_builtin){
                         //free(f->description);
                         free(f);
                     }
                 }
-                if(type == obj_module_t){
+                else if(type == obj_module_t){
                     Object o;
                     o.type = type;
                     o.val.module = address;
@@ -355,9 +369,20 @@ void remove_count(void* address, int type){
                     free(o.val.module->MEM->values);
                     free(o.val.module->MEM);
                     free(o.val.module);
+                    // when freeing the elements the REFS change position
+                    for(int k = 0; k < REFS_len; k++){
+                        if (REFS[k].address == address) {
+                            i = k;
+                            break;
+                        }
+                    }
                 }
-                for(int k = i + 1; k < REFS_len; k++){
-                    REFS[k - 1] = REFS[k];
+                else {
+                    printf("ERROR unknow type in refs\n");
+                    exit(1);
+                }
+                for(int k = i; k < REFS_len - 1; k++){
+                    REFS[k] = REFS[k + 1];
                 }
                 REFS_len--;
                 REFS = realloc(REFS, sizeof(ref_count) * REFS_len);
@@ -388,4 +413,40 @@ char *Obj_type_as_str(short int type){
         return "module";
     return "";
 
+}
+
+memory*add_object_cpy(memory *MEMORY, char *name, Object x){
+    x = Obj_cpy(x);
+    MEMORY->len++;
+    MEMORY->keys = realloc(MEMORY->keys, sizeof(char*) * (MEMORY->len));
+
+    MEMORY->keys[MEMORY->len-1] = malloc(sizeof(char)*(1+strlen(name)));
+    strcpy(MEMORY->keys[MEMORY->len-1], name);  
+
+    MEMORY->values = realloc(MEMORY->values, sizeof(Object) * MEMORY->len);
+    MEMORY->values[MEMORY->len-1] = x;
+    return MEMORY;
+
+}
+
+
+void (**TO_CALL)();
+int TO_CALL_LEN;
+
+void init_to_call() {
+    TO_CALL = malloc(sizeof(void (*)()));
+    TO_CALL_LEN = 0;
+}
+
+void add_to_call(void (*func)()) {
+    TO_CALL_LEN++;
+    TO_CALL = realloc(TO_CALL, sizeof(void (*)())* TO_CALL_LEN);
+    TO_CALL[TO_CALL_LEN - 1] = func;
+}
+
+void call_to_call_and_free() {
+    for(int i = 0; i < TO_CALL_LEN; i++) {
+        (*TO_CALL[i])();
+    }
+    free(TO_CALL);
 }

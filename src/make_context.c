@@ -2,6 +2,7 @@
 #include "../include/memlib.h"
 #include "../include/sulfur.h"
 #include "../sulfur_libs/blt_libs/std.h"
+#include "../include/operation.h"
 
 int	CTX_ERRNO[4];
 extern memory MEMORY;
@@ -32,6 +33,7 @@ void *(*MEMLIB_FUNC[])() = {
 	(void *(*)()) &get_list_len,
 	(void *(*)()) &add_count,
 	(void *(*)()) &remove_count,
+	(void *(*)()) &add_to_call,
 	(void *(*)()) NULL
 };
 
@@ -50,7 +52,7 @@ Object (*STD_FUNC[])(Object *, int) = {
 	&get,
 	&set,
 	&std_comp,
-	&type,
+	&std_type,
 	&set_precision,
 	&get_precision,
 	&get_methods,
@@ -61,6 +63,28 @@ Object (*STD_FUNC[])(Object *, int) = {
 
 };
 
+void* (*OPERATIONS[])() = {
+	(void *(*)()) &add,
+	(void *(*)()) &sub,
+	(void *(*)()) &mul,
+	(void *(*)()) &_div,
+	(void *(*)()) &fl_div,
+	(void *(*)()) &mod,
+	(void *(*)()) &_pow,
+	(void *(*)()) &negate,
+	(void *(*)()) &not,
+	(void *(*)()) &and,
+	(void *(*)()) &or,
+	(void *(*)()) &eq,
+	(void *(*)()) &not_eq,
+	(void *(*)()) &less,
+	(void *(*)()) &greater,
+	(void *(*)()) &less_eq,
+	(void *(*)()) &greater_eq,
+	(void *(*)()) NULL
+
+};
+
 void make_context(){
 	CTX.errno = CTX_ERRNO;
 	CTX.errno[0] = 0;
@@ -68,4 +92,5 @@ void make_context(){
 	CTX.memlib_func = MEMLIB_FUNC;
 	CTX.std_func = STD_FUNC;
 	CTX.vars = NULL;
+	CTX.operations = OPERATIONS;
 }

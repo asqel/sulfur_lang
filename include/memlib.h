@@ -2,6 +2,19 @@
 #define MEMLIB_H
 #include <string.h>
 
+
+typedef char*   S_string_t;
+typedef char    S_boolean_t;
+#ifndef SULFUR_32
+    typedef long long int   S_ount_t;
+    typedef long long int   S_sulfur_int;
+    typedef long double     S_floap_t;
+#else
+    typedef long int    S_ount_t;
+    typedef long int    S_sulfur_int;
+    typedef double      S_floap_t;
+#endif
+
 struct Object;
 
 typedef struct class{
@@ -59,22 +72,25 @@ typedef struct stack{
     int len;
 }stack;
 
-
+typedef struct Custom_obj {
+    char *type_name;
+    void *data;
+}Custom_obj;
 
 typedef union Obj_val{
-    struct Object*o;
-    char* s;//string {char,...}
-    long long int i;//ount 
-    long double f;//floap
-    long double c[2];//complex {re,im}
-    char b;//boolean 
-    class*cl;//class
-    class*cl_def;
-    Funcdef *funcid;//contain a function identifier
-    char*typeid;//contain a type
-    Module*module;
-    list*li;
-
+    struct Object *o;
+    S_string_t    s;//string {char,...}
+    S_ount_t      i;//ount 
+    S_floap_t     f;//floap
+    S_floap_t     c[2];//complex {re,im}
+    S_boolean_t   b;//boolean 
+    class       *cl;//class
+    class       *cl_def;
+    Funcdef     *funcid;//contain a function identifier
+    char        *typeid;//contain a type
+    Module      *module;
+    list *      li;
+    Custom_obj  *cst_obj;
 }Obj_val;
 
 typedef struct Object{
@@ -98,7 +114,8 @@ enum Obj_Type{
     Obj_class_t,
     obj_module_t,
     Obj_class_def_t,
-    Obj_class_instance_t
+    Obj_class_instance_t,
+    Obj_custom_obj_t
 };
 
 
@@ -118,11 +135,11 @@ void Obj_print(Object obj);
 Funcdef new_blt_func(Object (*func)(Object*,int),char*desc);
 
 
-memory*add_func(memory*MEMORY,char*name,Object (*func)(Object*,int),char*desc);
+memory *add_func(memory *MEMORY, char *name, Object (*func)(Object *, int), char *desc);
 
-memory*add_object(memory*MEMORY,char*name,Object x);
+memory *add_object(memory *MEMORY, char *name, Object x);
 
-memory*add_obj_str(memory*MEMORY,char*name,char*val);
+memory *add_obj_str(memory *MEMORY, char *name, S_string_t val);
 
 
 
@@ -134,17 +151,17 @@ void add_func_Module(Object mod, char *name, Object (*func)(Object *, int), char
 void add_Object_Module(Object mod, char*name,Object x);
 
 
-Object new_ount(long long int value);
+Object new_ount(S_ount_t value);
 
-Object new_floap(long double value);
+Object new_floap(S_floap_t value);
 
-Object new_complex(long double re, long double im);
+Object new_complex(S_floap_t re, S_floap_t im);
 
 //the string will be copied *
-Object new_string(char * value);
+Object new_string(S_string_t value);
 
 
-Object new_boolean(int value);
+Object new_boolean(S_ount_t value);
 
 Object Obj_cpy(Object o);
 
@@ -168,15 +185,29 @@ void add_count();
 void remove_count();
 
 typedef struct Sulfur_ctx{
-    void *memlib_func;
+    void *(**memlib_func)();
+    void *(**operations)();
     Object (**std_func)(Object *, int);
     void *vars;
     memory *MEM;
     int *errno; // len = 4 [is_error,type,error_number,extra]
     char **argv; // args passed after filename can be NULL
     int argc;
+
 } Sulfur_ctx;
 
 char *Obj_type_as_str(short int type);
+
+memory*add_object_cpy(memory *MEMORY, char *name, Object x);
+
+
+extern void (**TO_CALL)();
+extern int TO_CALL_LEN;
+
+void  init_to_call();
+
+void add_to_call(void (*func)());
+
+void call_to_call_and_free();
 
 #endif

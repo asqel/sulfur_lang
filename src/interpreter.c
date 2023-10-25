@@ -6,6 +6,7 @@
 #include "../sulfur_libs/blt_libs/string_su.h"
 #include "../sulfur_libs/blt_libs/funccall_su.h"
 #include "../sulfur_libs/blt_libs/list_su.h"
+#include "../sulfur_libs/blt_libs/complex.h"
 
 #include "../include/sulfur.h"
 #include "../include/operation.h"
@@ -88,15 +89,16 @@ void init_memory(){
     MEMORY.len=0;
 
     REFS = malloc(sizeof(ref_count));
-    REFS_len = 1; // set to one to avoid realloc(x,0) when there is no lists
+    REFS_len = 0; // set to one to avoid realloc(x,0) when there is no lists
 }
 
 void init_libs(char*path){
     MEMORY = init_std(MEMORY, path);
     add_func(&MEMORY, "import", &import_func, ""); 
-    add_object(&MEMORY, "_string", init_string(&MEMORY, path));
-    add_object(&MEMORY, "_list", init_list(&MEMORY, path));
-    add_object(&MEMORY, "_funccall", init_funccall(&MEMORY, path));
+    add_object(&MEMORY, "string", init_string(&MEMORY, path));
+    add_object(&MEMORY, "list", init_list(&MEMORY, path));
+    add_object(&MEMORY, "funccall", init_funccall(&MEMORY, path));
+    add_object(&MEMORY, "complex", init_complex(&MEMORY, path));
 }
 
 void add_loop_count(int index, int *loops_count, int **loops){
@@ -162,6 +164,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
 
         else if(code[p].type == inst_return_t){
+            free(loops);
             return eval_Ast(code[p].value.ret);
         }
 
