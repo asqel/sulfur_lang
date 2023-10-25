@@ -1,5 +1,2 @@
-a = 3 + 7*$i
-println(a:rE)
-println(a:"re")
-println(a.re())
-println(a:0)
+import("math", "mt")
+println(mt.is_even.help())

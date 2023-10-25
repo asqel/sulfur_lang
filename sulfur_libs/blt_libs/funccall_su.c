@@ -19,6 +19,14 @@ Object funccall_call(Object* argv, int argc){
     }
 }
 
+Object funccall_help(Object *argv, int argc) {
+    if (argc != 1) {
+        printf("ERROR funcid:help dont takes arg\n");
+        exit(1);
+    }
+    return new_string(argv[0].val.funcid->description ? argv[0].val.funcid->description : "");
+}
+
 Object init_funccall(memory *MEMORY,char*path){
     char* module_name = "funccall";
 
@@ -27,7 +35,8 @@ Object init_funccall(memory *MEMORY,char*path){
     mod.val.module->filename = malloc(sizeof(char) * (1 + strlen(module_name)));
     strcpy(mod.val.module->filename, module_name);
 
-    add_func_Module(mod,"call",&funccall_call,"");
+    add_func_Module(mod,"call",&funccall_call, "");
+    add_func_Module(mod,"help",&funccall_help, "");
 
     funccall_module = *mod.val.module;
     return mod;
