@@ -769,6 +769,35 @@ Object std_exec_cmd(Object *argv, int argc) {
     return new_ount(system(argv[0].val.s));
 }
 
+Object std_abs(Object *argv, int argc) {
+    if (argc != 1) {
+        printf("ERROR abs only takes 1 arg\n");
+        exit(1);
+    }
+    if (argv[0].type == Obj_ount_t) 
+        return new_ount(sulfur_int_abs(argv[0].val.i));
+    if (argv[0].type == Obj_floap_t)
+        return new_floap(sulfur_float_abs(argv[0].val.f));
+    if (argv[0].type == Obj_boolean_t)
+        return new_boolean(argv[0].val.b);
+    if (argv[0].type == Obj_string_t) {
+        S_floap_t sum = 0;
+        int len = strlen(argv[0].val.s);
+        for (int i = 0; i < len; i++) {
+            sum +=  argv[0].val.s[i] * argv[0].val.s[i];
+        }
+        return new_floap(sulfur_sqrt(sum));
+    }
+    if (argv[0].type == Obj_complex_t) {
+        return new_floap(sulfur_sqrt(
+            argv[0].val.c[0] * sulfur_sqrt(argv[0].val.c[0]) +
+            argv[0].val.c[1] * sulfur_sqrt(argv[0].val.c[1])
+        ));
+    }
+    printf("ERROR wrong argument for abs\n");
+    exit(1);
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
@@ -829,5 +858,6 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY, "call_sec", &std_call_sec, "");
     add_func(&MEMORY, "var_val", &std_var_val, "");
     add_func(&MEMORY, "exec_cmd", &std_exec_cmd, "");
+    add_func(&MEMORY, "abs", &std_abs, "");
     return MEMORY;
 }
