@@ -75,12 +75,20 @@ Object print_prompt(Object*obj,int n_arg){
         
     }
     else if(obj->type==Obj_complex_t){
-        printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
+        #ifdef __profanOS
+            printf("%g + %gi",obj->val.c[0],obj->val.c[1]);
+        #else
+            printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
+        #endif
     }
     else if(obj->type==Obj_floap_t){
-        char tmp[30];
-        sprintf(tmp, "%%.%dLf", precision);
-        printf(tmp, obj->val.f);
+        #ifdef __profanOS
+            printf("%g", obj->val.f);
+        #else
+            char tmp[30];
+            sprintf(tmp, "%%.%dLf", precision);
+            printf(tmp, obj->val.f);
+        #endif
     }
     else if(obj->type==Obj_list_t){
         int len=obj->val.li->elements[0].val.i;
@@ -146,7 +154,7 @@ Object std_chr(Object* argv, int argc){
     }
     for(int i=0; i < argc; i++){
         if(argv[i].type != Obj_ount_t){
-            printf("ERROR std_chr only takes strings\n");
+            printf("ERROR std_chr only takes ount\n");
             exit(1);
         }
     }

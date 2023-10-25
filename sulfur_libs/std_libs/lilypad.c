@@ -87,11 +87,6 @@ Object std_set_val_byte(Object* argv, int argc){
     return nil_Obj;
 }
 
-Object memory_adresse(Object * argv, int argc){
-    printf("%d\n", 42);
-    return (nil_Obj);
-}
-
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -119,7 +114,7 @@ Object __loader(Sulfur_ctx ctx) {
     add_func_Module(mod, "malloc", &std_malloc, "");
     add_func_Module(mod,"get_byte", &std_get_val_byte,"");
     add_func_Module(mod,"set_byte", &std_set_val_byte,"");
-    add_func_Module(mod,"a", &memory_adresse,"");
+    add_func_Module(mod,"clear", &clearConsole,"");
 
     return mod;
 }
