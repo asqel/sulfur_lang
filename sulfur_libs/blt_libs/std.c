@@ -75,15 +75,15 @@ Object print_prompt(Object*obj,int n_arg){
         
     }
     else if(obj->type==Obj_complex_t){
-        #ifdef __profanOS
-            printf("%g + %gi",obj->val.c[0],obj->val.c[1]);
+        #ifdef __profanOS__
+            printf("%g + %gi", (float)obj->val.c[0], (float)obj->val.c[1]);
         #else
             printf("%Lf + %Lfi",obj->val.c[0],obj->val.c[1]);
         #endif
     }
     else if(obj->type==Obj_floap_t){
-        #ifdef __profanOS
-            printf("%g", obj->val.f);
+        #ifdef __profanOS__
+            printf("%g", (float)obj->val.f);
         #else
             char tmp[30];
             sprintf(tmp, "%%.%dLf", precision);
