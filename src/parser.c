@@ -90,8 +90,8 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                     }
                     to_parse[cl_brac - op_brac -1] = end_token;
                     Instruction* code=malloc(sizeof(Instruction));
-                    int* code_len=malloc(sizeof(int));
-                    code=parse(to_parse,-1,-1,code,code_len);
+                    int code_len = 0;
+                    code = parse(to_parse,-1,-1,code,&code_len);
 
                     len-= (token_len(to_parse)+1);
                     e=realloc(e,sizeof(Ast)*len);
@@ -99,7 +99,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                     e[i - start-offset].isAst=1;
                     e[i - start-offset].root.ano_func = malloc(sizeof(anonym_func));
                     e[i - start-offset].root.ano_func->code = code;
-                    e[i - start-offset].root.ano_func->code_len = *code_len;
+                    e[i - start-offset].root.ano_func->code_len = code_len;
                     offset+=cl_brac-i;
                     i=cl_brac;
 

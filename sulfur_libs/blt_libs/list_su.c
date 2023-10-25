@@ -1,6 +1,8 @@
 #include "../../include/memlib.h"
 #include "list_su.h"
 #include <stdlib.h>
+#include "std.h"
+
 Module list_module;
 char* list_methods = "append";
 
@@ -9,7 +11,7 @@ Object append_list(Object*obj,int n_arg){
     obj[0].val.li->elements = realloc(obj->val.li->elements,(len+2)*sizeof(Object));
     obj[0].val.li->elements[len+1] = Obj_cpy(obj[1]);
     obj[0].val.li->elements[0].val.i++;
-    return Obj_cpy(obj[0]);
+    return obj[0];
 }
 
 Object clear_list(Object*obj,int n_arg){
@@ -43,6 +45,7 @@ Object init_list(memory *MEMORY,char*path){
     add_func_Module(mod, "append", &append_list, "");
     add_func_Module(mod, "clear", &clear_list, "");
     add_func_Module(mod, "reverse", &list_reverse, "");
+    add_func_Module(mod, "__call", &std_list, "");
 
     list_module = *mod.val.module;
     return mod;

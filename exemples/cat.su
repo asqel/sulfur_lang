@@ -1,0 +1,16 @@
+import("poppy","po")
+
+if (get_args():-1) {
+    args = get_args()
+    args_len = args:-1
+    for (i from 0 to args_len) {
+        text = po.read_file(args:i)
+        if (text != nil) {
+            print(text)
+        }
+    }
+    return ;
+}
+while (1) {
+    println(input())
+}

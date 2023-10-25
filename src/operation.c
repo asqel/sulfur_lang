@@ -13,9 +13,12 @@ Object add(Object a,Object b){
     if(a.type == Obj_ount_t&&b.type == Obj_ount_t)
         return new_ount(a.val.i + b.val.i);
 
-    if(a.type == Obj_string_t&&b.type == Obj_string_t)
-        return new_string(str_cat_new(a.val.s, b.val.s));
-
+    if (a.type == Obj_string_t&&b.type == Obj_string_t) {
+        char *s = str_cat_new(a.val.s, b.val.s);
+        Object res = new_string(s);
+        free(s);
+        return res;
+    }
     if(a.type == Obj_floap_t && b.type == Obj_floap_t)
         return new_floap(a.val.f + b.val.f);
 
@@ -45,8 +48,21 @@ Object add(Object a,Object b){
         }
         return x;
         
+        
 
     }
+    //complex
+    if (a.type == Obj_complex_t && b.type == Obj_ount_t)
+        return new_complex(b.val.i + a.val.c[0], a.val.c[1]);
+    if (b.type == Obj_complex_t && a.type == Obj_ount_t)
+        return new_complex(a.val.i + b.val.c[0], b.val.c[1]);
+    if (a.type == Obj_complex_t && b.type == Obj_floap_t)
+        return new_complex(b.val.f + a.val.c[0], a.val.c[1]);
+    if (b.type == Obj_complex_t && a.type == Obj_floap_t)
+        return new_complex(a.val.f + b.val.c[0], b.val.c[1]);
+    if (a.type == Obj_complex_t && b.type == Obj_complex_t);
+        return new_complex(a.val.c[0] + b.val.c[1], a.val.c[1] + b.val.c[1]);
+
     
     printf("ERROR : operation(+) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
@@ -74,6 +90,23 @@ Object sub(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_floap_t)
         return new_floap(a.val.i - b.val.f );
 
+
+    if (a.type == Obj_complex_t && b.type == Obj_ount_t)
+        return new_complex(a.val.c[0] - b.val.i, a.val.c[1]);
+
+    if (a.type == Obj_ount_t && b.type == Obj_complex_t)
+        return new_complex(a.val.i - b.val.c[0], b.val.c[1]);
+
+    if (a.type == Obj_complex_t && b.type == Obj_floap_t)
+        return new_complex(a.val.c[0] - b.val.f, a.val.c[1]);
+
+    if (a.type == Obj_floap_t && b.type == Obj_complex_t)
+        return new_complex(a.val.f - b.val.c[0], b.val.c[1]);
+
+    if (a.type == Obj_complex_t && b.type == Obj_complex_t);
+        return new_complex(a.val.c[0] + b.val.c[1], a.val.c[1] + b.val.c[1]);
+
+
     printf("ERROR : operation(-) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
@@ -95,6 +128,25 @@ Object mul(Object a,Object b){
 
     if(a.type == Obj_ount_t && b.type == Obj_floap_t)
         return new_floap(a.val.i * b.val.f);
+
+
+    if (a.type == Obj_complex_t && b.type == Obj_ount_t)
+        return new_complex(a.val.c[0] * b.val.i, a.val.c[1] * b.val.i);
+
+    if (a.type == Obj_ount_t && b.type == Obj_complex_t)
+        return new_complex(a.val.i * b.val.c[0], a.val.i * b.val.c[1]);
+
+    if (a.type == Obj_complex_t && b.type == Obj_floap_t)
+        return new_complex(a.val.c[0] * b.val.f, a.val.c[1] * b.val.f);
+
+    if (a.type == Obj_floap_t && b.type == Obj_complex_t)
+        return new_complex(a.val.f * b.val.c[0], b.val.c[1] * a.val.f);
+
+    if (a.type == Obj_complex_t && b.type == Obj_complex_t)
+        return new_complex(
+            a.val.c[0] * b.val.c[0] - a.val.c[1] * b.val.c[1],
+            a.val.c[0] * b.val.c[1] + a.val.c[1] * b.val.c[0]
+        );
 
     printf("ERROR : operation(*) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
@@ -130,6 +182,57 @@ Object _div(Object a,Object b){
         }
         return new_floap(a.val.i / b.val.f );
     }
+
+
+    if (a.type == Obj_complex_t && b.type == Obj_ount_t) {
+        if(b.val.i == 0){
+            printf("ERROR division by zero (ount)\n");
+            exit(1);
+        }
+        return new_complex(a.val.c[0] * b.val.i, a.val.c[1] * b.val.i);
+    }
+
+    if (a.type == Obj_ount_t && b.type == Obj_complex_t) {
+        if(b.val.c[0] == 0 && b.val.c[1] == 0){
+            printf("ERROR division by zero (complex)\n");
+            exit(1);
+        }
+        return new_complex(
+            a.val.i * b.val.c[0] / (b.val.c[0] * b.val.c[0] + b.val.c[1] * b.val.c[1]),
+            -a.val.i * b.val.c[1] / (b.val.c[0] * b.val.c[0] + b.val.c[1] * b.val.c[1])
+        );
+    }
+
+    if (a.type == Obj_complex_t && b.type == Obj_floap_t) {
+        return new_complex(a.val.c[0] / b.val.f, a.val.c[1] / b.val.f);
+    }
+
+    if (a.type == Obj_floap_t && b.type == Obj_complex_t) {
+        if(b.val.c[0] == 0 && b.val.c[1] == 0){
+            printf("ERROR division by zero (complex)\n");
+            exit(1);
+        }
+        return new_complex(
+            a.val.f * b.val.c[0] / (b.val.c[0] * b.val.c[0] + b.val.c[1] * b.val.c[1]),
+            -a.val.f * b.val.c[1] / (b.val.c[0] * b.val.c[0] + b.val.c[1] * b.val.c[1])
+        );
+    }
+
+    if (a.type == Obj_complex_t && b.type == Obj_complex_t) {
+        float _a = a.val.c[0];
+        float _b = a.val.c[1];
+        float _c = b.val.c[0];
+        float _d = b.val.c[1];
+        if(_c == 0 && _d == 0){
+            printf("ERROR division by zero (complex)\n");
+            exit(1);
+        }
+        return new_complex(
+            (_a*_c + _b*_d) / (_c*_c + _d*_d),
+            (_b*_c - _a*_d) / (_c*_c + _d*_d)
+        );
+    }
+
     printf("ERROR : operation(/) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
@@ -320,7 +423,7 @@ Object not(Object a){
         return new_boolean(!a.val.b);
     }
     Object o = std_bool(&a, 1);
-    o.val.b = !a.val.b;
+    o.val.b = !o.val.b;
     return o;
 }
 

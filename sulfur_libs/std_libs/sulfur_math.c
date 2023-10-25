@@ -9,6 +9,8 @@
 
 #ifndef ONE_FILE
     Sulfur_ctx context;
+#else
+    #include "../blt_libs/std.h"
 #endif
 
 Object is_even(Object* argv, int argc) {
@@ -133,8 +135,8 @@ Object _floor(Object* argv, int argc) {
 
 #ifndef ONE_FILE
 Object __loader(Sulfur_ctx ctx) {
-    Object mod = new_Module();
     context = ctx;
+    Object mod = new_Module();
 
     add_func_Module(mod, "is_even", &is_even, "");
     add_func_Module(mod, "is_odd", &is_odd, "");

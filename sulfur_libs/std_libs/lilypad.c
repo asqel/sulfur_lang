@@ -9,6 +9,8 @@
 
 #ifndef ONE_FILE
     Sulfur_ctx context;
+#else
+    #include "../blt_libs/std.h"
 #endif
 
 Object std_malloc(Object* argv, int argc){
@@ -110,8 +112,8 @@ Object clearConsole(Object *argv, int argc) {
 #ifndef ONE_FILE
 
 Object __loader(Sulfur_ctx ctx) {
-    Object mod = new_Module();
     context = ctx;
+    Object mod = new_Module();
 
     add_func_Module(mod, "free", &std_free, "");
     add_func_Module(mod, "malloc", &std_malloc, "");

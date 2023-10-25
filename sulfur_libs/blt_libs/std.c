@@ -161,7 +161,7 @@ Object std_chr(Object* argv, int argc){
 
 Object std_bool(Object*obj,int n_arg){
     if(n_arg!=1){
-        printf("ERROR %s only 1 argument needed in bool call\n", n_arg>1 ? "too many arguments" : "too few arguments");
+        printf("ERROR %s only 1 argument needed in bool call\n", n_arg > 1 ? "too many arguments" : "too few arguments");
         exit(1);
     }
     if(obj->type==Obj_ount_t){
@@ -417,7 +417,7 @@ Object std_comp(Object* argv, int argc){
 }
 
 
-Object type(Object* obj, int n_arg) {
+Object std_type(Object* obj, int n_arg) {
     if (n_arg!=1){
         printf("ERROR type only take one arg\n");
         exit(1);
@@ -493,6 +493,7 @@ Object pop(Object* argv, int argc){
     Obj_free_val(argv[0].val.li->elements[len]);
     argv[0].val.li->elements[0].val.i--;
     argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * len);
+
 }
 
 Object std_asc_val(Object* argv, int argc){
@@ -563,9 +564,98 @@ Object std_current_instruction(Object *argv, int argc){
     return new_ount(*current_index);
 }
 
-//
+//0 : section to jump
+//1 : section to return 
+//2 : arg1
+//3 : arg2
+//4 : arg3
 Object std_call_sec(Object *argv, int argc){
-
+    if (argc != 5) {
+        printf("ERROR call_sec only takes 5 args\n");
+        exit(1);
+    }
+    Object arg1 = argv[2];
+    Object arg2 = argv[3];
+    Object arg3 = argv[4];
+    if (argv[0].type == Obj_ount_t) {
+        *current_index = argv[0].val.i;
+    }
+    else if (argv[0].type == Obj_string_t){
+        char *jump_to = argv[0].val.s;
+        int n = -1;
+        //search down
+        for(int i = *current_index + 1; i < instruction_len; i++){
+            if(current_instructions[i].type == inst_section_t){
+                if(!strcmp(jump_to, current_instructions[i].value.section)){
+                    n = i;
+                    break;
+                }
+            }
+        }
+        if(n == -1){
+            //search up
+            for(int i = *current_index - 1; i >= 0; i--){
+                if(current_instructions[i].type == inst_section_t){
+                    if(!strcmp(jump_to, current_instructions[i].value.section)){
+                        n = i;
+                        break;
+                    }
+                }
+            }
+        }
+        if(n == -1){
+            printf("ERROR call_sec section %s doesnt exists\n", jump_to);
+            exit(1);
+        }
+        *current_index = n;
+    }
+    else {
+        printf("ERROR call_sec only takes ount or string as arg0\n");
+        exit(1);
+    }
+    if (argv[1].type != Obj_ount_t && argv[1].type == Obj_string_t) {
+        printf("ERROR call_sec only takes a string or ount as arg1\n");
+    }
+    int ret_sec_set = 0;
+    int arg1_set = 0;
+    int arg2_set = 0;
+    int arg3_set = 0;
+    Object old;
+    for (int i = 0; i < MEMORY.len && !(arg1_set && arg2_set && arg3_set && ret_sec_set) ; i++) {
+        if (!strcmp(MEMORY.keys[i], "__arg1")) {
+            arg1_set = 1;
+            old = MEMORY.values[i];
+            MEMORY.values[i] = Obj_cpy(arg1);
+            Obj_free_val(old);
+        }
+        if (!strcmp(MEMORY.keys[i], "__arg2")) {
+            arg2_set = 1;
+            old = MEMORY.values[i];
+            MEMORY.values[i] = Obj_cpy(arg2);
+            Obj_free_val(old);
+        }
+        if (!strcmp(MEMORY.keys[i], "__arg3")) {
+            arg3_set = 1;
+            old = MEMORY.values[i];
+            MEMORY.values[i] = Obj_cpy(arg3);
+            Obj_free_val(old);
+        }
+        if (!strcmp(MEMORY.keys[i], "__ret_sec")) {
+            ret_sec_set = 1;
+            old = MEMORY.values[i];
+            MEMORY.values[i] = Obj_cpy(argv[1]);
+            Obj_free_val(old);
+        }
+    }
+    if (!arg1_set)
+        add_object_cpy(&MEMORY, "__arg1", arg1);
+    if (!arg2_set)
+        add_object_cpy(&MEMORY, "__arg2", arg2);
+    if (!arg3_set)
+        add_object_cpy(&MEMORY, "__arg3", arg3);
+    if (!ret_sec_set)
+        add_object_cpy(&MEMORY, "__ret_sec", argv[1]);
+    return nil_Obj;
 }
 
 Object std_dirname(Object *argv, int argc){
@@ -666,28 +756,42 @@ Object std_var_val(Object *argv, int argc) {
     return res;
 }
 
+
+Object std_exec_cmd(Object *argv, int argc) {
+    if (argc != 1) {
+        printf("ERROR exec_cmd only takes one arg\n");
+        exit(1);
+    }
+    if (argv[0].type != Obj_string_t) {
+        printf("ERROR exec_cmd only takes a string as arg\n");
+        exit(1);
+    }
+    return new_ount(system(argv[0].val.s));
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
     add_object(&MEMORY, "__", nil_Obj);
     add_object(&MEMORY, "___", nil_Obj);
-    add_object(&MEMORY, "____", nil_Obj);
-    add_object(&MEMORY, "_____", nil_Obj);
-    add_object(&MEMORY, "______", nil_Obj);
+    add_object(&MEMORY, "__arg1", nil_Obj);
+    add_object(&MEMORY, "__arg2", nil_Obj);
+    add_object(&MEMORY, "__arg3", nil_Obj);
+    add_object(&MEMORY, "__ret_val", nil_Obj);
+    add_object(&MEMORY, "__ret_sec", nil_Obj);
     add_func(&MEMORY, "print", &print_prompt,"");
     add_func(&MEMORY, "println", &println_prompt,"");
     add_func(&MEMORY, "bool", &std_bool,"");
     add_func(&MEMORY, "input", &read_prompt,"");
     add_func(&MEMORY, "ount", &std_ount,"");
     add_func(&MEMORY, "floap", &std_floap,"");
-    add_func(&MEMORY, "list", &std_list,"");
     add_func(&MEMORY, "time", &current_timestamp,"");
     add_func(&MEMORY, "sleep", &sleep,"");
     /*depracated*/
     add_func(&MEMORY, "get", &get,"");
     /*depracated*/
     add_func(&MEMORY, "set", &set,"");
-    add_func(&MEMORY, "type", &type,"");
+    add_func(&MEMORY, "type", &std_type,"");
     add_func(&MEMORY, "__set_precision__", &set_precision,"");
     add_func(&MEMORY, "__get_precision__", &get_precision,"");
     char *path0 = abs_path();
@@ -722,6 +826,8 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY, "dirname", &std_dirname, "");
     add_func(&MEMORY, "get_args", &get_program_args, "");
     add_func(&MEMORY, "get_env", &std_get_env, "");
+    add_func(&MEMORY, "call_sec", &std_call_sec, "");
     add_func(&MEMORY, "var_val", &std_var_val, "");
+    add_func(&MEMORY, "exec_cmd", &std_exec_cmd, "");
     return MEMORY;
 }

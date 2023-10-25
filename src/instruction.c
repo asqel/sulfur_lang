@@ -69,6 +69,9 @@ void instruction_free(Instruction code){
 		case inst_section_t:
 			free(code.value.section);
 			break;
+        case inst_return_t:
+            free_ast(*code.value.ret);
+            free(code.value.ret);
 		case inst_pass_t:
         case inst_else_t:
         case inst_stop_t:
