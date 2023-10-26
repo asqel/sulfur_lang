@@ -1,2 +1,1 @@
-import("math", "mt")
-println(mt.is_even.help())
+println(3, $list(4, 7))

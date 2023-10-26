@@ -528,7 +528,7 @@ Ast*make_ast(Ast*e,int len){
         p++;
     }
      
-    //make unary + - !
+    //make unary + - ! $
     p=0;
     while(p<len){
         if(e[p].type==Ast_op_t && e[p].root.op==OP_NOT){// !
@@ -556,6 +556,23 @@ Ast*make_ast(Ast*e,int len){
             e[p].isAst=1;
             e[p].type=Ast_add_t;
             e[p].left=NULL;
+            e[p].right=malloc(sizeof(Ast));
+            *e[p].right=e[p+1];
+            for(int i=p+2;i<len;i++){
+                e[i-1]=e[i];
+            }
+            len--;
+            e=realloc(e,sizeof(Ast)*len);
+            p++;
+        }
+
+        if(e[p].type==Ast_op_t && e[p].root.op==OP_UNPACK){// !
+            if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
+                printf("ERROR missing operand after '$' in expression\n");
+                exit(1);
+            }
+            e[p].isAst=1;
+            e[p].type=Ast_unpack_t;
             e[p].right=malloc(sizeof(Ast));
             *e[p].right=e[p+1];
             for(int i=p+2;i<len;i++){

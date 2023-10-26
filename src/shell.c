@@ -98,7 +98,6 @@ int interactive_shell(sulfur_args_t *args) {
 
         // execute
         execute(insts, "*shell*", instruction_len);
-        call_to_call_and_free();
 
         // free memory
         for(int i = 0; i < len; i++){
@@ -109,6 +108,7 @@ int interactive_shell(sulfur_args_t *args) {
         // clean up
         decl = 0;
     }
+    call_to_call_and_free();
 
     // clean memory
     free(code);

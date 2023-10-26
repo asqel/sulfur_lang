@@ -509,7 +509,7 @@ Object std_asc_val(Object* argv, int argc){
 }
 
 Object std_rand(Object* argv, int argc){
-    return new_floap((long double)rand()/RAND_MAX);
+    return new_floap(((S_floap_t)rand())/RAND_MAX);
 }
 
 Object std_print_memory(Object* argv, int argc){
