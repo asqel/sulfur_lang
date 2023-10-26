@@ -39,11 +39,6 @@ Object eval_Ast(Ast*x){
             int args_len = 0;
             
             Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
-            //if (!strcmp("println", x->root.fun->name)){
-            //    for(int i = 0; i < x->root.fun->nbr_arg; i++)
-            //        print_ast(*x->root.fun->args);
-            //    printf("<<<%d \n", args_len);   
-            //}
             Object res = (*func.val.funcid->func_p)(args, args_len);
             Obj_free_array(args, args_len);
             return res;
@@ -670,10 +665,11 @@ Object *eval_args(Ast *args, int len, int *ret_len) {
                 Obj_free_val(x);
                 continue;
             }
-            res = realloc(res, sizeof(Object) * (malloc_len + x.val.li->elements[0].val.i - 1));
-            for(int k = 0; i < x.val.li->elements[0].val.i; i++)
+            int list_len = x.val.li->elements[0].val.i;
+            res = realloc(res, sizeof(Object) * (malloc_len + list_len - 1));
+            for(int k = 0; k < list_len; k++)
                 res[(*ret_len)++] = Obj_cpy(x.val.li->elements[k + 1]); 
-            malloc_len += x.val.li->elements[0].val.i - 1;
+            malloc_len += list_len - 1;
             x = Obj_cpy(x);
             Obj_free_val(x);
         }
