@@ -3,7 +3,7 @@
 
 #include "memlib.h"
 
-#define VERSION "2.7"
+#define VERSION "2.8"
 #define SUB_VERSION "0000"
 #define COMPLETE_VERSION (VERSION "." SUB_VERSION)
 
@@ -12,6 +12,7 @@ typedef struct {
     int show_parse;
     int show_lexe;
     int show_lexe_include;
+    int make_bytecode;
 
     int help;
     int version;

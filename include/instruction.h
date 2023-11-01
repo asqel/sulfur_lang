@@ -33,7 +33,7 @@ typedef struct For{
     char*var_name;
     struct Ast*start;
     struct Ast*end;
-    int endfor;
+    S_sulfur_int endfor;
 }For;
 
 typedef struct While{
