@@ -109,6 +109,11 @@ char* get_op_as_str(int type){
 
 int print_ast(Ast x){
     switch (x.type){
+        case Ast_unpack_t:
+            printf("Unpack[");
+            print_ast(*x.right);
+            printf("]");
+            break;
         case Ast_add_t:
         case Ast_mul_t:
         case Ast_sub_t:

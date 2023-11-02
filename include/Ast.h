@@ -95,7 +95,8 @@ enum Ast_types{
     Ast_anonym_func_t,
     Ast_list_comprehension_t,
     Ast_colon_t,
-    Ast_expr_funccall_t //function called like this : (...)(a,b)
+    Ast_expr_funccall_t, //function called like this : (...)(a,b)
+    Ast_unpack_t
 
 };
 

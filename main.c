@@ -9,6 +9,7 @@
 #include "include/interpreter.h"
 #include "include/func_interpreter.h"
 #include "include/make_context.h"
+#include "include/bytecode_maker/bytecode_converter.h"
 
 #include "sulfur_libs/blt_libs/std.h"
 
@@ -25,6 +26,7 @@ void show_help(char *name, int full) {
         "  -l, --show-lexe     show tokens after lexing\n"
         "  -h, --help          show this help message and exit\n"
         "  -v, --version       show sulfur version and exit\n"
+        "      --bytecode      make the bytecode of the file\n"
 
         "If no file is given, sulfur will run in interactive mode.\n"
         "If file is given, sulfur will execute it and exit.\n"
@@ -74,6 +76,20 @@ int execute_file(sulfur_args_t *args) {
     init_stack(); 
     init_libs(args->filepath);  
     make_context();
+
+    //make bytecode
+    if (args->make_bytecode) {
+        int len = strlen(args->filepath);
+        char *new_path = malloc(len + 3);
+        strcpy(new_path, args->filepath);
+        strcat(new_path, "bc");
+        FILE *f = fopen(new_path,"w");
+        Bytecode_t b = make_bytecode(code, instruction_len);
+        fwrite(b.bytes, 1, b.len, f);
+        fclose(f);
+        free_bytecode(b);
+        free(new_path);
+    }
 
     execute(code, args->filepath, instruction_len);
     call_to_call_and_free();

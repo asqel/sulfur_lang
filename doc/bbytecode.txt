@@ -41,15 +41,33 @@ END_WHILE:
     0x02 64bits(WHILE idx)
 
 PROCEED:
-    0x03 0x01 64bits(FOR / WHILE idx) 
+    0x03 0x01
 
 STOP:
-    0x03 0x01 64bits(END_FOR / END_WHILE idx) 
+    0x03 0x02
 
 GOTO:
-    0x03 0x00 64bits(label name idx in constants)
+    0x03 0x03 64bits(label name idx in constants)
+JUMP:
+    0x03 0x04 64bits(instruction idx to jump to)
 EXPR:
     0x04 64bits(ast idx)
+
+IF:
+    0x05 64bits(ast idx) 64bits(endif idx)
+ELIF :
+    0x06 64bits(ast idx) 64bits(endif idx)
+ELSE:
+    0x07 64bits(endif idx)
+ENDIF:
+    0x08 64bits(endifelse idx)
+ENDIFELSE:
+    0x09 64bits(if idx)
+RETURN :
+    0x0A 64bits(ast idx)
+SECTION:
+    0x0B 64bits(name idx in constans)
+
 
 END_AST / END_CONSTANTS / END_INSTRUCTION:
     0x00 0x00 0x00 0x00 0x00 0x00 (indicate definition of all ast / const / insts is finished)
@@ -59,17 +77,17 @@ END_AST / END_CONSTANTS / END_INSTRUCTION:
 ast -> push / operation
 
     +       -> push a; push b; add;
-a       b   -> stack_max_len=2 (bc. 2 push)
+a       b   -> 
 
             +       -> push a; push b; mul; push c; add;
     *           c   -> constants = ["a", "b", "c"] 
 a       b           ->     ________________________________________________________
                            |              |              |    |              |    |
-(64bits)0x03 (64bits)0x05  0x01 0x01 0x00 0x01 0x01 0x01 0x04 0x01 0x01 0x02 0x03
+             (64bits)0x05   0x01 0x01 0x00 0x01 0x01 0x01 0x04 0x01 0x01 0x02 0x03
 
 
 
-AST : 64bits(stack max len) 64bits(AST_instruction len) ast_instructions;
+AST : 64bits(AST_instruction len) ast_instructions;
 
 ast_instructions:
     push : 0x01 (0x01/0x02 (varcall / constants idx)) 64bits(idx)
@@ -95,18 +113,33 @@ ast_instructions:
         erase the top of the stack
 
     // the operation are done on the 2 top value of the stack
-    add : 0x05
-    sub : 0x06
-    mul : 0x07
-    div : 0x08
+    add     : 0x05
+    sub     : 0x06
+    mul     : 0x07
+    div     : 0x08
+    fl_div  : 0x09
+    modulo  : 0x0A
+    power   : 0x0B
+    or      : 0x0C
+    and     : 0x0D
+    not     : 0x0E
+    negate  : 0x0F
+    eq      : 0x10
+    noteq   : 0x11
+    geq     : 0x12
+    leq     : 0x13
+    le      : 0x14
+    ge      : 0x15
+    rshift  : 0x16
+    lshift  : 0x17
 
     assign : 0xF0
-        assign the top of the stack to the var with the name stored as string in second top of the stack
+        assign the second top of stack to the var corresponding of the string in the top of stack
         ex:
             //we want to assign 3 to a (a = 3)
             //constants = [3, "a"]
-            push "a";  |   0x01 0x02 (64bits)0x01
             push 3;    |   0x01 0x02 (64bits)0x00
+            push "a";  |   0x01 0x02 (64bits)0x01
             assign;    |   0xF0
     push_dot : 0xF1
         same as push but for things that require dot operator (ex : math.pi)
@@ -128,20 +161,35 @@ ast_instructions:
             push "c"
             push_dot
     assign_dot : 0xF2
-        set the value of the top of the stack into the 2 top in 3 top
-        push container then push name of var as string then push value then assign_dot
-        it will remove 3 top of the stack
+        too lazy to explain  how it works plsease see the example
+        (erase 3 top of stack)
         ex:
             //we want to asssign math.pi to 20 (math.pi = 20)
             //constants = ["math", "pi", 20]
+            push 20;    |   0x01 0x01 (64bits)0x02 //push value 20
             push math;  |   0x01 0x01 (64bits)0x00 //push value of math (a module)
             push "pi";  |   0x01 0x02 (64bits)0x01 // push the constant "pi"
-            push 20;    |   0x01 0x01 (64bits)0x02 //push value 20
             assign_dot; |   0xF2
+    push_colon : 0xF3
+        same as push_dot but push the index instead of the member name
+    assign_colon : 0xF4
+        same as push_dot but push the index or the value instead of the member name
+    unpack : 0xF5
+        when unpacking a variable it counts as 1 argument
+        the number of argument will be computed by the interpreter
+        ex :
+            //we want to println($a, 3)
+            //a is a list
+            push 3          |
+            push a          |
+            unpack          |   turn to of the stack into a waiting_to_be_unpacked object
+            push 2          |   number of argument
+            push println    |
+            call_func       |   
 
 ################ bytecode file format #################
 
-magical number      |   0x2e 0x53 0x63 0x2e
+magical number      |   0x2e 0x53 0x75 0x2e
 constants section   |   64bits(nbr of constants)
                     |   constants
                     |   0x00 0x00 0x00 0x00 0x00 0x00

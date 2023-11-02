@@ -61,8 +61,8 @@ enum Operators {
   OP_EXPONENT,// ^
   OP_MODULUS,// %
   OP_FLOOR_DIVIDE,/* \  */
-  OP_OR,// |
-  OP_AND,// &
+  OP_OR,// ||
+  OP_AND,// &&
   OP_NOT,// !
   OP_ASSIGN,// =
   OP_EQUAL,// ==
@@ -74,7 +74,8 @@ enum Operators {
   OP_LESS,// <
   OP_GREATER,// >
   OP_LSHIFT,// <<
-  OP_RSHIFT// >>
+  OP_RSHIFT,// >>
+  OP_UNPACK
 };
 
 //Token value for keywords
