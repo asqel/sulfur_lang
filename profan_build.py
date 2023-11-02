@@ -10,7 +10,7 @@ LDFLAGS = "-T build/profan/_link.ld"
 
 OBJDIR  = "build/profan_objects"
 
-SRC_DIRS = ["src", "sulfur_libs/blt_libs", "sulfur_libs/std_libs", "sulfur_libs/std_libs/graphic"]
+SRC_DIRS = ["src", "src/bytecode_maker", "sulfur_libs/blt_libs", "sulfur_libs/std_libs", "sulfur_libs/std_libs/graphic"]
 
 ENDNOTE = """
     The  file  "sulfur.bin"  was  successfully
