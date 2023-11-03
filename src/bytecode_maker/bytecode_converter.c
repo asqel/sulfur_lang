@@ -122,6 +122,11 @@ Bytecode_t make_bytecode_inst(Instruction inst) {
 		bytecode_append_llint(&code, add_bytecode_ast(ast_to_bytecode(*inst.value.fo->end, &temp), &temp));
 		bytecode_append_llint(&code, inst.value.fo->endfor); 
 	}
+	else if (inst.type == while_t) {
+		bytecode_append_char(&code, 1, '\x0f');
+		bytecode_append_llint(&code, add_bytecode_ast(ast_to_bytecode(*inst.value.wh->condition, &temp), &temp));
+		bytecode_append_llint(&code, inst.value.wh->endwhile); 
+	}
 	else if (inst.type == inst_endfor_t) {
 		bytecode_append_char(&code, 1, '\x02');
 		bytecode_append_llint(&code, inst.value.endfor);

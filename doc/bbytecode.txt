@@ -35,7 +35,7 @@ END_FOR:
     0x02 64bits(FOR idx)
 
 WHILE
-    0x01 64bits(start AST idx) 64bits(END_WHILE idx)
+    0x0f 64bits(start AST idx) 64bits(END_WHILE idx)
 
 END_WHILE:
     0x02 64bits(WHILE idx)
@@ -49,7 +49,7 @@ STOP:
 GOTO:
     0x03 0x03 64bits(label name idx in constants)
 JUMP:
-    0x03 0x04 64bits(instruction idx to jump to)
+    0x03 0x04 64bits(ast idx for condition) 64bits(instruction idx to jump to)
 EXPR:
     0x04 64bits(ast idx)
 
@@ -186,6 +186,11 @@ ast_instructions:
             push 2          |   number of argument
             push println    |
             call_func       |   
+    call_ast : 0xF6
+        call the ast with the corresponding idx stored in a int at the top of the stack
+        ex:
+            push 3    |
+            call_ast  | this will call the ast with index 3
 
 ################ bytecode file format #################
 
