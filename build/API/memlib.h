@@ -26,16 +26,19 @@ typedef struct Module{
 }Module;
 
 typedef struct Funcdef{
-    char**ret_type;// list of types that can be returned by the function
-    int nbr_ret_type;//len of ret_type
-    char**arg_types;
-    char**arg_names;
-    int nbr_of_args;
-    int code_len;
-    char is_builtin;
+    //for builtin
     struct Object (*func_p)(struct Object*,int);//pointer to the builtin function
-    struct Instruction*code;
+    //common
     char*description;//can be shown with help()
+    char is_builtin;
+    char*name;
+    //for sulfuric function
+    char** args;
+    int args_len;
+    char args_mod;  // 'o' = only args_len,  '+' = args_len or more
+    struct Instruction* code;
+    int code_len;
+
 }Funcdef;
 
 typedef struct list{
@@ -118,7 +121,7 @@ extern Sulfur_ctx context;
     #define get_obj_pointer     (*(void *(*)(Object))context.memlib_func[1])
     #define Objs_print          (*(void (*)(Object *, int))context.memlib_func[2])
     #define Obj_print           (*(void (*)(Object))context.memlib_func[3])
-    #define new_blt_func        (*(Funcdef (*)(Object (*)(Object*, int), char *))context.memlib_func[4])
+    #define new_blt_func        (*(Funcdef (*)(Object (*)(Object*, int), char *, char *))context.memlib_func[4])
     #define add_func            (*(memory *(*)(memory *, char *,Object (*func)(Object*, int),char *))context.memlib_func[5])
     #define add_object          (*(memory *(*)(memory *, char *, Object))context.memlib_func[6])
     #define add_obj_str         (*(memory *(*)(memory *, char *, char *))context.memlib_func[7])

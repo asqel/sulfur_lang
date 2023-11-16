@@ -79,7 +79,21 @@ void instruction_print(Instruction code){
         printf("PASS");
     }
     if(code.type == inst_funcdef_t){
-        printf("FUNCDEF : %s {\n", code.value.fc->info.name);
+        printf("FUNCDEF : %s (", code.value.fc->info.name);
+        if (code.value.fc->args_mod == '+') {
+            for(int i = 0; i < code.value.fc->args_len - 1; i++) {
+                if (i != 0) printf(" ");
+                printf("%s", code.value.fc->args[i]);
+            }
+            printf(" $%s", code.value.fc->args[code.value.fc->args_len - 1]);
+        }
+        else {
+            for(int i = 0; i < code.value.fc->args_len; i++) {
+                if (i != 0) printf(" ");
+                printf("%s", code.value.fc->args[i]);
+            }
+        }
+        printf("){\n");
         instructions_print(code.value.fc->code, code.value.fc->code_len);
         printf("}");
     }

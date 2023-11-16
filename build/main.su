@@ -1,1 +1,5 @@
-println(3, 8, $list(4, 7, $list(50)))
+def func(a, $b) {
+    return b;
+}
+
+println(func(0, list(3)));

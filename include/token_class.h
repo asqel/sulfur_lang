@@ -135,4 +135,6 @@ int id_acceptable_ptr(char*v);
 
 int Token_count(Token*tok,int type,__value value); 
 
+int token_is(Token t, char *what);
+
 #endif

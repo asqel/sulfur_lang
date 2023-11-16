@@ -54,9 +54,7 @@ typedef struct Funcdef_code{
 
     char** args;
     int args_len;
-
-    char is_builtin;
-    struct Object (*func_p)(struct Object*, int);//pointer to the builtin function
+    char args_mod;  // 'o' = only args_len,  '+' = args_len or more
 
     struct Instruction* code;
     int code_len;

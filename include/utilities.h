@@ -75,5 +75,6 @@ void*get_module_loader(char* filename);
 void* get_standard_module(char* filename);
 #endif
 
+char *uti_strdup(char *src);
 
 #endif

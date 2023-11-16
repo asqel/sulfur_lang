@@ -1,5 +1,6 @@
 #include "../include/interpreter.h"
 #include "../include/instruction.h"
+#include "../include/memlib.h"
 #include <stdlib.h>
 
 #include "../sulfur_libs/blt_libs/std.h"
@@ -402,32 +403,58 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         //TODO maybe one day implement this asqel
         else if(code[p].type==inst_funcdef_t){
-            int n=-1;
-            for(int i=0;i<MEMORY.len;i++){
-                if(!strcmp(MEMORY.keys[i],code[p].value.fc->info.name)){
-                    n=i;
+            int n = -1;
+            for (int i = 0; i < MEMORY.len; i++) {
+                if (!strcmp(code[p].value.fc->info.name, MEMORY.keys[i])) {
+                    n = i;
                     break;
                 }
             }
-            if(n == -1){
+            if (n == -1) {
                 Object f;
                 f.type = Obj_funcid_t;
                 f.val.funcid = malloc(sizeof(Funcdef));
-                f.val.funcid->code = code[p].value.fc->code;
-                f.val.funcid->code_len = code[p].value.fc->code_len;
+                f.val.funcid->name = uti_strdup(code[p].value.fc->info.name);
                 f.val.funcid->is_builtin = 0;
-                f.val.funcid->arg_names = code[p].value.fc->args;
-                f.val.funcid->nbr_of_args = code[p].value.fc->args_len;
-                add_object(&MEMORY, code[p].value.fc->info.name, f);
-                p++;
-            }
-            else{
-                printf("ERROR function has same name as variable or another function\n");
-                exit(1);
-
+                f.val.funcid->description = code[p].value.fc->info.description;
+                f.val.funcid->defs_len = 1;
+                f.val.funcid->defs = malloc(sizeof(sulfur_func));
+                f.val.funcid->defs->args = code[p].value.fc->args;
+                f.val.funcid->defs->args_len = code[p].value.fc->args_len;
+                f.val.funcid->defs->args_mod = code[p].value.fc->args_mod;
+                f.val.funcid->defs->code = code[p].value.fc->code;
+                f.val.funcid->defs->code_len = code[p].value.fc->code_len;
+                add_object(&MEMORY, f.val.funcid->name, f);
             }
             p++;
+        
         }
+        //    int n=-1;
+        //    for(int i=0;i<MEMORY.len;i++){
+        //        if(!strcmp(MEMORY.keys[i],code[p].value.fc->info.name)){
+        //            n=i;
+        //            break;
+        //        }
+        //    }
+        //    if(n == -1){
+        //        Object f;
+        //        f.type = Obj_funcid_t;
+        //        f.val.funcid = malloc(sizeof(Funcdef));
+        //        f.val.funcid->code = code[p].value.fc->code;
+        //        f.val.funcid->code_len = code[p].value.fc->code_len;
+        //        f.val.funcid->is_builtin = 0;
+        //        f.val.funcid->arg_names = code[p].value.fc->args;
+        //        f.val.funcid->nbr_of_args = code[p].value.fc->args_len;
+        //        add_object(&MEMORY, code[p].value.fc->info.name, f);
+        //        p++;
+        //    }
+        //    else{
+        //        printf("ERROR function has same name as variable or another function\n");
+        //        exit(1);
+//
+        //    }
+        //    p++;
+        //}
 
         else {
             printf("ERROR in execute unknown instruction type %d\n", code[p].type);

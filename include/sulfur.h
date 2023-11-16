@@ -34,5 +34,6 @@ void add_dyn_lib(void *lib);
 
 void free_dyn_libs();
 
+void set_errno(int is_error, int type, int err_num, int extra);
 
 #endif

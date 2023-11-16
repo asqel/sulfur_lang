@@ -1,4 +1,6 @@
 #include "../include/memlib.h"
+#include "../include/interpreter.h"
+#include "../include/sulfur.h"
 #include "../include/utilities.h"
 #include "../sulfur_libs/blt_libs/std.h"
 #include <string.h>
@@ -136,14 +138,13 @@ void*get_obj_pointer(Object o){
     }
 }
 
-Funcdef new_blt_func(Object (*func)(Object*, int), char *desc){
+Funcdef new_blt_func(Object (*func)(Object*, int), char *desc, char *name){
     Funcdef f;
-    f.arg_names=NULL;
-    f.code=NULL;
     f.description=desc;
     f.func_p=func;
     f.is_builtin=1;
-    f.nbr_of_args=-1;
+    f.name = uti_strdup(name);
+    //other member of f are not looked if is_builtin is 1
     return f;
 }
 
@@ -151,13 +152,12 @@ memory*add_func(memory *MEMORY, char *name,Object (*func)(Object*, int),char *de
     MEMORY->len += 1;
     MEMORY->keys = realloc_c(MEMORY->keys, sizeof(char*) * (MEMORY->len - 1), sizeof(char*) * MEMORY->len);
 
-    MEMORY->keys[MEMORY->len-1] = malloc(sizeof(char) * (1 + strlen(name)));
-    strcpy(MEMORY->keys[MEMORY->len - 1], name);  
+    MEMORY->keys[MEMORY->len-1] = uti_strdup(name);
 
     MEMORY->values = realloc_c(MEMORY->values,sizeof(Object) * (MEMORY->len - 1),sizeof(Object) * MEMORY->len);
     MEMORY->values[MEMORY->len - 1].type = Obj_funcid_t;
     MEMORY->values[MEMORY->len - 1].val.funcid = malloc(sizeof(Funcdef));
-    *MEMORY->values[MEMORY->len - 1].val.funcid = new_blt_func(func,desc);
+    *MEMORY->values[MEMORY->len - 1].val.funcid = new_blt_func(func, desc, name);
     add_count(MEMORY->values[MEMORY->len - 1].val.funcid, Obj_funcid_t);
     return MEMORY;
 }
@@ -360,8 +360,15 @@ void remove_count(void* address, int type){
                 }
                 else if(type == Obj_funcid_t){
                     Funcdef* f = ((Funcdef*)address);
+                    if (f->name)
+                        free(f->name);
                     if(f->is_builtin){
                         //free(f->description);
+                        free(f);
+                    }
+                    else {
+                        if (f->defs)
+                            free(f->defs);
                         free(f);
                     }
                 }
@@ -457,4 +464,37 @@ void call_to_call_and_free() {
         (*TO_CALL[i])();
     }
     free(TO_CALL);
+}
+
+
+void add_funcdef_to_func(Funcdef *obj, Funcdef_code def) {
+    if (obj->is_builtin) {
+        set_errno(1,Obj_funcid_t, 2, 0);
+        return ;
+    }
+    set_errno(0,0,0,0);
+    if (strcmp(obj->name, def.info.name)) {
+        set_errno(1, Obj_funcid_t, 1, 0);
+        return ;
+    }
+    for(int i = 0; i < obj->defs_len; i++) {
+        if (obj->defs[i].args_len == def.args_len && obj->defs[i].args_mod == def.args_mod) {
+            obj->defs[i].args = def.args;
+            obj->defs[i].args_len = def.args_len;
+            obj->defs[i].args_mod = def.args_mod;
+            obj->defs[i].code = def.code;
+            obj->defs[i].code_len = def.code_len;
+            set_errno(0, Obj_funcid_t, 0, 0);
+            return ;
+        }
+    }
+    obj->defs_len++;
+    obj->defs = realloc(obj->defs, sizeof(sulfur_func) * (obj->defs_len));
+    obj->defs[obj->defs_len - 1].args = def.args;
+    obj->defs[obj->defs_len - 1].args_len = def.args_len;
+    obj->defs[obj->defs_len - 1].args_mod =  def.args_mod;
+    obj->defs[obj->defs_len - 1].code = def.code;
+    obj->defs[obj->defs_len - 1].code_len = def.code_len;
+    set_errno(0,Obj_funcid_t, 0, 1);
+    return ;
 }
