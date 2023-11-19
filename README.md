@@ -4,6 +4,8 @@
 
 Sulfur is a programming language written in C that supports Windows, Linux, and partially macOS. This documentation provides an overview of the language's features, syntax, and built-in functions.
 
+you can use the [sulfur_code](https://marketplace.visualstudio.com/items?itemName=asqel.sulfur-color) vscode extension to have coloration and some autocompletion
+
 ## Getting started
 you need to have gcc installed in order To compile and run the interpreter:
 - On Windows : `make win_all`
