@@ -19,12 +19,15 @@ stack STACK;
 
 void init_stack(){
     STACK.len = 0;
-    STACK.MEM = malloc(sizeof(memory));
+    STACK.MEM = calloc(1, sizeof(memory));
 }
 
 void create_stack(){
     STACK.len++;
     STACK.MEM = realloc(STACK.MEM, sizeof(memory) * STACK.len);
+    STACK.MEM[STACK.len - 1].keys = NULL;
+    STACK.MEM[STACK.len - 1].len = 0;
+    STACK.MEM[STACK.len - 1].values = NULL;
 }
 
 
