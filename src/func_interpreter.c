@@ -46,7 +46,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             add_object(&STACK.MEM[STACK.len - 1], func.args[i],  Obj_cpy(argv[i]));
         }
     }
-    else {
+    else if (func.args_mod == '+') {
         for (int i = 0; i < func.args_len - 1; i++) {
             add_object(&STACK.MEM[STACK.len - 1], func.args[i],  Obj_cpy(argv[i]));
         }
