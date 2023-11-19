@@ -1,2 +1,5 @@
-println("
-":-1)
+def f() {
+	return print
+}
+
+print(f())

@@ -20,7 +20,7 @@ Object func_eval_Ast(Ast *x){
         Object func = get_Obj_mem(STACK.MEM[STACK.len - 1], x->root.fun->name);
 
         if(func.type == Obj_not_found_t){
-            Object func = get_Obj_mem(MEMORY, x->root.fun->name);
+            func = get_Obj_mem(MEMORY, x->root.fun->name);
             if(func.type == Obj_not_found_t){
                 printf("ERROR function '%s' not found\n",x->root.fun->name);
                 exit(1);
@@ -70,7 +70,7 @@ Object func_eval_Ast(Ast *x){
         if(x->type == Ast_varcall_t){
             Object val = get_Obj_mem(STACK.MEM[STACK.len - 1], x->root.varcall);
             if(val.type == Obj_not_found_t){
-                Object val = get_Obj_mem(MEMORY, x->root.varcall);
+                val = get_Obj_mem(MEMORY, x->root.varcall);
                 if(val.type == Obj_not_found_t){
                     printf("ERROR var '%s' not found\n", x->root.varcall);
                     exit(1);
