@@ -3,7 +3,7 @@
 
 #include "memlib.h"
 
-#define VERSION "2.8"
+#define VERSION "2.9"
 #define SUB_VERSION "0000"
 #define COMPLETE_VERSION (VERSION "." SUB_VERSION)
 
