@@ -202,13 +202,14 @@ void add_count(void* address, int type);
 
 void remove_count(void* address, int type);
 
+
 typedef struct Sulfur_ctx{
     void *(**memlib_func)();
     void *(**operations)();
     Object (**std_func)(Object *, int);
     void *vars;
     memory *MEM;
-    int *errno; // len = 4 [is_error,type,error_number,extra]
+    int *_errno; // len = 4 [is_error,type,error_number,extra]
     char **argv; // args passed after filename can be NULL
     int argc;
 

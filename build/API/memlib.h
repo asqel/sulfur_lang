@@ -111,7 +111,7 @@ typedef struct Sulfur_ctx{
     void *(**operations)();
     void *vars;
     memory *MEM;
-    int *errno; // len = 4 [is_error,type,error_number,extra]
+    int *_errno; // len = 4 [is_error,type,error_number,extra]
 } Sulfur_ctx;
 
 extern Sulfur_ctx context;

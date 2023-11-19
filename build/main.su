@@ -1,5 +1,2 @@
-def func(a, $b) {
-    return b;
-}
-
-println(func(0, list(3)));
+println("
+":-1)

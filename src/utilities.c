@@ -328,7 +328,7 @@ void *get_module_loader(char* filename) {
             loader_function = GetProcAddress(handle, "__loader");
         }
         else{
-            old_filename = filename;
+            char *old_filename = filename;
             char *filename=str_cat_new(filename,".dll");
             free(old_filename);
             HINSTANCE handle = LoadLibrary(filename);

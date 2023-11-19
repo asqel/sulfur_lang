@@ -47,8 +47,8 @@ void free_dyn_libs() {
 
 
 void set_errno(int is_error, int type, int err_num, int extra) {
-    CTX.errno[0] = is_error;
-    CTX.errno[0] = type;
-    CTX.errno[0] = err_num;  
-    CTX.errno[0] = extra;
+    CTX._errno[0] = is_error;
+    CTX._errno[0] = type;
+    CTX._errno[0] = err_num;  
+    CTX._errno[0] = extra;
 }
