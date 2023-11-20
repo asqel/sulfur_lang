@@ -1,0 +1,82 @@
+def printf(_format, $args) {
+    _formats = list("")
+    len = _format:-1
+    i = 0
+    while (i < len) {
+        if (_format:i != '%') {
+            _formats:(_formats:-1 - 1) += _format:i
+            i += 1
+            proceed
+        }
+        if (i + 1 < len) {
+            letter = _format:(i+1)
+            if (letter == 'd') {
+                i += 2
+                _formats.append(list(nil, 'ount'))
+                _formats.append("")
+
+            }
+            elif (letter == 's') {
+                i += 2
+                _formats.append(list(nil, 'string'))
+                _formats.append("")
+            }
+            elif (letter == 'f') {
+                i += 2
+                _formats.append(list(nil, 'floap'))
+                _formats.append("")
+            }
+            elif (letter == 'c') {
+                i += 2
+                _formats.append(list(nil, "char"))
+                _formats.append("")
+            }
+            elif (letter = '%') {
+                i += 2
+                _formats:(_formats:-1 - 1) += '%'
+            }
+            else {
+                println("ERROR wrong format")
+                return ;
+            }
+            proceed
+        }
+        else {
+            _formats:(_formats:-1 - 1) += "%"
+            i +=1 
+        }
+    }
+    args_idx = 0
+    for(i from 0 to _formats:-1) {
+        if (type(_formats:i) != "string") {
+            if (args_idx < args:-1) {
+                if (type(args:args_idx) == _formats:i:1) {
+                    _formats:i:0 = args:args_idx
+                    args_idx += 1
+                }
+                elif (_formats:i:1 == "char"){
+                    if (type(args:args_idx) == "string") {
+                        _formats:i:0 = args:args_idx:0
+                        args_idx += 1
+                    }
+                    elif (type(args:args_idx) == "ount" || type(args:args_idx) == "floap") {
+                        _formats:i:0 = chr(args:args_idx)
+                        args_idx += 1
+                    }
+                }
+            }
+        }
+    }
+    for(i from 0 to _formats:-1) {
+        if (type(_formats:i) == "string") {
+            print(_formats:i)
+        }
+        else {
+            print(_formats:i:0)
+        }
+    }
+}
+
+
+
+printf("bonjour %c",10)

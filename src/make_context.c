@@ -34,6 +34,7 @@ void *(*MEMLIB_FUNC[])() = {
 	(void *(*)()) &add_count,
 	(void *(*)()) &remove_count,
 	(void *(*)()) &add_to_call,
+	(void *(*)()) &add_Object_Module_cpy,
 	(void *(*)()) NULL
 };
 
