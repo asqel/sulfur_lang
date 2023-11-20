@@ -6,6 +6,8 @@ Sulfur is a programming language written in C that supports Windows, Linux, and 
 
 you can use the [sulfur_code](https://marketplace.visualstudio.com/items?itemName=asqel.sulfur-color) vscode extension to have coloration and some autocompletion
 
+for installation see [the installation guide](INSTALL.md)
+
 ## Getting started
 you need to have gcc installed in order To compile and run the interpreter:
 - On Windows : `make win_all`
