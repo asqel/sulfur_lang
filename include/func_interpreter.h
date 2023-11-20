@@ -7,6 +7,6 @@ extern stack STACK;
 
 void init_stack();
 
-Object func_execute(Funcdef* func, Object* argv, int argc, int create_stack);
+Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int add_stack);
 
 #endif

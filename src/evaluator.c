@@ -46,7 +46,7 @@ Object eval_Ast(Ast*x){
         else{
             int args_len = 0;
             Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
-            Object res = func_execute(func.val.funcid, args, args_len, 1);
+            Object res = eval_func(args, args_len, *func.val.funcid);
             Obj_free_array(args, args_len);
             return res;
         }
@@ -379,6 +379,13 @@ Object eval_Ast(Ast*x){
                             return res;
                         }
                     }
+                    else{
+                        int args_len = 0;
+                        Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
+                        Object res = eval_func(args, args_len, *func.val.funcid);
+                        Obj_free_array(args, args_len);
+                        return res;
+                    }
 
                 }
                 else if(x->right->type == Ast_varcall_t){
@@ -417,6 +424,13 @@ Object eval_Ast(Ast*x){
                             Obj_free_val(arg);
                             return res;
                         }
+                    }
+                    else {
+                        int args_len = 0;
+                        Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
+                        Object res = eval_func(args, args_len, *func.val.funcid);
+                        Obj_free_array(args, args_len);
+                        return res;
                     }
 
                 }
@@ -457,6 +471,13 @@ Object eval_Ast(Ast*x){
                             return res;
                         }
                     }
+                    else {
+                        int args_len = 0;
+                        Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
+                        Object res = eval_func(args, args_len, *func.val.funcid);
+                        Obj_free_array(args, args_len);
+                        return res;
+                    }
 
                 }
                 else if(x->right->type == Ast_varcall_t){
@@ -495,6 +516,13 @@ Object eval_Ast(Ast*x){
                             return res;
                         }
                     }
+                    else {
+                        int args_len = 0;
+                        Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
+                        Object res = eval_func(args, args_len, *func.val.funcid);
+                        Obj_free_array(args, args_len);
+                        return res;
+                    }
 
                 }
                 else if(x->right->type == Ast_varcall_t){
@@ -532,6 +560,13 @@ Object eval_Ast(Ast*x){
                             Obj_free_val(arg);
                             return res;
                         }
+                    }
+                    else {
+                        int args_len = 0;
+                        Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
+                        Object res = eval_func(args, args_len, *func.val.funcid);
+                        Obj_free_array(args, args_len);
+                        return res;
                     }
 
                 }
@@ -675,4 +710,32 @@ Object *eval_args(Ast *args, int len, int *ret_len) {
         }
     }
     return res;
+}
+
+
+Object eval_func(Object *argv, int argc, Funcdef func){
+    if (func.is_builtin)
+        return (*func.func_p)(argv, argc);
+    //search perfect match
+    int n = -1;
+    for (int i = 0; i < func.defs_len; i++) {
+        if (func.defs[i].args_mod ==  'o' && argc == func.defs[i].args_len) {
+            n = i;
+            break;
+        }
+    }
+    if (n == -1) {
+        //search one that match with packed args
+        for (int i = 0; i < func.defs[i].args_len; i++) {
+            if (func.defs[i].args_mod == '+' && argc >= func.defs[i].args_len - 1) {
+                n = i;
+                break;
+            }
+        }
+        if (n == -1) {
+            printf("ERROR cannot call function %s with %d arguments\n", func.name, argc);
+            exit(1);
+        }
+    }
+    return func_execute(argv, argc, func.defs[n], func.name, 1);
 }

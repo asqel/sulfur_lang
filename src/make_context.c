@@ -86,8 +86,8 @@ void* (*OPERATIONS[])() = {
 };
 
 void make_context(){
-	CTX.errno = CTX_ERRNO;
-	CTX.errno[0] = 0;
+	CTX._errno = CTX_ERRNO;
+	CTX._errno[0] = 0;
 	CTX.MEM = &MEMORY;
 	CTX.memlib_func = MEMLIB_FUNC;
 	CTX.std_func = STD_FUNC;
