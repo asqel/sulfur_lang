@@ -9,7 +9,7 @@
   - we put it here so if wwe want to use the vscode extension for sulfur it will find it here
   - now if you want to run a program jutse do in a terminal $HOME/sulfur/sulfur path-to-your-file
 
-## for non pre built (linux and windows (here macOS try using linux)
+## for non pre built (linux and windows (here macOS try using linux))
   - you will need a few things :
     - the gcc compiler
     - the ability to run a makefile
