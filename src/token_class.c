@@ -249,3 +249,18 @@ int id_acceptable_ptr(char*v){
     }
     return 1;
 }
+
+
+
+int token_is(Token t, char *what) {
+    if (t.type == keyword)
+        if (!strcmp(what, KEYWORDS[*t.value.t]))
+            return 1;
+    if (t.type == syntax)
+        if (!strcmp(SYNTAX[*t.value.t], what))
+            return 1;
+    if (t.type == op)
+        if (!strcmp(OPS[*t.value.t], what))
+            return 1;
+    return 0;
+}

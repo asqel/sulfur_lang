@@ -816,14 +816,14 @@ memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "__arg3", nil_Obj);
     add_object(&MEMORY, "__ret_val", nil_Obj);
     add_object(&MEMORY, "__ret_sec", nil_Obj);
-    add_func(&MEMORY, "print", &print_prompt,"");
-    add_func(&MEMORY, "println", &println_prompt,"");
-    add_func(&MEMORY, "bool", &std_bool,"");
-    add_func(&MEMORY, "input", &read_prompt,"");
-    add_func(&MEMORY, "ount", &std_ount,"");
-    add_func(&MEMORY, "floap", &std_floap,"");
-    add_func(&MEMORY, "time", &current_timestamp,"");
-    add_func(&MEMORY, "sleep", &sleep,"");
+    add_func(&MEMORY, "print", &print_prompt,"print to standard output each argument");
+    add_func(&MEMORY, "println", &println_prompt,"print to standard output each argument and add a new line");
+    add_func(&MEMORY, "bool", &std_bool,"convert to a boolean value");
+    add_func(&MEMORY, "input", &read_prompt,"get the input as string from the stdin");
+    add_func(&MEMORY, "ount", &std_ount,"convert to a ount value");
+    add_func(&MEMORY, "floap", &std_floap,"convert to a floap value");
+    add_func(&MEMORY, "time", &current_timestamp,"get the current timestamp in millisecond as ount");
+    add_func(&MEMORY, "sleep", &sleep,"sleep for x miliseconds");
     /*depracated*/
     add_func(&MEMORY, "get", &get,"");
     /*depracated*/
@@ -853,8 +853,8 @@ memory init_std(memory MEMORY,char*path){
     srand(current_timestamp(NULL,0).val.i);
     add_func(&MEMORY, "rand",&std_rand,"");
 
-    add_func(&MEMORY, "__print_memory__", &std_print_memory, "");
-    add_func(&MEMORY, "__set_flush__", &std_set_flush, "");
+    add_func(&MEMORY, "__print_memory__", &std_print_memory, "print the memory of the programe");
+    add_func(&MEMORY, "__set_flush__", &std_set_flush, "tell the interpreter to fflush(stdout) or not at each print");
     add_obj_str(&MEMORY,"__version__",VERSION);
     add_obj_str(&MEMORY,"__sub_version__",SUB_VERSION);
     add_obj_str(&MEMORY,"__complete_version__",COMPLETE_VERSION);

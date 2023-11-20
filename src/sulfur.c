@@ -44,3 +44,10 @@ void free_dyn_libs() {
         free(DYN_LIBS);
     }
 }
+
+void set_errno(int is_error, int type, int err_num, int extra) {
+    CTX._errno[0] = is_error;
+    CTX._errno[0] = type;
+    CTX._errno[0] = err_num;  
+    CTX._errno[0] = extra;
+}

@@ -9,6 +9,7 @@
 #include "../include/make_for.h"
 #include "../include/make_return.h"
 #include "../include/make_while.h"
+#include "../include/make_funcdef.h"
 
 //take a math expression and see if it ok
 //return nothing 
@@ -814,6 +815,12 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
         inst = make_while(tok, start, end, inst, n_inst, p, len);
         if(*n_inst != old_n_inst)
             return inst;
+        //make funcdef
+        line = tok[*p].line;
+        inst = make_funcdef(tok, start, end, inst, n_inst, p, len);
+        if(*n_inst != old_n_inst)
+            return inst;
+
         if(tok[*p].type == identifier && *p + 1 < len) {
             if(tok[*p + 1].type == syntax && *tok[*p + 1].value.t == colon && *p + 2 < len){
                 if(tok[*p + 2].type == syntax && *tok[*p + 2].value.t == colon){

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <string.h>
 #include "../include/sulfur.h"
 #include <math.h>
 #include "../include/utilities.h"
@@ -113,7 +112,7 @@ char* uti_dirname(char*v){
         }
     }
     if(n==-1){
-        return strdup(" ");
+        return uti_strdup(" ");
     }
     char old = v[n];
     v[n] = '\0';
@@ -309,7 +308,7 @@ void *get_module_loader(char* filename) {
     #endif
 
     #ifndef ONE_FILE
-    filename = strdup(filename);
+    filename = uti_strdup(filename);
     if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
         char * interpreter =abs_path();
         char* dir = uti_dirname(interpreter);
@@ -329,7 +328,7 @@ void *get_module_loader(char* filename) {
             loader_function = GetProcAddress(handle, "__loader");
         }
         else{
-            old_filename = filename;
+            char *old_filename = filename;
             char *filename=str_cat_new(filename,".dll");
             free(old_filename);
             HINSTANCE handle = LoadLibrary(filename);
@@ -397,3 +396,10 @@ void* get_standard_module(char* filename){
     return NULL;
 }
 #endif
+
+char *uti_strdup(char *src) {
+    int len = strlen(src);
+    char *res = malloc(sizeof(char) * (1 + len));
+    strcpy(res, src);
+    return res;
+}

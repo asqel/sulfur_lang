@@ -3,7 +3,7 @@
 
 #include "memlib.h"
 
-#define VERSION "2.8"
+#define VERSION "2.9"
 #define SUB_VERSION "0000"
 #define COMPLETE_VERSION (VERSION "." SUB_VERSION)
 
@@ -34,5 +34,6 @@ void add_dyn_lib(void *lib);
 
 void free_dyn_libs();
 
+void set_errno(int is_error, int type, int err_num, int extra);
 
 #endif
