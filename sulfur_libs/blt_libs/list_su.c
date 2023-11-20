@@ -1,6 +1,7 @@
 #include "../../include/memlib.h"
 #include "list_su.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "std.h"
 
 Module list_module;

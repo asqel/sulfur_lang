@@ -8,6 +8,7 @@ linux:
 	mkdir -p build
 	mkdir -p build/libs
 	gcc main.c src/*.c sulfur_libs/blt_libs/*.c src/bytecode_maker/*.c -o build/sulfur -lm -fno-builtin-printf -ldl
+
 	make stdlibs_linux
 
 profan:

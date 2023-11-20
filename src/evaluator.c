@@ -274,11 +274,11 @@ Object eval_Ast(Ast*x){
                 for(int i = 0; i<MEMORY.len; i++){
                     if(!strcmp(x->left->root.varcall, MEMORY.keys[i])){
                         Object old = MEMORY.values[i];
-                        MEMORY.values[i] = right;
+                        MEMORY.values[i] = Obj_cpy(right);
                         return old;
                     }
                 }
-                add_object(&MEMORY, x->left->root.varcall, right);
+                add_object(&MEMORY, x->left->root.varcall, Obj_cpy(right));
                 return nil_Obj;
             }
             if(x->left->type != Ast_dot_t && x->left->type != Ast_colon_t){
@@ -544,7 +544,7 @@ Object eval_Ast(Ast*x){
                     if(func.val.funcid->is_builtin){
                         if(x->right->root.fun->nbr_arg){
                             int args_len = 0;
-                            Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
+                            Object *args = eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                             args_len++;
                             args = realloc(args, sizeof(Object) * args_len);
                             for(int i = 1;  i < args_len; i++)
