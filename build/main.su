@@ -1,2 +1,10 @@
-println("
-":-1)
+def str_cat($values) {
+	return {
+		res = ""
+		for(i from 0 to values:-1)
+			res += values:i;
+		return res
+	}
+}
+
+println(str_cat("salut","bonjourt"))
