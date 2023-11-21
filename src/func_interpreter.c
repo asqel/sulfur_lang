@@ -19,12 +19,15 @@ stack STACK;
 
 void init_stack(){
     STACK.len = 0;
-    STACK.MEM = malloc(sizeof(memory));
+    STACK.MEM = calloc(1, sizeof(memory));
 }
 
 void create_stack(){
     STACK.len++;
     STACK.MEM = realloc(STACK.MEM, sizeof(memory) * STACK.len);
+    STACK.MEM[STACK.len - 1].keys = NULL;
+    STACK.MEM[STACK.len - 1].len = 0;
+    STACK.MEM[STACK.len - 1].values = NULL;
 }
 
 
@@ -43,7 +46,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             add_object(&STACK.MEM[STACK.len - 1], func.args[i],  Obj_cpy(argv[i]));
         }
     }
-    else {
+    else if (func.args_mod == '+') {
         for (int i = 0; i < func.args_len - 1; i++) {
             add_object(&STACK.MEM[STACK.len - 1], func.args[i],  Obj_cpy(argv[i]));
         }
