@@ -437,7 +437,7 @@ Object func_eval_Ast(Ast *x){
                             Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                             args_len++;
                             args = realloc(args, sizeof(Object) * args_len);
-                            for(int i = 1;  i < args_len; i++)
+                            for(int i = args_len - 1;  i > 0; i--)
                                 args[i] = args[i - 1];
                             args[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(args, args_len);
@@ -453,11 +453,11 @@ Object func_eval_Ast(Ast *x){
                     }
                     else {
                         int args_len = 0;
-                        Object *args = eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
+                        Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                         args_len++;
                         args = realloc(args, sizeof(Object) * args_len);
-                        for(int i = 1;  i < args_len; i++)
-                            args[i] = args[i - 1];
+                        for(int i = args_len - 1;  i > 0; i--)
+                                args[i] = args[i - 1];
                         args[0] = Obj_cpy(a);
                         Object res = eval_func(args, args_len, *func.val.funcid);
                         Obj_free_array(args, args_len);
@@ -488,7 +488,7 @@ Object func_eval_Ast(Ast *x){
                             Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                             args_len++;
                             args = realloc(args, sizeof(Object) * args_len);
-                            for(int i = 1;  i < args_len; i++)
+                            for(int i = args_len - 1;  i > 0; i--)
                                 args[i] = args[i - 1];
                             args[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(args, args_len);
@@ -504,11 +504,11 @@ Object func_eval_Ast(Ast *x){
                     }
                     else {
                         int args_len = 0;
-                        Object *args = eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
+                        Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                         args_len++;
                         args = realloc(args, sizeof(Object) * args_len);
-                        for(int i = 1;  i < args_len; i++)
-                            args[i] = args[i - 1];
+                        for(int i = args_len - 1;  i > 0; i--)
+                                args[i] = args[i - 1];
                         args[0] = Obj_cpy(a);
                         Object res = eval_func(args, args_len, *func.val.funcid);
                         Obj_free_array(args, args_len);
@@ -539,7 +539,7 @@ Object func_eval_Ast(Ast *x){
                             Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                             args_len++;
                             args = realloc(args, sizeof(Object) * args_len);
-                            for(int i = 1;  i < args_len; i++)
+                            for(int i = args_len - 1;  i > 0; i--)
                                 args[i] = args[i - 1];
                             args[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(args, args_len);
@@ -554,11 +554,11 @@ Object func_eval_Ast(Ast *x){
                     }
                     else {
                         int args_len = 0;
-                        Object *args = eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
+                        Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                         args_len++;
                         args = realloc(args, sizeof(Object) * args_len);
-                        for(int i = 1;  i < args_len; i++)
-                            args[i] = args[i - 1];
+                        for(int i = args_len - 1;  i > 0; i--)
+                                args[i] = args[i - 1];
                         args[0] = Obj_cpy(a);
                         Object res = eval_func(args, args_len, *func.val.funcid);
                         Obj_free_array(args, args_len);
@@ -588,7 +588,7 @@ Object func_eval_Ast(Ast *x){
                             Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                             args_len++;
                             args = realloc(args, sizeof(Object) * args_len);
-                            for(int i = 1;  i < args_len; i++)
+                            for(int i = args_len - 1;  i > 0; i--)
                                 args[i] = args[i - 1];
                             args[0] = Obj_cpy(a);
                             Object res = (*func.val.funcid->func_p)(args, args_len);
@@ -604,11 +604,11 @@ Object func_eval_Ast(Ast *x){
                     }
                     else {
                         int args_len = 0;
-                        Object *args = eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
+                        Object *args = func_eval_args(x->right->root.fun->args, x->right->root.fun->nbr_arg, &args_len);
                         args_len++;
                         args = realloc(args, sizeof(Object) * args_len);
-                        for(int i = 1;  i < args_len; i++)
-                            args[i] = args[i - 1];
+                        for(int i = args_len - 1;  i > 0; i--)
+                                args[i] = args[i - 1];
                         args[0] = Obj_cpy(a);
                         Object res = eval_func(args, args_len, *func.val.funcid);
                         Obj_free_array(args, args_len);

@@ -20,8 +20,11 @@ int screen;
 Display *display;
 Window window;
 
+Pixmap buffer;
+
 void to_free_graphic() {
     XDestroyWindow(display, window);
+    XFreePixmap(display, buffer);
     XCloseDisplay(display);
 }
 
@@ -36,6 +39,7 @@ Object init_graphic(Object *argv, int *argc)
     window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0,
                                  width, height, 0, 0, WhitePixel(display, screen));
     XSelectInput(display, window, WIN_FLAGS);
+    buffer = XCreatePixmap(display, window, width, height, DefaultDepth(display, 0));
     return nil_Obj;
 }
 
@@ -54,7 +58,9 @@ Object show_window()
 
 Object update_window()
 {
-    XFlush(display);
+    GC gc = XCreateGC(display, window, 0, NULL);
+    XCopyArea(display, buffer, window, gc, 0, 0, width, height, 0, 0);
+    XFreeGC(display, gc);
     return nil_Obj;
 }
 
@@ -64,8 +70,15 @@ Object set_width(Object *argv, int argc)
         return new_ount(-1);
     if(argv[0].type != Obj_ount_t)
         return new_ount(-1);
-    width = argv[0].val.i;
-    XResizeWindow(display, window, width, height);
+    int new_width = argv[0].val.i;
+    Pixmap new_buffer = XCreatePixmap(display, window, new_width, height, DefaultDepth(display, 0));
+    GC gc = XCreateGC(display, buffer, 0, NULL);
+    XCopyArea(display, buffer, new_buffer, gc, 0, 0, new_width, height, 0, 0);
+    XFreeGC(display, gc);
+    XFreePixmap(display, buffer);
+    buffer = new_buffer;
+    width = new_width;
+    XResizeWindow(display, window, new_width, height);
     return nil_Obj;
 }
 
@@ -75,7 +88,14 @@ Object set_height(Object *argv, int argc)
         return new_ount(-1);
     if(argv[0].type != Obj_ount_t)
         return new_ount(-1);
-    height = argv[0].val.i;
+    int new_height = argv[0].val.i;
+    Pixmap new_buffer = XCreatePixmap(display, window, width, new_height, DefaultDepth(display, 0));
+    GC gc = XCreateGC(display, buffer, 0, NULL);
+    XCopyArea(display, buffer, new_buffer, gc, 0, 0, width, height, 0, 0);
+    XFreeGC(display, gc);
+    XFreePixmap(display, buffer);
+    buffer = new_buffer;
+    height = new_height;
     XResizeWindow(display, window, width, height);
     return nil_Obj;
 }
@@ -98,11 +118,13 @@ Object set_pixel(Object *argv, int argc){
     color.blue = argv[4].val.i * 65535 / 255;
     color.flags = DoRed | DoGreen | DoBlue;
 
+    GC gc_buffer = XCreateGC(display, buffer, 0, NULL);
     if (!XAllocColor(display, DefaultColormap(display, screen), &color)) {
+        XFreeGC(display, gc_buffer);
         return new_ount(-1);
     }
-    XSetForeground(display, DefaultGC(display, screen), color.pixel);
-    XDrawPoint(display, window, DefaultGC(display, screen), x, y);
+    XSetForeground(display, gc_buffer, color.pixel);
+    XDrawPoint(display, buffer, gc_buffer, x, y);
 
     return nil_Obj;
 }
@@ -126,12 +148,13 @@ Object fill_window(Object* argv, int argc) {
     color.blue = argv[2].val.i * 65535 / 255;
     color.flags = DoRed | DoGreen | DoBlue;
 
+    GC gc_buffer = XCreateGC(display, buffer, 0, NULL);
     if (!XAllocColor(display, DefaultColormap(display, screen), &color)) {
+        XFreeGC(display, gc_buffer);
         return new_ount(-1);
     }
-
-    XSetForeground(display, DefaultGC(display, screen), color.pixel);
-    XFillRectangle(display, window, DefaultGC(display, screen), 0, 0, width, height);
+    XSetForeground(display, gc_buffer, color.pixel);
+    XFillRectangle(display, buffer, gc_buffer, 0, 0, width, height);
 
     return nil_Obj;
 }
@@ -167,13 +190,36 @@ Object fill_rect(Object* argv, int argc){
     return nil_Obj;
 }
 
+void graphic_handle_window_resize(int new_width, int new_height) {
+    int old_width = width;
+    int old_height = height;
+    width = new_width;
+    height = new_height;
+    GC gc = XCreateGC(display, buffer, 0, NULL);
+    Pixmap new_buffer = XCreatePixmap(display, window, width, height, DefaultDepth(display, 0));
+    XCopyArea(display, buffer, new_buffer, gc, 0, 0, old_width, old_height, 0, 0);
+    XFreeGC(display, gc);
+    XFreePixmap(display, buffer);
+    buffer = new_buffer;
+}
+
+Object graphic_get_height(Object *argv, int argc) {
+    return new_ount(height);
+}
+Object graphic_get_width(Object *argv, int argc) {
+    return new_ount(width);
+}
 
 Object GetWindowEvents(Object * argv, int argc){
     XEvent event;
 
+    XWindowAttributes windowAttributes;
+    XGetWindowAttributes(display, window, &windowAttributes);
+
+    if (windowAttributes.width != width || windowAttributes.height != height)
+        graphic_handle_window_resize(windowAttributes.width, windowAttributes.height);
     while (XPending(display)) {
         XNextEvent(display, &event);
-
         /* Gestion des événements */
         switch (event.type) {
             case Expose:

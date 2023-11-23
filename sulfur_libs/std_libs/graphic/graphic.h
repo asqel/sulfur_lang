@@ -37,6 +37,9 @@ Object fill_rect(Object* argv, int argc);
 Object GetWindowEvents(Object * argv, int argc);
 
 
+Object graphic_get_height(Object *argv, int argc);
+Object graphic_get_width(Object *argv, int argc);
+
 #ifndef ONE_FILE
 Object __loader();
 #else
