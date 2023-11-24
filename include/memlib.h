@@ -229,4 +229,6 @@ void add_to_call(void (*func)());
 
 void call_to_call_and_free();
 
+void add_Object_Module_cpy(Object mod, char*name,Object x);
+
 #endif

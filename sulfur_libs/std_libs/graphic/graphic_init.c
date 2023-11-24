@@ -26,6 +26,8 @@ Object __loader(Sulfur_ctx ctx){
     add_func_Module(mod, "set_height", &set_height, "");
     add_func_Module(mod, "fill_window", &fill_window, "");
     add_func_Module(mod,  "update", &GetWindowEvents, "");
+    add_func_Module(mod,  "get_height", &graphic_get_height, "");
+    add_func_Module(mod,  "get_width", &graphic_get_width, "");
  
     return mod;
 

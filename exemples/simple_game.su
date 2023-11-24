@@ -5,15 +5,18 @@ clear = lilypad.clear;
 
 l = list();
 for(i from 0 to 10){
-    for(k from 0 to 10){
-        l.append(list(0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-    }
+    l.append(list(0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 }
 
 l:4:3 = "X"
 
 x = 0;
 y = 0;
+(l:y):x = "A";
+clear();
+for(i from 0 to 10){
+    println(l:i)
+}
 while (1b){
     (l:y):x = 0 
     old_x = x;
@@ -32,16 +35,16 @@ while (1b){
         x += 1;
     }
     if (x < 0){
-        x = 0;
+        x = l:0:-1 - 1;
     }
     if (y < 0){
+        y = l:-1 - 1;
+    }
+    if (y >= l:-1){
         y = 0;
     }
-    if (y >= 10){
-        y = 9;
-    }
-    if (x >= 10){
-        x = 9;
+    if (x >= l:0:-1){
+        x = 0;
     }
     if((l:y):x == "X"){
         x = old_x

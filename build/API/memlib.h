@@ -141,6 +141,7 @@ extern Sulfur_ctx context;
     #define add_count           (*(void (*)(void *, int))context.memlib_func[21])
     #define remove_count        (*(void (*)(void *, int))context.memlib_func[22])
     #define add_to_call         (*(void (*)(void (*)()))context.memlib_func[23])
+    #define add_Object_Module_cpy (*(void (*)(Object, char*, Object))context.memlib_func[24]);
 
 #define SULFUR_OPERATIONS 
     #define OP_ADD        (*(Object (*)(Object, Object)) context.operations[0])
