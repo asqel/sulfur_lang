@@ -8,6 +8,7 @@ linux:
 	mkdir -p build
 	mkdir -p build/libs
 	gcc main.c src/*.c sulfur_libs/blt_libs/*.c src/bytecode_maker/*.c -o build/sulfur -lm -fno-builtin-printf -ldl
+
 	make stdlibs_linux
 
 profan:
@@ -17,18 +18,18 @@ run:
 	build/sulfur
 
 stdlibs_win:
-	gcc -shared sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.dll -lm -fno-builtin-printf
-	gcc -shared sulfur_libs/std_libs/graphic/win_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c build/API/memlib.c -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
-	gcc -shared sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.dll -lm -fno-builtin-printf
-	gcc -shared sulfur_libs/std_libs/poppy.c build/API/memlib.c -o build/libs/poppy.dll -lm -fno-builtin-printf 
-	gcc -shared sulfur_libs/std_libs/why.c build/API/memlib.c -o build/libs/why.dll -lm -fno-builtin-printf 
+	gcc -shared sulfur_libs/std_libs/sulfur_math.c  -o build/libs/math.dll -lm -fno-builtin-printf
+	gcc -shared sulfur_libs/std_libs/graphic/win_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c  -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
+	gcc -shared sulfur_libs/std_libs/lilypad.c  -o build/libs/lilypad.dll -lm -fno-builtin-printf
+	gcc -shared sulfur_libs/std_libs/poppy.c  -o build/libs/poppy.dll -lm -fno-builtin-printf 
+	gcc -shared sulfur_libs/std_libs/why.c  -o build/libs/why.dll -lm -fno-builtin-printf 
 
 stdlibs_linux:
-	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c build/API/memlib.c -o build/libs/math.so -lm -fno-builtin-printf
-	gcc -shared -fPIC sulfur_libs/std_libs/graphic/linux_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c build/API/memlib.c -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
-	gcc -shared -fPIC sulfur_libs/std_libs/lilypad.c build/API/memlib.c -o build/libs/lilypad.so -lm -fno-builtin-printf
-	gcc -shared -fPIC sulfur_libs/std_libs/poppy.c build/API/memlib.c -o build/libs/poppy.so -lm -fno-builtin-printf 
-	gcc -shared -fPIC sulfur_libs/std_libs/why.c build/API/memlib.c -o build/libs/why.so -lm -fno-builtin-printf 
+	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c  -o build/libs/math.so -lm -fno-builtin-printf
+	gcc -shared -fPIC sulfur_libs/std_libs/graphic/linux_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c  -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
+	gcc -shared -fPIC sulfur_libs/std_libs/lilypad.c  -o build/libs/lilypad.so -lm -fno-builtin-printf
+	gcc -shared -fPIC sulfur_libs/std_libs/poppy.c  -o build/libs/poppy.so -lm -fno-builtin-printf 
+	gcc -shared -fPIC sulfur_libs/std_libs/why.c  -o build/libs/why.so -lm -fno-builtin-printf 
 
 win_all:
 	make win

@@ -46,8 +46,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                 e[i-start-offset].root.obj=malloc(sizeof(Object));
                 e[i-start-offset].type=Ast_object_t;
                 e[i-start-offset].root.obj->type=Obj_string_t;
-                e[i-start-offset].root.obj->val.s=malloc(sizeof(char)*(1+strlen(tok[i].value.s)));
-                strcpy(e[i-start-offset].root.obj->val.s,tok[i].value.s);
+                e[i-start-offset].root.obj->val.s = uti_strdup(tok[i].value.s);
                 break;
             case floap:
                 e[i-start-offset].root.obj=malloc(sizeof(Object));

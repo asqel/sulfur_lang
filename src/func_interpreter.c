@@ -30,6 +30,17 @@ void create_stack(){
     STACK.MEM[STACK.len - 1].values = NULL;
 }
 
+void remove_one_stack() {
+    for (int i = 0; i < STACK.MEM[STACK.len - 1].len; i++) {
+        free(STACK.MEM[STACK.len - 1].keys[i]);
+    }
+    if (STACK.MEM[STACK.len - 1].keys)
+        free(STACK.MEM[STACK.len - 1].keys);
+    Obj_free_array(STACK.MEM[STACK.len - 1].values, STACK.MEM[STACK.len - 1].len);
+    STACK.len--;
+    STACK.MEM = realloc(STACK.MEM, sizeof(memory) * STACK.len);
+}
+
 
 extern void add_loop_count(int index, int *loops_count, int **loops);
 extern void remove_loop_count(int *loops_count, int **loops);
@@ -111,7 +122,11 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
 
         else if(code[p].type == inst_return_t){
             free(loops);
-            return func_eval_Ast(code[p].value.ret);
+            
+            Object res = func_eval_Ast(code[p].value.ret);
+            if (func.args_mod != 'A')
+                remove_one_stack();
+            return res;
         }
 
         else if(code[p].type == inst_expr_t){
@@ -380,6 +395,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
         }
     }
     free(loops);
-    
+    if (func.args_mod != 'A')
+        remove_one_stack();
     return nil_Obj;
 }

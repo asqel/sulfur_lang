@@ -13,7 +13,7 @@ len = code.len()
 
 
 while(p < len){
-    char = code.get(p)
+    char = code:p
     if(char == "+"){
         if(cells_idx >= 0){
             cells_positive:cells_idx = cells_positive:cells_idx + 1
@@ -75,13 +75,13 @@ while(p < len){
             opening_idx = -1
             for(i from p-1 to -1){
                 
-                if(code.get(i) == "]"){
+                if(code:i == "]"){
                     count += 1
                 }
-                if(code.get(i) == "[" && count > 0){
+                if(code:i == "[" && count > 0){
                     count += -1
                 }
-                elif(code.get(i) == "[" && count == 0){
+                elif(code:i == "[" && count == 0){
                     opening_idx = i
                     i = -1
                 }
@@ -102,13 +102,13 @@ while(p < len){
             count = 0
             opening_idx = -1
             for(i from p+1 to len){
-                if(code.get(i) == "["){
+                if(code:i == "["){
                     count += 1
                 }
-                if(code.get(i) == "]" && count > 0){
+                if(code:i == "]" && count > 0){
                     count += -1
                 }
-                elif(code.get(i) == "]" && count == 0){
+                elif(code:i == "]" && count == 0){
                     opening_idx = i
                     i = len
                 }

@@ -211,6 +211,10 @@ void add_Object_Module(Object mod, char*name,Object x){
     add_object(mod.val.module->MEM,name,x);
 }
 
+void add_Object_Module_cpy(Object mod, char*name,Object x){
+    add_object_cpy(mod.val.module->MEM,name,x);
+}
+
 Object new_ount(long long int value){
     Object o;
     o.type = Obj_ount_t;

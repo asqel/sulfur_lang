@@ -1,7 +1,7 @@
 n = ount(rand()*100)
 count = 0
 guess = -1
-println("guess : ")
+print("guess : ")
 while(n != guess && count < 10){
     guess = ount(input())
     if(guess < n){
