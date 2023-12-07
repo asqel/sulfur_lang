@@ -64,6 +64,19 @@ Object update_window()
     return nil_Obj;
 }
 
+void graphic_handle_window_resize(int new_width, int new_height) {
+    int old_width = width;
+    int old_height = height;
+    width = new_width;
+    height = new_height;
+    GC gc = XCreateGC(display, buffer, 0, NULL);
+    Pixmap new_buffer = XCreatePixmap(display, window, width, height, DefaultDepth(display, 0));
+    XCopyArea(display, buffer, new_buffer, gc, 0, 0, old_width, old_height, 0, 0);
+    XFreeGC(display, gc);
+    XFreePixmap(display, buffer);
+    buffer = new_buffer;
+}
+
 Object set_width(Object *argv, int argc)
 {
     if(argc != 1)
@@ -190,18 +203,7 @@ Object fill_rect(Object* argv, int argc){
     return nil_Obj;
 }
 
-void graphic_handle_window_resize(int new_width, int new_height) {
-    int old_width = width;
-    int old_height = height;
-    width = new_width;
-    height = new_height;
-    GC gc = XCreateGC(display, buffer, 0, NULL);
-    Pixmap new_buffer = XCreatePixmap(display, window, width, height, DefaultDepth(display, 0));
-    XCopyArea(display, buffer, new_buffer, gc, 0, 0, old_width, old_height, 0, 0);
-    XFreeGC(display, gc);
-    XFreePixmap(display, buffer);
-    buffer = new_buffer;
-}
+
 
 Object graphic_get_height(Object *argv, int argc) {
     return new_ount(height);
