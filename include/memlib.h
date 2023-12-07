@@ -13,6 +13,7 @@ typedef char    S_boolean_t;
     #define sulfur_int_abs  llabs
     #define sulfur_float_abs fabsl
     #define sulfur_sqrt     sqrtl
+    #define sulfur_pow      pow
 #else
     typedef long int    S_ount_t;
     typedef long int    S_sulfur_int;
@@ -21,6 +22,7 @@ typedef char    S_boolean_t;
     #define sulfur_int_abs      labs
     #define sulfur_float_abs    fabs
     #define sulfur_sqrt     sqrt
+    #define sulfur_pow      powf
 #endif
 
 typedef struct Object Object;
@@ -230,5 +232,7 @@ void add_to_call(void (*func)());
 void call_to_call_and_free();
 
 void add_Object_Module_cpy(Object mod, char*name,Object x);
+
+S_sulfur_int hash_str(char *str);
 
 #endif
