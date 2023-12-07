@@ -114,4 +114,12 @@ Object fill_rect(Object* argv, int argc){
 Object GetWindowEvents(Object * argv, int argc){
     return nil_Obj;
 }
+
+Object graphic_get_width(Object *argv, int argc) {
+    return new_ount(width);
+}
+
+Object graphic_get_height(Object *argv, int argc) {
+    return new_ount(height);
+}
 #endif
