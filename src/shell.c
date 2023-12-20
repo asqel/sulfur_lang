@@ -39,7 +39,8 @@ int does_code_is_good(char *code) {
             }
             if (end == -1)
                 return 0;
-            i = end + 1;
+            i = end;
+            continue;
         }
         if (code[i] == '(') nub++;
         if (code[i] == ')') nub--;
@@ -58,7 +59,8 @@ int does_code_is_good(char *code) {
             }
             if (end == -1)
                 return 0;
-            i = end + 1;
+            i = end;
+            continue;
         }
         if (code[i] == '{') nub++;
         if (code[i] == '}') nub--;
@@ -77,7 +79,8 @@ int does_code_is_good(char *code) {
             }
             if (end == -1)
                 return 0;
-            i = end + 1;
+            i = end;
+            continue;
         }
         if (code[i] == '[') nub++;
         if (code[i] == ']') nub--;
