@@ -19,6 +19,7 @@ int does_code_is_good(char *code) {
 
     int nub = 0;
     int len = strlen(code);
+    int is_in_string = 0;
 
     while (code[len - 1] == ' ' || code[len - 1] == '\n') {
         len--;
@@ -28,13 +29,37 @@ int does_code_is_good(char *code) {
 
     // check if all '(' are closed
     for (int i = 0; i < len; i++) {
+        if (code[i] == '"') {
+            int end = -1;
+            for(int k = i + 1; k < len; k++) {
+                if (code[k] == '"') {
+                    end = k;
+                    break;
+                }
+            }
+            if (end == -1)
+                return 0;
+            i = end + 1;
+        }
         if (code[i] == '(') nub++;
         if (code[i] == ')') nub--;
-    }
+    }  
     if (nub != 0) return 0;
 
     // check if all '{' are closed
     for (int i = 0; i < len; i++) {
+        if (code[i] == '"') {
+            int end = -1;
+            for(int k = i + 1; k < len; k++) {
+                if (code[k] == '"') {
+                    end = k;
+                    break;
+                }
+            }
+            if (end == -1)
+                return 0;
+            i = end + 1;
+        }
         if (code[i] == '{') nub++;
         if (code[i] == '}') nub--;
     }
@@ -42,6 +67,18 @@ int does_code_is_good(char *code) {
 
     // check if all '[' are closed
     for (int i = 0; i < len; i++) {
+        if (code[i] == '"') {
+            int end = -1;
+            for(int k = i + 1; k < len; k++) {
+                if (code[k] == '"') {
+                    end = k;
+                    break;
+                }
+            }
+            if (end == -1)
+                return 0;
+            i = end + 1;
+        }
         if (code[i] == '[') nub++;
         if (code[i] == ']') nub--;
     }
