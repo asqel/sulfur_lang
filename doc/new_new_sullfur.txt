@@ -1,0 +1,20 @@
+VARS: array of objects
+
+BLT_END : int
+
+²
+builtin vars starts at 0 and ends at BLT_END - 1
+user variable starts at BLT_END
+
+when an instruction push_var (val) has the most  left bit of val set to 1
+the interpreter will replace the 1 by a 0 and add BLT_END for the offset
+it is only at runtime so the file will not be modified
+
+
+PARSER OF SUFRAMCE:
+	INST : push 'var'
+	if var correspond to a builtin name of var it will be its index
+	else it will choose the first index that it find and set the left bit to 1
+
+	this will also be done on push_col and push_dot
+	on them BLT_END can be equal to 0 or be different than the global BLT_END

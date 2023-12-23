@@ -7,6 +7,7 @@
 #include "../include/token_class.h"
 #include "../include/utilities.h"
 #include "../include/lexer.h"
+#include "../include/memlib.h"
 
 Token *lexe(char *input) {
     char *text = preprocess(input);
@@ -163,11 +164,11 @@ Token *lexe(char *input) {
             }
 
             for (int i = dotidx - 1; i >= 0; i--) {
-                v += pow(10, dotidx-i-1) * (s[i]-'0');
+                v += sulfur_pow(10, dotidx-i-1) * (s[i]-'0');
             }
 
             for (int i = dotidx + 1; i < len; i++) {
-                v += pow(10, dotidx-i)* (s[i]-'0');
+                v += sulfur_pow(10, dotidx-i)* (s[i]-'0');
             }
 
             *toks[n_tok-1].value.f = v;

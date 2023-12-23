@@ -9,7 +9,7 @@
 #include "include/interpreter.h"
 #include "include/func_interpreter.h"
 #include "include/make_context.h"
-#include "include/bytecode_maker/bytecode_converter.h"
+#include "include/bytecode/bytecode.h"
 
 #include "sulfur_libs/blt_libs/std.h"
 
@@ -78,18 +78,18 @@ int execute_file(sulfur_args_t *args) {
     make_context();
 
     //make bytecode
-    if (args->make_bytecode) {
-        int len = strlen(args->filepath);
-        char *new_path = malloc(len + 3);
-        strcpy(new_path, args->filepath);
-        strcat(new_path, "bc");
-        FILE *f = fopen(new_path,"w");
-        Bytecode_t b = make_bytecode(code, instruction_len);
-        fwrite(b.bytes, 1, b.len, f);
-        fclose(f);
-        free_bytecode(b);
-        free(new_path);
-    }
+    //if (args->make_bytecode) {
+    //    int len = strlen(args->filepath);
+    //    char *new_path = malloc(len + 3);
+    //    strcpy(new_path, args->filepath);
+    //    strcat(new_path, "bc");
+    //    FILE *f = fopen(new_path,"w");
+    //    Bytecode_t b = make_bytecode(code, instruction_len);
+    //    fwrite(b.bytes, 1, b.len, f);
+    //    fclose(f);
+    //    free_bytecode(b);
+    //    free(new_path);
+    //}
 
     execute(code, args->filepath, instruction_len);
     call_to_call_and_free();
