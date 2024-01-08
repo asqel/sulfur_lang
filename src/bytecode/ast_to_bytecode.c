@@ -1,20 +1,18 @@
 #include "../../include/Ast.h"
 #include "../../include/bytecode/bytecode.h"
 #include "../../include/bytecode/op_codes.h"
+#include "../../include/bytecode/constants.h"
 #include <stdint.h>
 
-Bytecode_t *ast_to_bytecode(Ast x, Bytecode_t *code) {
+int bc_get_const_addr_str(char * str);
+int bc_get_const_addr(Object *x);
+
+Bytecode_t *ast_to_bytecode(Bytecode_t *code, Ast x) {
 	if (x.type == Ast_varcall_t) {
-		if (is_varname_blt(x.root.varcall)) {
-			uint32_t var_idx = bc_get_blt_var_idx(x.root.varcall);
-			bytecode_append_char(code, 1, OPC_PUSH_VAR);
-			bytecode_append_llint(code, var_idx);
-			return code;
-		}
-		uint32_t var_idx = bc_get_var_idx(x.root.varcall);
-		var_idx = var_idx | 2<<31;
+		bytecode_append_char(code, 1, OPC_PUSH);
+		bytecode_append_llint(code, bc_get_const_addr_str(x.root.varcall));
 		bytecode_append_char(code, 1, OPC_PUSH_VAR);
-		bytecode_append_llint(code, var_idx);
+		bytecode_append_llint(code, hash_str(x.root.varcall));
 		return code;
 	}
 	if (x.type == Ast_object_t) {
@@ -35,68 +33,69 @@ Bytecode_t *ast_to_bytecode(Ast x, Bytecode_t *code) {
 		return code;
 	}
 	if (x.type  == Ast_funccall_t) {
-		/*
-			...
-			push arg3
-			push arg2
-			push arg1
-			push nbr_arg
-			push func    // same as pushing a variable
-			CALL_FUNC
-		*/
-		for (int i = x.root.fun->nbr_arg; i >= 0; i++) {
-			ast_to_bytecode(x.root.fun->args[i], code);
-			bytecode_append_char(code, 1, OPC_PUSH_I);
-		}
-		bytecode_append_llint(code, x.root.fun->nbr_arg);
-		//push the object containing the function
-		{
-			if (is_varname_blt(x.root.fun->name)) {
-				uint32_t var_idx = bc_get_blt_var_idx(x.root.fun->name);
-				bytecode_append_char(code, 1, OPC_PUSH_VAR);
-				bytecode_append_llint(code, var_idx);
-				return code;
-			}
-			uint32_t var_idx = bc_get_var_idx(x.root.fun->name);
-			var_idx = var_idx | 2<<31;
-			bytecode_append_char(code, 1, OPC_PUSH_VAR);
-			bytecode_append_llint(code, var_idx);
-		}
+		//TODO
+		///*
+		//	...
+		//	push arg3
+		//	push arg2
+		//	push arg1
+		//	push nbr_arg
+		//	push func    // same as pushing a variable
+		//	CALL_FUNC
+		//*/
+		//for (int i = x.root.fun->nbr_arg; i >= 0; i++) {
+		//	ast_to_bytecode(x.root.fun->args[i], code);
+		//	bytecode_append_char(code, 1, OPC_PUSH_I);
+		//}
+		//bytecode_append_llint(code, x.root.fun->nbr_arg);
+		////push the object containing the function
+		//{
+		//	if (is_varname_blt(x.root.fun->name)) {
+		//		uint32_t var_idx = bc_get_blt_var_idx(x.root.fun->name);
+		//		bytecode_append_char(code, 1, OPC_PUSH_VAR);
+		//		bytecode_append_llint(code, var_idx);
+		//		return code;
+		//	}
+		//	uint32_t var_idx = bc_get_var_idx(x.root.fun->name);
+		//	var_idx = var_idx | 1<<31;
+		//	bytecode_append_char(code, 1, OPC_PUSH_VAR);
+		//	bytecode_append_llint(code, var_idx);
+		//}
 		return code;
 	}
 	if (x.type == Ast_add_t) {
-		ast_to_bytecode(*x.right, code);
-		ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, OPC_ADD);
 	}
 	if (x.type == Ast_sub_t) {
-		ast_to_bytecode(*x.right, code);
-		if (x.left) ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		if (x.left) ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, x.left ? OPC_SUB :OPC_NEGATE);
 	}
 	if (x.type == Ast_mul_t) {
-		ast_to_bytecode(*x.right, code);
-		ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, OPC_MUL);
 	}
 	if (x.type == Ast_div_t) {
-		ast_to_bytecode(*x.right, code);
-		ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, OPC_DIV);
 	}
 	if (x.type == Ast_fldiv_t) {
-		ast_to_bytecode(*x.right, code);
-		ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, OPC_FLDIV);
 	}
 	if (x.type == Ast_mod_t) {
-		ast_to_bytecode(*x.right, code);
-		ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, OPC_MOD);
 	}
 	if (x.type == Ast_or_t) {
-		ast_to_bytecode(*x.right, code);
-		ast_to_bytecode(*x.left, code);
+		ast_to_bytecode(code, *x.right);
+		ast_to_bytecode(code, *x.left);
 		bytecode_append_char(code, 1, OPC_OR);
 	}
 

@@ -7,7 +7,7 @@ win:
 linux:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c src/bytecode/*.c -o build/sulfur -lm -fno-builtin-printf -ldl
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c src/bytecode/*.c -o build/sulfur -lm -fno-builtin-printf -ldl 
 
 	make stdlibs_linux
 

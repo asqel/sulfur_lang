@@ -118,78 +118,74 @@ the adress of the first instruction is at 0x04 on 8 bytes in little endian
 
 
 */
-#define OPC_END_EXEC 0x00 // used to stop the execution (may not be the last instruction)
-#define OPC_PASS 0x01
-#define OPC_JMP 0x02
-#define OPC_JMP_AT 0x03
-#define OPC_JMP_AT_IF 0x04
-#define OPC_JMP_AT_IFN 0x05
 
-#define OPC_JMP_IF 0x06
-#define OPC_JMP_IFN 0x07
+enum OP_CODES {
+	OPC_END_EXEC, // used to stop the execution (may not be the last instruction)
+	OPC_PASS,
 
+	OPC_JMP,
+	OPC_JMP_AT,
+	OPC_JMP_AT_IF,
+	OPC_JMP_AT_IFN,
+	OPC_JMP_IF,
+	OPC_JMP_IFN,
 
-#define OPC_CALL 0x08
-#define OPC_RET 0x09
-#define OPC_PUSH 0xA
-#define OPC_PUSH_VAR 0x0B
-#define OPC_POP 0x0C
-#define OPC_CALL_FUNC 0x0D
-#define OPC_RET_FUNC 0x0E
-#define OPC_DEF_FUNC 0x0F
-#define OPC_DUP 0x10
-#define OPC_SWAP 0x11
-#define OPC_PUSH_I 0x12 // push $i
-#define OPC_PUSH_1B 0x13
-#define OPC_PUSH_0B 0x14
-#define OPC_PUSH_OUNT 0x15 // 1B + 8B
-#define OPC_PUSH_FLOAP 0x16
+	OPC_CALL,
+	OPC_R_CALL,
+	OPC_RET,
 
-#define OPC_ADD 0xD0
-#define OPC_SUB 0xD1
-#define OPC_MUL 0xD2
-#define OPC_DIV 0xD3
-#define OPC_MOD 0xD4
-#define OPC_FLDIV 0xD5
-#define OPC_AND 0xD6
-#define OPC_OR 0xD7
-#define OPC_POW 0xD8
-#define OPC_LSHIFT 0xD9
-#define OPC_RSHIFT 0xDA
-#define OPC_COLON 0xDB
-#define OPC_DOT 0xDC
+	OPC_PUSH,
+	OPC_PUSH_VAR, // stack : [..., var_name], arg : hash of the string
+	OPC_POP,
+	OPC_EMPTY_STACK,
+	OPC_DUP, 
+	OPC_SWAP,
+	OPC_PUSH_I,
+	OPC_PUSH_1B,
+	OPC_PUSH_0B,
+	OPC_PUSH_OUNT,
+	OPC_PUSH_FLOAP,
+	OPC_PUSH_STR, // arg : string_len, characters (not null terminated)
 
-#define OPC_NOT 0xDD
-#define OPC_NEGATE 0xDE
-#define OPC_NEGATE 0xDF
-#define OPC_EQ 0xE0
-#define OPC_GREATER 0xE1
-#define OPC_LESS 0xE2
-#define OPC_GREAT_EQ 0xE3
-#define OPC_LESS_EQ 0xE4
-#define OPC_NEQ 0xE5
-#define OPC_ASSIGN 0xE6
-#define OPC_PLUS_ASSIGN 0xE7
-#define OPC_MINUS_ASSIGN 0xE8
-#define OPC_R_CALL 0xE9
+	OPC_CALL_FUNC,
+	OPC_RET_FUNC,
+	OPC_DEF_FUNC,
+	
+	OPC_ADD,
+	OPC_SUB,
+	OPC_MUL,
+	OPC_DIV,
+	OPC_MOD ,
+	OPC_FLDIV,
+	OPC_AND,
+	OPC_OR,
+	OPC_POW,
+	OPC_LSHIFT,
+	OPC_RSHIFT,
+	OPC_PUSH_COLON,
+	OPC_PUSH_DOT,
+	OPC_NOT,
+	OPC_NEGATE,
+	OPC_EQ,
+	OPC_GREATER,
+	OPC_LESS,
+	OPC_GREAT_EQ,
+	OPC_LESS_EQ,
+	OPC_NEQ,
 
-#define OPC_END_CODE 0xFF // the last instruction (must be the last byte of the file)
+	OPC_ASSIGN,
+	OPC_PLUS_ASSIGN,
+	OPC_MINUS_ASSIGN,
+	OPC_COL_ASSIGN,
+	OPC_DOT_ASSIGN,
 
-#define SIZE_END 1
-#define SIZE_PASS 1
-#define SIZE_JMP 9
-#define SIZE_JMP_IF 9
-#define SIZE_JMP_IFN 9
-#define SIZE_JMP_AT 1
-#define SIZE_JMP_AT_IF 1
-#define SIZE_JMP_AT_IFN 1
-#define SIZE_CALL 1
-#define SIZE_RET 1
-#define SIZE_PUSH 9
-#define SIZE_PUSH_VAR 1
-#define SIZE_POP 1
-#define SIZE_CALL_FUNC 1
-#define SIZE_RET_FUNC 1
-#define SIZE_DEF_FUNC 10
+	OPC_FOR_JMP, // [..., end, start, 'i', hash('i')] arg : FOR addresse
+
+	OPC_END_CODE = 0xFF
+};
+#define OPC_SIZE_JMP_IF 9 // 1B(opc) + 8B(address)
+#define OPC_SIZE_JMP_IFN 9
+#define OPC_SIZE_JMP 9
+#define OPC_SIZE_FOR_JMP 9
 
 #endif

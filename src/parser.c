@@ -10,6 +10,7 @@
 #include "../include/make_return.h"
 #include "../include/make_while.h"
 #include "../include/make_funcdef.h"
+#include "../include/make_jmp_links.h"
 
 //take a math expression and see if it ok
 //return nothing 
@@ -92,6 +93,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                     Instruction* code=malloc(sizeof(Instruction));
                     int code_len = 0;
                     code = parse(to_parse,-1,-1,code,&code_len);
+    				code = make_jmp_links(code, code_len);
 
                     len-= (token_len(to_parse)+1);
                     e=realloc(e,sizeof(Ast)*len);

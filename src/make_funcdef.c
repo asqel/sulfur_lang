@@ -14,7 +14,7 @@ extern int search_rpar(Token*t,int start);
 Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int* n_inst, int* p, int len){
 	if (token_is(tok[*p], "def")){
 		if (*p + 1 < len && tok[*p + 1].type == identifier) {
-			char *name =  tok[*p + 1].value.s;
+			char *name =  tok[*p + 1].value.s;	
 			if (*p + 2 < len && token_is(tok[*p + 2], "(")) {
 				int par_l = *p + 2;
 				int par_r = search_rpar(tok, *p + 2);
@@ -41,7 +41,7 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 					}
 					int inst_len = 0;
 					Instruction *f_inst = parse(tok, br_l + 1, br_r, NULL, &inst_len);
-					
+    				f_inst = make_jmp_links(f_inst, inst_len);
 					if (par_l + 1 == par_r) {
 						Instruction func;
 						func.line = tok[*p].line;

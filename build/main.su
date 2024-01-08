@@ -1,0 +1,6 @@
+return 
+i = 0
+a::
+i += i
+println(i)
+goto a

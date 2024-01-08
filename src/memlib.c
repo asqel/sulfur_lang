@@ -502,3 +502,14 @@ void add_funcdef_to_func(Funcdef *obj, Funcdef_code def) {
     set_errno(0,Obj_funcid_t, 0, 1);
     return ;
 }
+
+#define HASH_MAX 10000
+
+
+S_sulfur_int hash_str(char *str) {
+    int res = 0;
+    for(int i = 0; str[i] != '\0'; i++) {
+        res += i * 31;
+    }
+    return res % HASH_MAX;
+}

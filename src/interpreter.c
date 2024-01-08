@@ -377,6 +377,10 @@ Object execute(Instruction* code, char* file_name, int len){
                 p++;
             }
         }
+        else if (code[p].type == inst_jmp_t) {
+            p = code[p].value.jmp;
+            continue;
+        }
         else if(code[p].type == inst_proceed_t){
             int index = loops[loops_count - 1];
             if(code[index].type == inst_while_t){

@@ -191,3 +191,12 @@ void constants_to_bytecode(Bytecode_t *code) {
         }
     }
 }
+
+
+int bc_get_const_addr_str(char * str) {
+    return 0;
+}
+
+int bc_get_const_addr(Object *x) {
+    return 0;
+}
