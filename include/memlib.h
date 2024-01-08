@@ -10,6 +10,7 @@ typedef char    S_boolean_t;
     typedef long long int   S_sulfur_int;
     typedef long double     S_floap_t;
     typedef long double     S_float_t;
+    typedef double     S_short_float_t;
     #define sulfur_int_abs  llabs
     #define sulfur_float_abs fabsl
     #define sulfur_sqrt     sqrtl
@@ -19,6 +20,7 @@ typedef char    S_boolean_t;
     typedef long int    S_sulfur_int;
     typedef double      S_floap_t;
     typedef double      S_float_t;
+    typedef float     S_short_float_t;
     #define sulfur_int_abs      labs
     #define sulfur_float_abs    fabs
     #define sulfur_sqrt     sqrt
@@ -102,7 +104,7 @@ typedef union Obj_val{
     S_string_t    s;//string {char,...}
     S_ount_t      i;//ount 
     S_floap_t     f;//floap
-    S_floap_t     c[2];//complex {re,im}
+    S_short_float_t     c[2];//complex {re,im}
     S_boolean_t   b;//boolean 
     class       *cl;//class
     class       *cl_def;

@@ -78,6 +78,7 @@ typedef struct Instruction{
         Elif*el;
         char*section;
         char*goto_sec;
+        int jmp;
     }value;
     int line;
 }Instruction;
@@ -103,6 +104,7 @@ enum instruction_type{
     inst_funcdef_t,
     inst_proceed_t,
     inst_stop_t,
+    inst_jmp_t // jump to index of instruction
 };
 
 //to acces an element

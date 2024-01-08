@@ -78,6 +78,9 @@ void instruction_print(Instruction code){
     if(code.type == inst_pass_t){
         printf("PASS");
     }
+    if (code.type == inst_jmp_t) {
+        printf("JMP : %d", code.value.jmp);
+    }
     if(code.type == inst_funcdef_t){
         printf("FUNCDEF : %s (", code.value.fc->info.name);
         if (code.value.fc->args_mod == '+') {

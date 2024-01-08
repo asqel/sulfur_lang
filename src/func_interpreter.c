@@ -111,6 +111,10 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
         else if(code[p].type == inst_else_t){
             p++;
         }
+        else if (code[p].type == inst_jmp_t) {
+            p = code[p].value.jmp;
+            continue;
+        }
 
         else if(code[p].type == inst_endif){
             p = code[p].value.endifelse + 1;
