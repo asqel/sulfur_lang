@@ -51,4 +51,5 @@ Instruction set:
 
     CALL:
         0x06    : obj_stack : [..., a] store the current address in the call_stack, jump to a and pop it
-    
+    LONG_PASS int:
+        0xFF int(8b<) : do nothing but can store an unsigned int 

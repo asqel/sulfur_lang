@@ -1,0 +1,28 @@
+OPERATORS:
+	operators can be writen as an identifier or with special character equivalent if it has any
+
+	   letter_name		 args						
+
+	push 			|	(INT / FLOAT / BOOL / IDENTIFIER / STRING / LABEL / CONST_CALL)	|	push a value on the stack 
+																						|	if arg is IDENTIFIER push is as string  and do push_var
+																						|	if arg is LABEL push the address of the LABEL 
+																						| 	if arg is CONST_CALL puhs the value of the constant on the stack
+ 	func_def		|	(STRING)  (IDENTIFIER)											|	arg0 : '+' (func with packed arg) / 'o'(func with only the nbr of arg):
+																						|   arg1 : name of the function (only used by the compiler to find the end)
+	end_func_def	|	(IDENTIFIER)													|	arg0 : name of the function (used by the func_def)
+	jmp				|	(LABEL)															|	jump to the label unconditionaly
+	jmp_if			|	(LABEL)															|	jump to the label if the top of the stack is true
+	jmp_ifn			|	(LABEL)															|	jump to label if the top of stack is false(empty stack is false) 
+	define 			| 	(IDENTIFIER) (INT / FLOAT / BOOL / STRING)						| 	define a constant to be used by the operator push
+
+
+
+INT : 0x12 / 23 0b0011101
+FLOAT : 3.14
+BOOL : 0b / 1b
+STRING : "hello" / 'bonjour'
+OPERATORS : see operators
+IDENTIFIER : cannot start with 0-9 cannot contains characters such as / * $ . ...
+				and cannot be same as an operator  ex: a_var
+CONST_CALL : !identifier (used by push)  ex : !PI
+LABEL : identifier:: (used by jmps to jump to) ex: loop::

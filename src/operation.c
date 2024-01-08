@@ -247,25 +247,25 @@ Object _pow(Object a,Object b){
         if(a.val.i == 0 && b.val.i == 0){
             return new_floap(1);
         }
-        return new_floap(pow(a.val.i,b.val.i));
+        return new_floap(sulfur_pow(a.val.i,b.val.i));
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
         if(a.val.f == 0 && b.val.f == 0){
             return new_floap(1);
         }
-        return new_floap(pow(a.val.f,b.val.f));
+        return new_floap(sulfur_pow(a.val.f,b.val.f));
     }
     if(a.type == Obj_floap_t && b.type == Obj_ount_t){
         if(a.val.f == 0 && b.val.i == 0){
             return new_floap(1);
         }
-        return new_floap(pow(a.val.f, b.val.i));
+        return new_floap(sulfur_pow(a.val.f, b.val.i));
     }
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         if(a.val.i == 0 && b.val.f == 0){
             return new_floap(1);
         }
-        return new_floap(pow(a.val.i, b.val.f));
+        return new_floap(sulfur_pow(a.val.i, b.val.f));
     }
     printf("ERROR : operation(^) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));

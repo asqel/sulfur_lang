@@ -1,0 +1,21 @@
+Instructions:
+	define name value :
+		name : Id
+		value : str | float | int | bool
+		//define a constant with a name and a value that can be used with !name
+	
+	push value :
+		value : str | float | int | bool | id | $i
+		//push a value on to the stack
+		//the value will be replaced by the constant address of the value
+	
+	jmp sec :
+	jmp_if sec :
+	jmp_ifn sec :
+		sec : id
+		// jump to a section depending on a donction or not
+
+	sec:: :
+		sec : id
+		//define a section for jump to jump to 
+	
