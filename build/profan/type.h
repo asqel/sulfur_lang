@@ -14,16 +14,17 @@
 #define FS_SECTOR_SIZE 256
 #endif
 
-typedef struct {
-    int seconds;
-    int minutes;
-    int hours;
-    int day_of_week;
-    int day_of_month;
-    int month;
-    int year;
-    int full[6];
-} i_time_t;
+typedef struct tm {
+    int    tm_sec ;  // seconds [0,61]
+    int    tm_min ;  // minutes [0,59]
+    int    tm_hour;  // hour [0,23]
+    int    tm_mday;  // day of month [1,31]
+    int    tm_mon ;  // month of year [0,11]
+    int    tm_year;  // years since 1900
+    int    tm_wday;  // day of week [0,6] (Sunday = 0)
+    int    tm_yday;  // day of year [0,365]
+    int    tm_isdst; // daylight savings flag
+} tm_t;
 
 #define low_16(address) (uint16_t)((address) & 0xFFFF)
 #define high_16(address) (uint16_t)(((address) >> 16) & 0xFFFF)
@@ -155,7 +156,7 @@ struct random_data {
     int32_t *end_ptr;   /* Pointer behind state table.  */
 };
 
-typedef void *locale_t; // PLACEHOLDER, //TODO : implement locale_t
+typedef void *locale_t; // TODO : implement locale_t
 
 typedef unsigned char __string_uchar_t;
 typedef int            errno_t;
@@ -169,8 +170,9 @@ typedef struct FILE {
 
     char *buffer;
     int   buffer_size;
+    int   buffer_pid;
 
-    int   file_pos;
+    uint32_t file_pos;
     int   type;
     sid_t sid;
 } FILE;
