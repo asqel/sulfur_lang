@@ -10,6 +10,7 @@
 #include "include/func_interpreter.h"
 #include "include/make_context.h"
 #include "include/bytecode/bytecode.h"
+#include "include/make_jmp_links.h"
 
 #include "sulfur_libs/blt_libs/std.h"
 
@@ -64,6 +65,7 @@ int execute_file(sulfur_args_t *args) {
 
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
+    code = make_jmp_links(code, instruction_len);
 
     if (args->show_parse) {
         instructions_print(code, instruction_len);

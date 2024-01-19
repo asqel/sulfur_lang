@@ -34,6 +34,7 @@ void instruction_free(Instruction code){
 			break;
 		case inst_endif:
 		case inst_endifelse:
+		case inst_jmp_t:
 		case inst_endfor_t:
 		case inst_endwhile_t:
 			break;//nothing
