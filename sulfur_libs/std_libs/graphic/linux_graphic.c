@@ -193,13 +193,13 @@ Object fill_rect(Object* argv, int argc){
     color.blue = argv[6].val.i * 65535 / 255;
     color.flags = DoRed | DoGreen | DoBlue;
 
+    GC gc_buffer = XCreateGC(display, buffer, 0, NULL);
     if (!XAllocColor(display, DefaultColormap(display, screen), &color)) {
+        XFreeGC(display, gc_buffer);
         return new_ount(-1);
     }
-
-    XSetForeground(display, DefaultGC(display, screen), color.pixel);
-    XFillRectangle(display, window, DefaultGC(display, screen), x, y, w, h);
-
+    XSetForeground(display, gc_buffer, color.pixel);
+    XFillRectangle(display, buffer, gc_buffer, x, y, w, h);
     return nil_Obj;
 }
 

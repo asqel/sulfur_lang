@@ -502,3 +502,78 @@ void add_funcdef_to_func(Funcdef *obj, Funcdef_code def) {
     set_errno(0,Obj_funcid_t, 0, 1);
     return ;
 }
+
+typedef struct Node{
+    Object val;
+    char *name;
+    struct Node *next;
+}Node;
+
+#define hash_map_len 10000
+
+Node hash_map[hash_map_len];
+
+void hash_map_init() {
+    for (int i = 0; i < hash_map_len; i++) {
+        hash_map[i].name = NULL;
+        hash_map[i].next = NULL;
+    }
+}
+
+S_sulfur_int hash_str(char *str) {
+    S_sulfur_int res = 0;
+    for(int i = 0; str[i] != '\0'; i++)
+        res += str[i] * 31;
+    return res % hash_map_len;
+}
+
+Object get_hash_map(char *str) {
+    S_sulfur_int h = hash_str(str);
+    Node n = hash_map[h];
+    while (n.name) {
+        if (!strcmp(n.name, str))
+            return n.val;
+        if (!n.next)
+            break;
+        n = *n.next;
+    }
+    return not_found_Obj;
+}
+
+void add_hash_map(char *str, Object x) {
+    S_sulfur_int h = hash_str(str);
+    Node *n = &hash_map[h];
+    while (n->name) {
+        if (!strcmp(n->name, str))
+            return ;
+        if (!n->next) {
+            n->next = malloc(sizeof(Node));
+            n->next->name = uti_strdup(str);
+            n->next->val = Obj_cpy(x);
+            n->next->next = NULL;
+            return ;
+        }
+        n = n->next;
+    }
+    n->name = uti_strdup(str);
+    n->next = NULL;
+    n->val = Obj_cpy(x);
+}
+
+void free_hash_map() {
+    for (int i = 0; i < hash_map_len; i++) {
+        Node *current = hash_map[i].next;
+        while (current) {
+            Node *next = current->next;
+            free(current->name);
+            Obj_free_val(current->val);
+            free(current);
+            current = next;
+        }
+        if (hash_map[i].name) {
+            free(hash_map[i].name);
+            Obj_free_val(hash_map[i].val);
+        }
+    }
+
+}
