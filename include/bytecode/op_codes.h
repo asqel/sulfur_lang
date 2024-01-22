@@ -149,7 +149,8 @@ enum OP_CODES {
 
 	OPC_CALL_FUNC,
 	OPC_RET_FUNC,
-	OPC_DEF_FUNC,
+	OPC_DEF_FUNC, // arg : end_func address
+	OPC_END_FUNC
 	
 	OPC_ADD,
 	OPC_SUB,

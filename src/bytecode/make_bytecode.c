@@ -4,7 +4,7 @@
 extern Bytecode_t *ast_to_bytecode(Bytecode_t *code, Ast x);
 
 Bytecode_t make_bytecode(Instruction *inst, int len) {
-	//reset_constants();
+	reset_constants();
 	//inst_to_constants(inst, len);
 //
 	//Bytecode_t res = new_bytecode();

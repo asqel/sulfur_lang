@@ -181,22 +181,47 @@ void constants_to_bytecode(Bytecode_t *code) {
     for(int i = 0; i < constants_len; i++) {
         constant_adresses[i] = code->len;
         if (constants[i].type == Obj_string_t)
-            bytecode_add_char_arr(code, constants[i].val.s, strlen(constants[i].val.s));
+            bytecode_add_char_arr(code, constants[i].val.s, strlen(constants[i].val.s) + 1);
         else if (constants[i].type == Obj_ount_t)
             bytecode_append_llint(code, constants[i].val.i);
         else if (constants[i].type == Obj_floap_t) {
             code->bytes = realloc(code->bytes, code->len + 8);
             double val = ((double)constants[i].val.f);
-            memcpy(&code->bytes[code->len], &val, 8);
+            memcpy(&code->bytes[code->len], &val, sizeof(double));
+            code->len += 8;
         }
     }
 }
 
 
 int bc_get_const_addr_str(char * str) {
+    for(int i = 0; i < constants_len; i++) {
+        if (constants[i].type == Obj_string_t && !strcmp(str, constants[i].val.s)) {
+            return constant_adresses[i];
+        }
+    }
+    return 0;
+}
+
+int bc_get_const_addr_int(S_sulfur_int i) {
+    for(int i = 0; i < constants_len; i++) {
+        if (constants[i].type == Obj_ount_t && i == constants[i].val.i) {
+            return constant_adresses[i];
+        }
+    }
     return 0;
 }
 
 int bc_get_const_addr(Object *x) {
+    for(int i = 0; i < constants_len; i++) {
+        if (x->type == constants[i].type) {
+            if (x->type == Obj_string_t && !strcmp(x->val.s, constants[i].val.s))
+                return constant_adresses[i];
+            if (x->type == Obj_ount_t && x->val.i == constants[i].val.i)
+                return constant_adresses[i];
+            if (x->type == Obj_floap_t && x->val.f == constants[i].val.f)
+                return constant_adresses[i];
+        }
+    }
     return 0;
 }
