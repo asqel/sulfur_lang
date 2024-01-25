@@ -9,7 +9,6 @@
 #include "include/interpreter.h"
 #include "include/func_interpreter.h"
 #include "include/make_context.h"
-#include "include/bytecode/bytecode.h"
 #include "include/make_jmp_links.h"
 
 #include "sulfur_libs/blt_libs/std.h"

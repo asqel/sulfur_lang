@@ -1,6 +1,6 @@
-return 
-i = 0
+for(i from 0 to 100) {
+	print('eeee')
+	goto a
+}
 a::
-i += i
-println(i)
-goto a
+print('fffeeee')
