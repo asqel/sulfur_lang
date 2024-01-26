@@ -7,6 +7,7 @@
 #include "../include/parser.h"
 #include <string.h>
 #include "../include/utilities.h"
+#include "../include/make_jmp_links.h"
 
 
 extern int search_rpar(Token*t,int start);

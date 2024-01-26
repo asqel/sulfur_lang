@@ -1,17 +1,6 @@
-
-goto func_end
-hash_str::
-    _ret = 0
-    _len = _arg0:-1
-    for (i from 0 to _len) {
-        _ret += asc_val(_arg0:i) * 31
-    }
-    _ret = _ret%10000
-    jump(_ret_location)
-
-func_end::
-
-_arg0 = "hello"
-_ret_location = __get_index__() + 1
-goto hash_str
-println(_ret)
+for(i from 0 to 100) {
+	print('eeee')
+	goto a
+}
+a::
+print('fffeeee')
