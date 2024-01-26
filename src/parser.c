@@ -873,6 +873,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
                 inst[*n_inst - 1].line = line;
                 inst[*n_inst - 1].type = inst_pass_t;
+                inst[*n_inst - 1].facultative = 1;
                 return inst;
             }
             int n=find_semicol(tok,*p);
@@ -881,10 +882,10 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
                 printf("ERROR unexpected token on line %d %d %d\n",tok[*p].line, tok[*p].type, *p);
                 exit(1);
             }
-            if(*p + 1 == n){
-                (*p)++;
-                continue;
-            }
+            //if(*p + 1 == n){
+            //    (*p)++;
+            //    continue;
+            //}
             if(n == *p){
                 (*p)++;
                 continue;
@@ -895,6 +896,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type=inst_expr_t;
             inst[*n_inst-1].value.expr=x;
+            inst[*n_inst - 1].facultative = *p + 1 == n ? 1 : 0;
             *p = n + 1;
             return inst;
 

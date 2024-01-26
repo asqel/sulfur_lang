@@ -113,12 +113,19 @@ void remove_loop_count(int *loops_count, int **loops){
     (*loops) = realloc(*loops, sizeof(int) * (*loops_count));
 }
 
+
+extern char IS_SHELL;
+
 Object execute(Instruction* code, char* file_name, int len){
     int p = 0;
     current_instructions = code;
     current_index = &p;
     instruction_len = len;
     while(p < len){
+        if (code[p].facultative && !IS_SHELL){
+            p++;
+            continue;
+        }
         if(code[p].type == inst_pass_t){
             p++;
         }
@@ -166,8 +173,16 @@ Object execute(Instruction* code, char* file_name, int len){
         }
 
         else if(code[p].type == inst_expr_t){
-            Object x = Obj_cpy(eval_Ast(code[p].value.expr));
-            Obj_free_val(x);
+            if (IS_SHELL) {
+                Object x = Obj_cpy(eval_Ast(code[p].value.expr));
+                if (x.type != nil_Obj.type)
+                    println_prompt(&x, 1);
+                Obj_free_val(x);
+            }
+            else if (!code[p].facultative) {
+                Object x = Obj_cpy(eval_Ast(code[p].value.expr));
+                Obj_free_val(x);
+            }
             p++;
         }
 

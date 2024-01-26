@@ -9,6 +9,7 @@ extern memory MEMORY;
 
 Sulfur_ctx CTX;
 
+
 void *(*MEMLIB_FUNC[])() = {
 	(void *(*)()) &Obj_free_val,
 	(void *(*)()) &get_obj_pointer,

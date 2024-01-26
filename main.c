@@ -44,6 +44,8 @@ extern int precision;
 
 extern void instructions_print(Instruction* code, int code_len);
 
+char IS_SHELL = 0;
+
 int execute_file(sulfur_args_t *args) {
     char *text = read_file(args->filepath);
 

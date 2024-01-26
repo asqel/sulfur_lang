@@ -81,6 +81,7 @@ typedef struct Instruction{
         int jmp;
     }value;
     int line;
+    char facultative; // used by expression / pass
 }Instruction;
 
 enum instruction_type{

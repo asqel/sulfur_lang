@@ -91,6 +91,8 @@ int does_code_is_good(char *code) {
     return 1;
 }
 
+extern char IS_SHELL;
+
 int interactive_shell(sulfur_args_t *args) {
     printf("Welcome to sulfur v%s interactive shell!\n", VERSION);
     printf("Type 'q' or destroy your computer to exit\n");
@@ -100,6 +102,7 @@ int interactive_shell(sulfur_args_t *args) {
     init_stack();
     init_libs("*shell*");
     make_context();
+    IS_SHELL = 1;
 
     // main loop
     char *code = calloc(1000, sizeof(char));
