@@ -19,6 +19,7 @@
 #define malloc_ask(size) malloc_func(size, 1)
 #define realloc_ask(mem, new_size) realloc_func(mem, new_size, 1)
 
+#define getfullenv() ((char** (*)(void)) get_func_addr(STDLIB_ID, 2))()
 #define calloc_func(nmemb, lsize, as_kernel) ((void *(*)(uint32_t, uint32_t, int)) get_func_addr(STDLIB_ID, 3))(nmemb, lsize, as_kernel)
 #define free(mem) ((void (*)(void *)) get_func_addr(STDLIB_ID, 4))(mem)
 #define malloc_func(size, as_kernel) ((void *(*)(uint32_t, int)) get_func_addr(STDLIB_ID, 5))(size, as_kernel)
@@ -86,7 +87,7 @@
 #define seed48_r(seed16v, buffer) ((int (*)(unsigned short int [3], struct drand48_data *)) get_func_addr(STDLIB_ID, 67))(seed16v, buffer)
 #define setenv(name, value, overwrite) ((int (*)(const char *, const char *, int)) get_func_addr(STDLIB_ID, 68))(name, value, overwrite)
 #define unsetenv(name) ((int (*)(const char *)) get_func_addr(STDLIB_ID, 69))(name)
-#define clearend() ((void (*)(void)) get_func_addr(STDLIB_ID, 70))()
+#define clearenv() ((void (*)(void)) get_func_addr(STDLIB_ID, 70))()
 #define putenv(string) ((int (*)(char *)) get_func_addr(STDLIB_ID, 71))(string)
 #define srand48(seedval) ((void (*)(long)) get_func_addr(STDLIB_ID, 72))(seedval)
 #define srand48_r(seedval, buffer) ((int (*)(long, struct drand48_data *)) get_func_addr(STDLIB_ID, 73))(seedval, buffer)

@@ -8,7 +8,7 @@
 #define basename(path) ((char *(*)(const char *)) get_func_addr(STRING_ID, 3))(path)
 #define bcopy(s2, s1, n) ((void (*)(const void *, void *, size_t)) get_func_addr(STRING_ID, 4))(s2, s1, n)
 #define bzero(s, n) ((void (*)(void *, size_t)) get_func_addr(STRING_ID, 5))(s, n)
-// #define dirname(path) ((char *(*)(const char *)) get_func_addr(STRING_ID, 6))(path)
+#define dirname(path) ((char *(*)(const char *)) get_func_addr(STRING_ID, 6))(path)
 #define ffs(i) ((int (*)(int)) get_func_addr(STRING_ID, 7))(i)
 #define ffsll(i) ((int (*)(long long)) get_func_addr(STRING_ID, 8))(i)
 #define memccpy(s1, s2, c, n) ((void *(*)(void *, const void *, int, size_t)) get_func_addr(STRING_ID, 9))(s1, s2, c, n)
