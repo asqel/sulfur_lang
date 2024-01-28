@@ -89,5 +89,6 @@ Instruction *make_jmp_links(Instruction *code, int len) {
 			continue;
 		}
 	}
+
 	return code;
 }

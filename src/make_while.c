@@ -30,6 +30,7 @@ Instruction *make_while(Token* tok, int start, int end, Instruction* inst, int* 
                 (*n_inst)++;
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
                 inst[*n_inst - 1].type = inst_while_t;
+				inst[*n_inst - 1].facultative = 0;
                 inst[*n_inst - 1].value.wh = malloc(sizeof(While));
                 ast_and_len val = tok_to_Ast(tok, opening_par + 1, closing_par);
                 inst[*n_inst - 1].value.i->condition = make_ast(val.value, val.len);
@@ -41,6 +42,7 @@ Instruction *make_while(Token* tok, int start, int end, Instruction* inst, int* 
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
                 inst[*n_inst - 1].type = inst_endwhile_t;
                 inst[*n_inst - 1].value.endwhile = while_index;
+			    inst[*n_inst - 1].facultative = 0;
                 inst[while_index].value.wh->endwhile = *n_inst - 1;
                 *p = closing_rback + 1;
                 return inst;

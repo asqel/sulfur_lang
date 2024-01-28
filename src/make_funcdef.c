@@ -58,6 +58,7 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 						(*n_inst)++;
 						inst = realloc(inst, sizeof(Instruction) * (*n_inst));
 						inst[*n_inst - 1] = func;
+						inst[*n_inst - 1].facultative = 0;
 						*p = br_r + 1;
 						return inst;
 					}
@@ -103,6 +104,7 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 						(*n_inst)++;
 						inst = realloc(inst, sizeof(Instruction) * (*n_inst));
 						inst[*n_inst - 1] = func;
+						inst[*n_inst - 1].facultative = 0;
 						*p = br_r + 1;
 						return inst;
 					}
