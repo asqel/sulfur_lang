@@ -9,7 +9,6 @@
 #include "include/interpreter.h"
 #include "include/func_interpreter.h"
 #include "include/make_context.h"
-#include "include/bytecode/bytecode.h"
 #include "include/make_jmp_links.h"
 
 #include "sulfur_libs/blt_libs/std.h"
@@ -44,6 +43,8 @@ extern int REFS_len;
 extern int precision;
 
 extern void instructions_print(Instruction* code, int code_len);
+
+char IS_SHELL = 0;
 
 int execute_file(sulfur_args_t *args) {
     char *text = read_file(args->filepath);

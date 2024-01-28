@@ -113,15 +113,19 @@ void remove_loop_count(int *loops_count, int **loops){
     (*loops) = realloc(*loops, sizeof(int) * (*loops_count));
 }
 
+
+extern char IS_SHELL;
+
 Object execute(Instruction* code, char* file_name, int len){
     int p = 0;
-    int *loops = malloc(sizeof(int));
-    *loops = 0;
-    int loops_count = 1; 
     current_instructions = code;
     current_index = &p;
     instruction_len = len;
     while(p < len){
+        if (code[p].facultative && !IS_SHELL){
+            p++;
+            continue;
+        }
         if(code[p].type == inst_pass_t){
             p++;
         }
@@ -165,13 +169,20 @@ Object execute(Instruction* code, char* file_name, int len){
         }
 
         else if(code[p].type == inst_return_t){
-            free(loops);
             return eval_Ast(code[p].value.ret);
         }
 
         else if(code[p].type == inst_expr_t){
-            Object x = Obj_cpy(eval_Ast(code[p].value.expr));
-            Obj_free_val(x);
+            if (IS_SHELL) {
+                Object x = Obj_cpy(eval_Ast(code[p].value.expr));
+                if (x.type != nil_Obj.type)
+                    println_prompt(&x, 1);
+                Obj_free_val(x);
+            }
+            else if (!code[p].facultative) {
+                Object x = Obj_cpy(eval_Ast(code[p].value.expr));
+                Obj_free_val(x);
+            }
             p++;
         }
 
@@ -179,38 +190,8 @@ Object execute(Instruction* code, char* file_name, int len){
             p++;
         }
 
-        else if(code[p].type == inst_goto_t){
-            int n=-1;
-            //search down
-            for(int i = p + 1; i < len; i++){
-                if(code[i].type == inst_section_t){
-                    if(!strcmp(code[p].value.goto_sec, code[i].value.section)){
-                        n = i;
-                        break;
-                    }
-                }
-            }
-            if(n == -1){
-                //search up
-                for(int i = p - 1; i >= 0; i--){
-                    if(code[i].type == inst_section_t){
-                        if(!strcmp(code[p].value.goto_sec, code[i].value.section)){
-                            n = i;
-                            break;
-                        }
-                    }
-                }
-            }
-            if(n == -1){
-                printf("section %s doesnt exists\n", code[p].value.goto_sec);
-                exit(1);
-            }
-            p = n;
-            continue;
-        }
 
         else if(code[p].type == inst_for_t){
-            add_loop_count(p, &loops_count, &loops);
             Object start = Obj_cpy(eval_Ast(code[p].value.fo->start));
             Object old_start = start;
             start = std_ount(&start, 1);
@@ -248,7 +229,6 @@ Object execute(Instruction* code, char* file_name, int len){
             if(start.val.i == end.val.i){
                 Obj_free_val(end);
                 p = code[p].value.fo->endfor + 1;
-                remove_loop_count(&loops_count, &loops);
                 continue;
             }
             Obj_free_val(end);
@@ -304,7 +284,6 @@ Object execute(Instruction* code, char* file_name, int len){
                     Obj_free_val(end);
                     Obj_free_val(start);
                     p++;
-                    remove_loop_count(&loops_count, &loops);
                     continue;
                 }
             }
@@ -349,7 +328,6 @@ Object execute(Instruction* code, char* file_name, int len){
         }
 
         else if(code[p].type == inst_while_t){
-            add_loop_count(p, &loops_count, &loops);
             Object condition = Obj_cpy(eval_Ast(code[p].value.wh->condition));
             Object c = std_bool(&condition, 1);
             Obj_free_val(condition);
@@ -359,7 +337,6 @@ Object execute(Instruction* code, char* file_name, int len){
             } else {
                 Obj_free_val(c);
                 p = code[p].value.wh->endwhile + 1;
-                remove_loop_count(&loops_count, &loops);
             }
         }
 
@@ -373,37 +350,12 @@ Object execute(Instruction* code, char* file_name, int len){
                 p=code[p].value.endwhile+1;
             } else{
                 Obj_free_val(c);
-                remove_loop_count(&loops_count, &loops);
                 p++;
             }
         }
         else if (code[p].type == inst_jmp_t) {
             p = code[p].value.jmp;
             continue;
-        }
-        else if(code[p].type == inst_proceed_t){
-            int index = loops[loops_count - 1];
-            if(code[index].type == inst_while_t){
-                p = code[index].value.wh->endwhile;
-            }
-            else if(code[index].type == inst_for_t){
-                p = code[index].value.fo->endfor;
-            }
-            else{
-                p = 0;
-            }
-        }
-        else if(code[p].type == inst_stop_t){
-            int index = loops[loops_count - 1];
-            if(code[index].type == inst_while_t){
-                p = code[index].value.wh->endwhile + 1;
-            }
-            else if(code[index].type == inst_for_t){
-                p = code[index].value.fo->endfor + 1;
-            }
-            else{
-                p = len;
-            }
         }
         //TODO maybe one day implement this asqel
         else if(code[p].type==inst_funcdef_t){
@@ -465,6 +417,5 @@ Object execute(Instruction* code, char* file_name, int len){
             exit(1);
         }
     }
-    free(loops);
     return nil_Obj;
 }

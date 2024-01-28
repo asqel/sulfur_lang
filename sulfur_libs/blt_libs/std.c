@@ -806,6 +806,10 @@ Object std_abs(Object *argv, int argc) {
     exit(1);
 }
 
+Object hash_std(Object *argv, int argc) {
+    return new_ount(hash_str(argv[0].val.s));
+}
+
 memory init_std(memory MEMORY,char*path){
     add_object(&MEMORY, "nil", nil_Obj);
     add_object(&MEMORY, "_", nil_Obj);
@@ -867,5 +871,6 @@ memory init_std(memory MEMORY,char*path){
     add_func(&MEMORY, "var_val", &std_var_val, "");
     add_func(&MEMORY, "exec_cmd", &std_exec_cmd, "");
     add_func(&MEMORY, "abs", &std_abs, "");
+    add_func(&MEMORY, "hash", &hash_std, "");
     return MEMORY;
 }
