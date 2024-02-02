@@ -64,20 +64,20 @@ typedef struct Funcdef_code{
 typedef struct Instruction{
     short int type;
     union {
-        varset*vs;
-        Funcdef_code*fc;
-        If*i;
-        For*fo;
-        While*wh;
+        varset *vs;
+        Funcdef_code *fc;
+        If *i;
+        For *fo;
+        While *wh;
         int endwhile;
         int endfor;
-        struct Ast*ret;
-        struct Ast*expr;
+        struct Ast *ret;
+        struct Ast *expr;
         int endif;
         int endifelse;
-        Elif*el;
-        char*section;
-        char*goto_sec;
+        Elif *el;
+        char *section;
+        char *goto_sec;
         int jmp;
     }value;
     int line;
