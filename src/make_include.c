@@ -4,58 +4,182 @@
 #include "../include/utilities.h"
 #include "../include/lexer.h"
 
+
+char **included_files = NULL;
+int	included_files_len = 0;
+
+void reset_included_files() {
+	for (int i = 0; i < included_files_len; i++) {
+		free(included_files[i]);
+	}
+	free(included_files);
+	included_files = NULL;
+	included_files_len = 0;
+}
+
+
+/*
+!TODO:
+	add read_bin_file(char *path, int *len) ->char*
+	cahnge include:
+		include PATH MODE else (VALUE)
+
+		PATH : path to file to include (str token)
+			files that starts with "//" are in the foolder s_include in the folder of the interpretery
+				"//test.su" if sulfur is in $HOME/sulfur/ : $HOME/sulfur/test.su
+
+			relatives files are relative to the folder of the files which the include is in
+
+		MODE : (identifier token)(optional)
+			once : only included the file if hasn't been included already
+			string : creates a string with the content of file (be carefull with binary files containing 0x00)
+			number : creates an ount or a floap depending on the content  of the file if the parsing of the number fail
+					the VALUE will be used if there is no  else the value nill will be used
+			floap : same as number but only for floap (if the file doesn't contain '.' it will also be a floap)
+			ount : same as number but only for ount
+			binary_list : ascii vals in list
+		VALUE:
+			is used if there is an error during the include if not specified may throw an error
+			
+
+		example:
+			include "secret_number.txt" ount else (0)
+			include "//print.su" once else ()
+			include "../other_folder/script.su"
+			lorem_ipsum = include "lorem_ipsum.txt" string else ("")
+
+
+
+*/
+
+char *evaluate_include_path(char *path) {
+	char *res;
+	if (path[0] == '/' && path[1] ==  '/'){
+		char *path0 = abs_path();
+		char *interpreter_dir = uti_dirname(path0);
+		free(path0);
+
+
+	}
+}
+
 Token *make_include(Token *toks, int *len, char *path_arg){
 	int p = 0;
 	char *dir_path = uti_dirname(path_arg);
 	while (p < *len){
-		if (toks[p].type == keyword && *toks[p].value.t == include_t){
-			if (p + 1 < *len && toks[p + 1].type == str){
-				char *path = NULL;
-				if(toks[p + 1].value.s[0] == '/' && toks[p + 1].value.s[1] == '/'){
-					path = str_cat_new(dir_path, "/");
-					char *old_path = path;
-					path = str_cat_new(path, &toks[p + 1].value.s[2]);
-					free(old_path);
-				}
-				else{
-					path = strdup(toks[p + 1].value.s);
-				}
-				char *text = read_file(path);
-				if(!text){
-					printf("ERROR on include file '%s' doesn't exists\n",path);
-					exit(1);
-				}
-				Token *l = lexe(text);
-    			int len2 = token_len(l);
-    			l = make_include(l, &len2, path);
-				free(path);
-				Token *new_tok = malloc(sizeof(Token) * ((*len - 2) + len2 + 1));
-				int k = 0;
-				for(int i = 0; i < p; i++){
-					new_tok[k++] = toks[i];
-				}
-				for(int i = 0; i < len2; i++){
-					new_tok[k++] = l[i];
-				}
-				for(int i = p + 2; i < *len; i++){
-					new_tok[k++] = toks[i];
-				}
-				new_tok[(*len - 2) + len2] = toks[*len];
-				free_tok_val(toks[p]);		// free the value of the include keyword
-				free_tok_val(toks[p + 1]);	// free the value of the include path
-				free(toks);
-				free(l);
-				free(text);
-				toks = new_tok;
-				*len = (*len - 2) + len2;
+		if (toks[p].type == keyword && *toks[p].value.t == include_t) {
+			if (p + 1 < *len && toks[p + 1].type == str) {
+				char *new_path = evaluate_include_path(toks[p + 1].value.s);
+				int file_len = 0;
+				char *file_content = read_bin_file(new_path, &file_len);
+				free(new_path);
 			}
-			else{
-				toks[p].type = identifier;
-				free(toks[p].value.t);
-				toks[p].value.s = strdup("include");
-				p++;
-				continue;
-			}
+			//if (p + 1 < *len && toks[p + 1].type == str){
+			//	if (p + 2 < *len && toks[p + 2].type == identifier && !strcmp("once", toks[p + 2].value.s)) {
+			//		char *path = NULL;
+			//		if(toks[p + 1].value.s[0] == '/' && toks[p + 1].value.s[1] == '/'){
+			//			path = str_cat_new(dir_path, "/");
+			//			char *old_path = path;
+			//			path = str_cat_new(path, &toks[p + 1].value.s[2]);
+			//			free(old_path);
+			//		}
+			//		else{
+			//			path = strdup(toks[p + 1].value.s);
+			//		}
+			//		//check if path has already been included
+			//		char has_been_included = 0;
+			//		for (int i = 0; i < included_files_len; i++) {
+			//			if (!strcmp(included_files[i], path)) {
+			//				has_been_included = 1;
+			//				break;
+			//			}
+			//		}
+			//		if (has_been_included) {
+			//			p += 3;
+			//			continue;
+			//		}
+			//		//add file in included files
+			//		included_files_len++;
+			//		included_files = realloc(included_files, sizeof(char *) * included_files_len);
+			//		included_files[included_files_len - 1] = strdup(path);
+			//		char *text = read_file(path);
+			//		if(!text){
+			//			printf("ERROR on include file '%s' doesn't exists\n",path);
+			//			exit(1);
+			//		}
+			//		Token *l = lexe(text);
+    		//		int len2 = token_len(l);
+    		//		l = make_include(l, &len2, path);
+			//		free(path);
+			//		Token *new_tok = malloc(sizeof(Token) * ((*len - 3) + len2 + 1));
+			//		int k = 0;
+			//		for(int i = 0; i < p; i++){
+			//			new_tok[k++] = toks[i];
+			//		}
+			//		for(int i = 0; i < len2; i++){
+			//			new_tok[k++] = l[i];
+			//		}
+			//		for(int i = p + 2; i < *len; i++){
+			//			new_tok[k++] = toks[i];
+			//		}
+			//		new_tok[(*len - 2) + len2] = toks[*len];
+			//		free_tok_val(toks[p]);		// free the value of the include keyword
+			//		free_tok_val(toks[p + 1]);	// free the value of the include path
+			//		free_tok_val(toks[p + 2]);	// free the value of the once identifier
+			//		free(toks);
+			//		free(l);
+			//		free(text);
+			//		toks = new_tok;
+			//		*len = (*len - 2) + len2;
+			//	}
+			//	else {
+			//		char *path = NULL;
+			//		if(toks[p + 1].value.s[0] == '/' && toks[p + 1].value.s[1] == '/'){
+			//			path = str_cat_new(dir_path, "/");
+			//			char *old_path = path;
+			//			path = str_cat_new(path, &toks[p + 1].value.s[2]);
+			//			free(old_path);
+			//		}
+			//		else{
+			//			path = strdup(toks[p + 1].value.s);
+			//		}
+			//		char *text = read_file(path);
+			//		if(!text){
+			//			printf("ERROR on include file '%s' doesn't exists\n",path);
+			//			exit(1);
+			//		}
+			//		Token *l = lexe(text);
+    		//		int len2 = token_len(l);
+    		//		l = make_include(l, &len2, path);
+			//		free(path);
+			//		Token *new_tok = malloc(sizeof(Token) * ((*len - 2) + len2 + 1));
+			//		int k = 0;
+			//		for(int i = 0; i < p; i++){
+			//			new_tok[k++] = toks[i];
+			//		}
+			//		for(int i = 0; i < len2; i++){
+			//			new_tok[k++] = l[i];
+			//		}
+			//		for(int i = p + 2; i < *len; i++){
+			//			new_tok[k++] = toks[i];
+			//		}
+			//		new_tok[(*len - 2) + len2] = toks[*len];
+			//		free_tok_val(toks[p]);		// free the value of the include keyword
+			//		free_tok_val(toks[p + 1]);	// free the value of the include path
+			//		free(toks);
+			//		free(l);
+			//		free(text);
+			//		toks = new_tok;
+			//		*len = (*len - 2) + len2;
+			//	}
+			//}
+			//else{
+			//	toks[p].type = identifier;
+			//	free(toks[p].value.t);
+			//	toks[p].value.s = strdup("include");
+			//	p++;
+			//	continue;
+			//}
 		}
 		else{
 			p++;
