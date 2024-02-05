@@ -27,7 +27,13 @@ char* uti_dirname(char*v);
 //return new str containing s1+s2
 char*str_cat_new(char*s1,char*s2);
 
+char*str_cat_new3(char *s1, char *s2, char *s3);
+
+int uti_is_path_relative(char *path);
+
 char*read_file(char*path);
+
+char *uti_read_bin_file(char *path, int *len);
 
 //return the max power of 10 that can fit into a number
 //for number greater or equal than 1 

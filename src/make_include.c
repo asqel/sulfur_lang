@@ -3,6 +3,7 @@
 #include "../include/sulfur.h"
 #include "../include/utilities.h"
 #include "../include/lexer.h"
+#include "../include/parser.h"
 
 
 char **included_files = NULL;
@@ -20,7 +21,10 @@ void reset_included_files() {
 
 /*
 !TODO:
-	add read_bin_file(char *path, int *len) ->char*
+	include path
+	include path else ()
+	include path mode
+	include path mode else ()
 	cahnge include:
 		include PATH MODE else (VALUE)
 
@@ -52,15 +56,14 @@ void reset_included_files() {
 
 */
 
-char *evaluate_include_path(char *path) {
+char *evaluate_include_path(char *path, char *dir_path) {
 	char *res;
-	if (path[0] == '/' && path[1] ==  '/'){
-		char *path0 = abs_path();
-		char *interpreter_dir = uti_dirname(path0);
-		free(path0);
-
-
-	}
+	if (path[0] == '/' && path[1] ==  '/')
+		return str_cat_new3(INTERPRETER_DIR, "/", &(path[2]));
+	else if (uti_is_path_relative(path))
+		return str_cat_new3(dir_path, "/", path[2]);
+	else
+		return uti_strdup(path);
 }
 
 Token *make_include(Token *toks, int *len, char *path_arg){
@@ -69,9 +72,89 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 	while (p < *len){
 		if (toks[p].type == keyword && *toks[p].value.t == include_t) {
 			if (p + 1 < *len && toks[p + 1].type == str) {
-				char *new_path = evaluate_include_path(toks[p + 1].value.s);
+				char *new_path = evaluate_include_path(toks[p + 1].value.s, dir_path);
 				int file_len = 0;
-				char *file_content = read_bin_file(new_path, &file_len);
+				char *file_content = uti_read_bin_file(new_path, &file_len);
+				char *mod = NULL;
+				int else_start = -1;
+				int else_end = -1;
+				if (p + 2 < *len && toks[p + 2].type == identifier) {
+					//include path mode else (...)
+					if (p + 3 < *len && toks[p + 3].type == keyword && *toks[p + 3].value.t == else_t) {
+						if (!(p + 4 < *len && toks[p + 4].type == syntax && *toks[p + 4].value.t == par_L)) {
+							printf("ERROR on include keyword missing '(' after else\n\ttry include '%s' %s else (...)\n", new_path, toks[p + 2].value.s);
+							exit(1);
+						}
+						else_start = p + 4;
+						else_end = search_rpar(toks, else_start);
+						if (else_end == -1) {
+							printf("ERROR on include keyword missing closing ')' after else\n\ttry include '%s' %s else (...)\n", new_path, toks[p + 2].value.s);
+							exit(1);
+						}
+						int include_tokens_len = 0;
+						Token *include_tokens = NULL;
+						int error = 0;
+						include_tokens = get_include_tokens(include_tokens, &include_tokens_len, &error);
+						if (error) {
+							// p-1    p    p+1  p+2  p+3 p+4
+							// ... include path mode else (...) ...
+							free(toks[p].value.t);
+							free(toks[p + 1].value.s);
+							free(toks[p + 2].value.s);
+							free(toks[p + 3].value.t);
+							free(toks[p + 4].value.t);
+							free(toks[else_end].value.t);
+							for(int i = else_end; i < *len - 1; i++) {
+								toks[i] = toks[i + 1];
+							}
+							(*len)--;
+							toks = realloc(toks, sizeof(Token) * (*len + 1));
+							toks[*len] = end_token;
+							for(int i = else_start + 1; i < *len; i++) {
+								toks[i - 5] = toks[i];
+							}
+							(*len) -= 5;
+							toks = realloc(toks, sizeof(Token) * (*len + 1));
+							toks[*len] = end_token;
+							continue;
+						}
+						else {
+							// p-1    p    p+1  p+2  p+3 p+4
+							// ... include path mode else (...) ...
+							Token *new_toks = malloc(sizeof(Token) * (*len - (else_end - p + 1) + include_tokens_len + 1));
+							int new_toks_end = 0;
+							for(int i = 0; i < p; i++) {
+								new_toks[new_toks_end] = toks[i];
+								new_toks_end++;
+							}
+							for(int i = 0; i < include_tokens_len; i++) {
+								new_toks[new_toks_end] = include_tokens[i];
+								new_toks_end++;
+							}
+							for(int i = else_end + 1; i < *len; i++) {
+								new_toks[new_toks_end] = toks[i];
+								new_toks_end++;
+							}
+							new_toks[new_toks_end] = end_token;
+							for(int i = p; i <= else_end; i++) {
+								free_tok_val(toks[i]);
+							}
+							free(toks);
+							toks = new_toks;
+							*len = *len - (else_end - p + 1) + include_tokens_len;
+							continue;
+						}
+					}
+					else {
+
+					}
+				}
+				else if (toks[p + 1].type == keyword && *toks[p + 1].value.t == else_t) {
+
+				}
+				else {
+
+				}
 				free(new_path);
 			}
 			//if (p + 1 < *len && toks[p + 1].type == str){

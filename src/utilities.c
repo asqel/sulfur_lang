@@ -137,6 +137,32 @@ char*str_cat_new(char*s1,char*s2){
     return s;
 }
 
+char*str_cat_new3(char *s1, char *s2, char *s3){
+    int l1 = strlen(s1);
+    int l2 = strlen(s2);
+    int l3 = strlen(s3);
+    char *s = malloc(sizeof(char) * (l1 + l2 + l3 +1));
+    for(int i = 0; i < l1; i++){
+        s[i]=s1[i];
+    }
+    for(int i = 0; i < l2; i++){
+        s[i+l1]=s2[i];
+    }
+    for(int i = 0; i < l3; i++) {
+        s[i + l1 + l2] = s3[i];
+    }
+    s[l1 + l2 + l3] = '\0';
+    return s;
+}
+
+int uti_is_path_relative(char *path) {
+    #ifdef _WIN32
+        return !(((path[0] <= 'Z' && path[0] >= 'A') || (path[0] <= 'z' && path[0] >= 'a')) && path[1] == ':' && (path[2] == '/' || path[2] == '\\'));
+    #else
+        return path[0] != '/';
+    #endif
+}
+
 char *read_file(char *path) {
     #ifdef __profanOS__
     sid_t file_id = fu_path_to_sid(ROOT_SID, path);
@@ -172,6 +198,43 @@ char *read_file(char *path) {
     text[n-1]='\0';
     fclose(f);
     return text;
+    #endif
+}
+
+char *uti_read_bin_file(char *path, int *len) {
+    #ifdef __profanOS__
+    sid_t file_id = fu_path_to_sid(ROOT_SID, path);
+
+    if (IS_NULL_SID(file_id) || !fu_is_file(file_id)) {
+        return NULL;
+    }
+    
+    uint32_t size = fu_get_file_size(file_id);
+    char *text = malloc(size);
+
+    fu_file_read(file_id, text, 0, size);
+    
+    *len = size;
+    return text;
+    #else
+    // check if file exists
+    FILE *f = fopen(path, "r");
+    if (f == NULL) return NULL;
+
+    char *text = malloc(sizeof(char));
+    int n = 1;
+    char c = fgetc(f);
+    text[n-1] = c;
+    while(c != EOF){
+        n++;
+        text = realloc(text, sizeof(char) * n);
+        c = fgetc(f);
+        text[n - 1] = c;
+    }
+    text[n-1]='\0';
+    fclose(f);
+    *len = n - 2;
+    return realloc(text, sizeof(char) * (n - 1));
     #endif
 }
 

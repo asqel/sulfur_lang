@@ -36,4 +36,9 @@ void free_dyn_libs();
 
 void set_errno(int is_error, int type, int err_num, int extra);
 
+extern char *INTERPRETER_PATHLL;
+extern char *INTERPRETER_DIR;
+extern char *LIBS_DIR;
+extern char *S_INCLUDE_DIR;
+
 #endif
