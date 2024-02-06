@@ -75,6 +75,7 @@ Token *get_include_tokens(int *len, char *mode, char *path) {
 		}
 		Token *toks = lexe(text);
 		*len = token_len(toks);
+		free(text);
 		return toks; 
 	}
 	else {
@@ -115,6 +116,7 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 						int include_tokens_len = 0;
 						//include tokens == NULL : ERROR, error is stored in include_tokens_len 0 if we can use the else
 						Token *include_tokens = get_include_tokens(&include_tokens_len, toks[p + 2].value.s, new_path);
+						free(new_path);
 						if (include_tokens == NULL && include_tokens_len != 0) {
 							printf("ERROR on include file '%s' with mod '%s'\n", new_path, toks[p + 2].value.s);
 							exit(1);
@@ -166,6 +168,7 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 							free(toks);
 							toks = new_toks;
 							*len = *len - (else_end - p + 1) + include_tokens_len;
+							free(include_tokens);
 							continue;
 						}
 					}
@@ -179,7 +182,6 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 				else {
 
 				}
-				free(new_path);
 			}
 			//if (p + 1 < *len && toks[p + 1].type == str){
 			//	if (p + 2 < *len && toks[p + 2].type == identifier && !strcmp("once", toks[p + 2].value.s)) {

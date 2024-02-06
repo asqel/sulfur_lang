@@ -1,1 +1,1 @@
-include "//std/2+2.su" normal else (3)
+x = get_args()
