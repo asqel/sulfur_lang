@@ -9,6 +9,7 @@
 #include "../sulfur_libs/blt_libs/std.h"
 #include "../include/sulfur.h"
 #include "../include/make_context.h"
+#include "../include/make_include.h"
 
 extern void instructions_print(Instruction* code, int code_len);
 
@@ -103,6 +104,9 @@ int interactive_shell(sulfur_args_t *args) {
     init_libs("*shell*");
     make_context();
     IS_SHELL = 1;
+    if (args->filepath == NULL) {
+        args->filepath = "*shell*";
+    }
 
     // main loop
     char *code = calloc(1000, sizeof(char));
@@ -130,6 +134,8 @@ int interactive_shell(sulfur_args_t *args) {
         // tokenize
         Token *l = lexe(code);
         int len = token_len(l);
+        l = make_include(l, &len, args->filepath);
+    
 
         // parse
         int instruction_len = 0;

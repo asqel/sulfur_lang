@@ -83,4 +83,12 @@ void* get_standard_module(char* filename);
 
 char *uti_strdup(char *src);
 
+
+#define FOR_RANGE(var, start, end) \
+    for(int var = start; var < end; var++)
+
+
+#define FORR_RANGE(var, start, end) \
+    for(int var = start; var > end; var--)
+
 #endif

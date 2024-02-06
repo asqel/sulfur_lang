@@ -24,6 +24,7 @@ void show_help(char *name, int full) {
         "  -m, --show-mem      show memory after execution\n"
         "  -p, --show-parse    show parse tree\n"
         "  -l, --show-lexe     show tokens after lexing\n"
+        "  -i,                 show tokens after making the includes\n"
         "  -h, --help          show this help message and exit\n"
         "  -v, --version       show sulfur version and exit\n"
         "      --bytecode      make the bytecode of the file\n"
@@ -158,7 +159,6 @@ void free_paths() {
 }
 
 int main(int argc,char **argv) {
-
     init_paths(argv[0]);
 
     init_dyn_libs();

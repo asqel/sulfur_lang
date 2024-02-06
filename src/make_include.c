@@ -59,22 +59,43 @@ void reset_included_files() {
 char *evaluate_include_path(char *path, char *dir_path) {
 	char *res;
 	if (path[0] == '/' && path[1] ==  '/')
-		return str_cat_new3(INTERPRETER_DIR, "/", &(path[2]));
+		return str_cat_new3(S_INCLUDE_DIR, "/", &(path[2]));
 	else if (uti_is_path_relative(path))
-		return str_cat_new3(dir_path, "/", path[2]);
+		return str_cat_new3(dir_path, "/", path);
 	else
 		return uti_strdup(path);
 }
 
+Token *get_include_tokens(int *len, char *mode, char *path) {
+	if (!strcmp(mode, "normal")) {
+		char *text = read_file(path);
+		if (!text) {
+			*len = 0;
+			return NULL;
+		}
+		Token *toks = lexe(text);
+		*len = token_len(toks);
+		return toks; 
+	}
+	else {
+		printf("ERROR unkown mode for include path '%s' mode '%s'\n", path, mode);
+		exit(1);
+	}
+}
+
 Token *make_include(Token *toks, int *len, char *path_arg){
 	int p = 0;
-	char *dir_path = uti_dirname(path_arg);
+	char *dir_path;
+	if (!strcmp(path_arg, "*shell*")) {
+		dir_path = uti_strdup(INTERPRETER_DIR);
+	}
+	else {
+		dir_path = uti_dirname(path_arg);
+	}
 	while (p < *len){
 		if (toks[p].type == keyword && *toks[p].value.t == include_t) {
 			if (p + 1 < *len && toks[p + 1].type == str) {
 				char *new_path = evaluate_include_path(toks[p + 1].value.s, dir_path);
-				int file_len = 0;
-				char *file_content = uti_read_bin_file(new_path, &file_len);
 				char *mod = NULL;
 				int else_start = -1;
 				int else_end = -1;
@@ -92,10 +113,13 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 							exit(1);
 						}
 						int include_tokens_len = 0;
-						Token *include_tokens = NULL;
-						int error = 0;
-						include_tokens = get_include_tokens(include_tokens, &include_tokens_len, &error);
-						if (error) {
+						//include tokens == NULL : ERROR, error is stored in include_tokens_len 0 if we can use the else
+						Token *include_tokens = get_include_tokens(&include_tokens_len, toks[p + 2].value.s, new_path);
+						if (include_tokens == NULL && include_tokens_len != 0) {
+							printf("ERROR on include file '%s' with mod '%s'\n", new_path, toks[p + 2].value.s);
+							exit(1);
+						}
+						if (include_tokens == NULL) {
 							// p-1    p    p+1  p+2  p+3 p+4
 							// ... include path mode else (...) ...
 							free(toks[p].value.t);
