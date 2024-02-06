@@ -1,0 +1,23 @@
+print("enter a number > ")
+n = ount(input())
+if (n ==  0) {
+	println("0")
+}
+else {
+	digits = list()
+	while (n > 0) {
+		digits.append(n % 16)
+		n = n \ 16
+	}
+	print("\t0x".esc())
+	for(i from 0 to digits:-1) 
+		print({
+			if (digits:(digits:-1 - i - 1) < 10) {
+				return digits:(digits:-1 - i - 1);
+			}
+			else {
+				return chr(digits:(digits:-1 - i - 1) - 10 + asc_val("A"));
+			}
+		})
+	println()
+}

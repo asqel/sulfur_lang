@@ -829,6 +829,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
                     inst = realloc(inst, sizeof(Instruction) * (*n_inst));
                     inst[*n_inst - 1].type = inst_section_t;
                     inst[*n_inst - 1].value.section = malloc(sizeof(char) * (1 + strlen(tok[*p].value.s)));
+					inst[*n_inst - 1].facultative = 0;
                     strcpy(inst[*n_inst - 1].value.section, tok[*p].value.s);
                     *p += 3;
                     return inst;
@@ -844,6 +845,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             (*n_inst)++;
             inst = realloc(inst, sizeof(Instruction) * (*n_inst));
             inst[*n_inst - 1].type = inst_goto_t;
+			inst[*n_inst - 1].facultative = 0;
             inst[*n_inst - 1].value.goto_sec = malloc(sizeof(char) * (1 + strlen(tok[*p + 1].value.s)));
             strcpy(inst[*n_inst - 1].value.goto_sec,tok[*p + 1].value.s);
             *p += 2;
@@ -853,6 +855,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction) * (*n_inst));
             inst[*n_inst-1].type = inst_proceed_t;
+            inst[*n_inst - 1].facultative = 0;
             *p += 1;
             return inst;
         }
@@ -860,6 +863,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type = inst_stop_t;
+            inst[*n_inst - 1].facultative = 0;
             *p += 1;
             return inst;
         }
@@ -896,6 +900,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type=inst_expr_t;
             inst[*n_inst-1].value.expr=x;
+            inst[*n_inst - 1].facultative = 0;
             inst[*n_inst - 1].facultative = *p + 1 == n ? 1 : 0;
             *p = n + 1;
             return inst;

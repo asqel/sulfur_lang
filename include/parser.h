@@ -23,6 +23,8 @@ Ast*make_ast(Ast*e,int len);
 
 int search_rrbrack(Token*t,int start);
 
+int search_rpar(Token*t,int start);
+
 int cond_parse(int start,int end,int len,int p);
 
 Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, int* n_inst, int* p, int len, int *result);

@@ -24,6 +24,7 @@ void show_help(char *name, int full) {
         "  -m, --show-mem      show memory after execution\n"
         "  -p, --show-parse    show parse tree\n"
         "  -l, --show-lexe     show tokens after lexing\n"
+        "  -i,                 show tokens after making the includes\n"
         "  -h, --help          show this help message and exit\n"
         "  -v, --version       show sulfur version and exit\n"
         "      --bytecode      make the bytecode of the file\n"
@@ -133,7 +134,32 @@ int execute_file(sulfur_args_t *args) {
     return 0;
 }
 
+
+char *INTERPRETER_PATH = NULL;
+char *INTERPRETER_DIR = NULL;
+char *LIBS_DIR = NULL;
+char *S_INCLUDE_DIR = NULL;
+
+void init_paths(char *path) {
+    if (NULL == INTERPRETER_PATH)
+        INTERPRETER_PATH = uti_strdup(path);
+    if (NULL == INTERPRETER_DIR)
+        INTERPRETER_DIR = uti_dirname(path);
+    if (NULL == LIBS_DIR)
+        LIBS_DIR = str_cat_new(INTERPRETER_DIR, "/libs");
+    if (NULL == S_INCLUDE_DIR)
+        S_INCLUDE_DIR = str_cat_new(INTERPRETER_DIR, "/s_include");
+}
+
+void free_paths() {
+    free(INTERPRETER_PATH);
+    free(INTERPRETER_DIR);
+    free(LIBS_DIR);
+    free(S_INCLUDE_DIR);
+}
+
 int main(int argc,char **argv) {
+    init_paths(argv[0]);
 
     init_dyn_libs();
 
@@ -170,6 +196,8 @@ int main(int argc,char **argv) {
     free(CTX.argv);
 
     free_dyn_libs();
+
+    free_paths();
 
     return exit_code;
 }
