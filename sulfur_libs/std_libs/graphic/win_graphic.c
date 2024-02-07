@@ -61,4 +61,11 @@ Object GetWindowEvents(Object * argv, int argc){
 	return nil_Obj;
 }
 
+Object graphic_get_height(Object *argv, int argc) {
+	return nil_Obj;
+}
+Object graphic_get_width(Object *argv, int argc) {
+	return nil_Obj;
+}
+
 #endif
