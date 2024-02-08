@@ -511,7 +511,7 @@ typedef struct Node{
 
 #define hash_map_len 10000
 
-Node hash_map[hash_map_len];
+//Node hash_map[hash_map_len];
 
 void hash_map_init() {
     for (int i = 0; i < hash_map_len; i++) {
