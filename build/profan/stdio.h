@@ -20,7 +20,7 @@
 #define EOF -1
 #define FOPEN_MAX 1024
 #define FILENAME_MAX 20
-#define BUFSIZ 1024 // TODO : CHOSE A CORRECT VALUE
+#define BUFSIZ 1024
 
 #ifndef SEEK_CUR
 #define SEEK_CUR 1
@@ -32,7 +32,7 @@
 #define SEEK_SET 0
 #endif
 
-#define get_func_addr ((int (*)(int, int)) *(int *) 0x1ffffb)
+#define get_func_addr ((uint32_t (*)(uint32_t, uint32_t)) *(uint32_t *) 0x1ffffb)
 
 // we dont define functions if we are in the .c file
 #ifndef STDIO_C
@@ -60,7 +60,7 @@
 #define putchar ((int (*)(int)) get_func_addr(STDIO_ID, 24))
 #define puts ((int (*)(const char *)) get_func_addr(STDIO_ID, 25))
 #define ungetc ((int (*)(int, FILE *)) get_func_addr(STDIO_ID, 26))
-#define scanf ((int (*)(const char *, ...)) get_func_addr(STDIO_ID, 27)) 
+#define scanf ((int (*)(const char *, ...)) get_func_addr(STDIO_ID, 27))
 #define fscanf ((int (*)(FILE *, const char *, ...)) get_func_addr(STDIO_ID, 28))
 #define sscanf ((int (*)(const char *, const char *, ...)) get_func_addr(STDIO_ID, 29))
 #define scanf_s ((int (*)(const char *, ...)) get_func_addr(STDIO_ID, 30))

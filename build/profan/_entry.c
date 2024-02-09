@@ -19,8 +19,7 @@ int entry2(int argc, char **argv) {
     main(argc, argv);
 
     // free memory
-    int freed = c_mem_free_all(c_process_get_pid());
-    printf("$6%d alloc freed$7\n", freed);
+    c_mem_free_all(c_process_get_pid());
 
     return 0;
 }
