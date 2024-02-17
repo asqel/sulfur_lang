@@ -114,14 +114,16 @@ int interactive_shell(sulfur_args_t *args) {
     int exit_code;
     while (1) {
         // read line
-        printf("sulfur > ");
+        fputs("sulfur > ", stdout);
+        fflush(stdout);
         while (1) {
             char *line = fgets(code + decl, 1000 - decl, stdin);
             if (!line) break;
             decl += strlen(line);
             exit_code = does_code_is_good(code);
             if (exit_code) break;
-            printf("       > ");
+            fputs("       > ", stdout);
+            fflush(stdout);
         }
 
         if (exit_code == 2) break;
