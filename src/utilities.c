@@ -466,3 +466,33 @@ char *uti_strdup(char *src) {
     strcpy(res, src);
     return res;
 }
+
+
+char *normalize_path(char *path) {
+    // normalize absolute files (/folder/folder2/../file.txt -> /folder/file.txt)
+    // may return a copy of path
+    // windows path must have / not back slash
+    int len = strlen(path);
+    char *res = calloc(1 + len, sizeof(char));
+    int p = 0;
+    int str_end = 0;
+    while (p < len) {
+        if (path[p] == '.' && path[p + 1] == '/')
+            p += 2;
+        else if (path[p] == '.' && path[p + 1] == '.' && path[p + 2] == '/') {
+            char *new_res = uti_dirname(res);
+            memset(res, 0, sizeof(char) * (1 + len));
+            memcpy(res, new_res, (strlen(new_res) + 1) * sizeof(char));
+            res[str_end] = '/';
+            p += 3;
+        }
+        else {
+
+            res[str_end] = path[p] == '\\' ? '/' : path[p];
+            p++;
+            str_end++;
+        }
+    }
+    res[str_end] = '\0';
+    return realloc(res, sizeof(char) * (str_end + 1));
+}

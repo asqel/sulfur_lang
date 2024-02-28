@@ -4,6 +4,7 @@
 #include "../include/utilities.h"
 #include "../include/lexer.h"
 #include "../include/parser.h"
+#include "../include/get_include_tokens.h"
 
 
 char **included_files = NULL;
@@ -66,23 +67,6 @@ char *evaluate_include_path(char *path, char *dir_path) {
 		return uti_strdup(path);
 }
 
-Token *get_include_tokens(int *len, char *mode, char *path) {
-	if (!strcmp(mode, "normal")) {
-		char *text = read_file(path);
-		if (!text) {
-			*len = 0;
-			return NULL;
-		}
-		Token *toks = lexe(text);
-		*len = token_len(toks);
-		free(text);
-		return toks; 
-	}
-	else {
-		printf("ERROR unkown mode for include path '%s' mode '%s'\n", path, mode);
-		exit(1);
-	}
-}
 
 Token *make_include(Token *toks, int *len, char *path_arg){
 	int p = 0;
