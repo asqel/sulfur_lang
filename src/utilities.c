@@ -26,7 +26,7 @@
 //*x pointer to the string  |  v char to search
 int str_contains_char(char *x,char v){
     int n=0;
-    for (int i = 0; i < strlen(x); i++){
+    for (unsigned int i = 0; i < strlen(x); i++){
         if(x[i]==v){
             return 1;
         }
@@ -85,7 +85,7 @@ int str_ar_contains_char(char*list[],char v,int list_len){
 //*x the string   ||  v the char to count
 int str_count(char*x,char v){
     int n=0;
-    for(int i=0;i<strlen(x);i++){
+    for(unsigned int i=0;i<strlen(x);i++){
         if(*(x+i)==v){
             n++;
         }
@@ -337,6 +337,7 @@ void*realloc_c(void*mem,long long int old_size,long long int new_size){
         free(mem);
         return NULL;
     }
+    return NULL;
 }
 
 int is_letter(char v){

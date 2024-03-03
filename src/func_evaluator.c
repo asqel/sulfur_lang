@@ -724,6 +724,7 @@ Object func_eval_Ast(Ast *x){
             }
         }
     }
+    return nil_Obj;
 }
 
 

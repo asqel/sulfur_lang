@@ -501,7 +501,7 @@ Object pop(Object* argv, int argc){
     Obj_free_val(argv[0].val.li->elements[len]);
     argv[0].val.li->elements[0].val.i--;
     argv[0].val.li->elements = realloc(argv[0].val.li->elements, sizeof(Object) * len);
-
+    return nil_Obj;
 }
 
 Object std_asc_val(Object* argv, int argc){

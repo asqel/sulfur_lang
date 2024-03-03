@@ -180,4 +180,5 @@ int interactive_shell(sulfur_args_t *args) {
 
     free(MEMORY.keys);
     free(MEMORY.values);
+    return 0;
 }

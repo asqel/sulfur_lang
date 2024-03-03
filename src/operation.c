@@ -107,7 +107,7 @@ Object sub(Object a,Object b){
     if (a.type == Obj_floap_t && b.type == Obj_complex_t)
         return new_complex(a.val.f - b.val.c[0], b.val.c[1]);
 
-    if (a.type == Obj_complex_t && b.type == Obj_complex_t);
+    if (a.type == Obj_complex_t && b.type == Obj_complex_t)
         return new_complex(a.val.c[0] + b.val.c[1], a.val.c[1] + b.val.c[1]);
 
 

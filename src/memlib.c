@@ -28,7 +28,7 @@ int Obj_cmp(Object obj1,Object obj2){
             case Obj_complex_t:
                 return *obj1.val.c == *obj2.val.c && obj1.val.c[1] == obj2.val.c[1];
             case Obj_boolean_t:
-                obj1.val.b == obj2.val.b;
+                return obj1.val.b == obj2.val.b;
             default:
                 //ERROR
                 break;
@@ -135,6 +135,8 @@ void*get_obj_pointer(Object o){
             return o.val.s;
         case Obj_typeid_t:
             return o.val.typeid;
+        default:
+            return NULL;
     }
 }
 
@@ -283,7 +285,6 @@ Object new_complex(long double re, long double im){
     o.type = Obj_complex_t;
     o.val.c[0] = re;
     o.val.c[1] = im;
-    sizeof(Object);
     return o;
 }
 
