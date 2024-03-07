@@ -79,7 +79,7 @@ Object str_starts_with(Object* argv, int argc){
         if(strlen(argv[0].val.s) < strlen(argv[1].val.s)){
             return new_boolean(0);
         }
-        for(int i=0; i < strlen(argv[1].val.s); i++){
+        for(unsigned int i=0; i < strlen(argv[1].val.s); i++){
             if(argv[0].val.s[i] != argv[1].val.s[i]){
                 return new_boolean(0);
             }
@@ -91,7 +91,7 @@ Object str_starts_with(Object* argv, int argc){
         if(strlen(argv[0].val.s) < strlen(argv[i].val.s)){
             continue;
         }
-        for(int i=0; i < strlen(argv[i].val.s); i++){
+        for(unsigned int i=0; i < strlen(argv[i].val.s); i++){
             if(argv[0].val.s[i] != argv[i].val.s[i]){
                 continue;
             }
@@ -105,7 +105,7 @@ Object str_starts_with(Object* argv, int argc){
 char* str_escape(char *str) {
     size_t len = strlen(str);
     char* result = malloc(sizeof(char) * (len + 1));
-    int i = 0;
+    unsigned int i = 0;
     int j = 0;
     while (i < len) {
         if (str[i] == '\\') {

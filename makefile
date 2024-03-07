@@ -1,19 +1,31 @@
+
+OUT_DIR = "build"
+SRC = "src"
+BLT_LIBS = "sulfur_libs/blt_libs"
+
+
+STD_LIBS = "sulfur_libs/std_libs"
+GRAPGIC_LIB = $(STD_LIBS)/graphic
+
+COMMON-FLAG = -fno-builtin-printf -lm -Wall -Wextra -Werror -Wno-format  -Wno-cast-function-type -Wno-unused-variable -Wno-unused-parameter
+COMPILER = "gcc"
+
 win:
 	if not exist build mkdir build
 	if not exist "build/libs" mkdir "build/libs"
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -fno-builtin-printf
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm $(COMMON-FLAG)
 	make stdlibs_win
 
 linux:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -fno-builtin-printf -ldl 
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG)
 	make stdlibs_linux
 
 linux_debug:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -fno-builtin-printf -ldl -fsanitize=address -g
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG) -fsanitize=address -g
 	make stdlibs_linux
 
 
@@ -25,18 +37,18 @@ run:
 	build/sulfur
 
 stdlibs_win:
-	gcc -shared sulfur_libs/std_libs/sulfur_math.c  -o build/libs/math.dll -lm -fno-builtin-printf
-	gcc -shared sulfur_libs/std_libs/graphic/win_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c  -o build/libs/graphic.dll -lm -fno-builtin-printf -lgdi32
-	gcc -shared sulfur_libs/std_libs/lilypad.c  -o build/libs/lilypad.dll -lm -fno-builtin-printf
-	gcc -shared sulfur_libs/std_libs/poppy.c  -o build/libs/poppy.dll -lm -fno-builtin-printf 
-	gcc -shared sulfur_libs/std_libs/why.c  -o build/libs/why.dll -lm -fno-builtin-printf 
+	gcc -shared sulfur_libs/std_libs/sulfur_math.c  -o build/libs/math.dll -lm $(COMMON-FLAG)
+	gcc -shared sulfur_libs/std_libs/graphic/win_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c  -o build/libs/graphic.dll -lm $(COMMON-FLAG) -lgdi32
+	gcc -shared sulfur_libs/std_libs/lilypad.c  -o build/libs/lilypad.dll -lm $(COMMON-FLAG)
+	gcc -shared sulfur_libs/std_libs/poppy.c  -o build/libs/poppy.dll -lm $(COMMON-FLAG) 
+	gcc -shared sulfur_libs/std_libs/why.c  -o build/libs/why.dll -lm $(COMMON-FLAG) 
 
 stdlibs_linux:
-	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c  -o build/libs/math.so -lm -fno-builtin-printf
-	gcc -shared -fPIC sulfur_libs/std_libs/graphic/linux_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c  -o build/libs/graphic.so -lm -fno-builtin-printf -lX11
-	gcc -shared -fPIC sulfur_libs/std_libs/lilypad.c  -o build/libs/lilypad.so -lm -fno-builtin-printf
-	gcc -shared -fPIC sulfur_libs/std_libs/poppy.c  -o build/libs/poppy.so -lm -fno-builtin-printf 
-	gcc -shared -fPIC sulfur_libs/std_libs/why.c  -o build/libs/why.so -lm -fno-builtin-printf 
+	gcc -shared -fPIC sulfur_libs/std_libs/sulfur_math.c  -o build/libs/math.so -lm $(COMMON-FLAG)
+	gcc -shared -fPIC sulfur_libs/std_libs/graphic/linux_graphic.c sulfur_libs/std_libs/graphic/graphic_init.c  -o build/libs/graphic.so -lm $(COMMON-FLAG) -lX11
+	gcc -shared -fPIC sulfur_libs/std_libs/lilypad.c  -o build/libs/lilypad.so -lm $(COMMON-FLAG)
+	gcc -shared -fPIC sulfur_libs/std_libs/poppy.c  -o build/libs/poppy.so -lm $(COMMON-FLAG) 
+	gcc -shared -fPIC sulfur_libs/std_libs/why.c  -o build/libs/why.so -lm $(COMMON-FLAG) 
 
 win_all:
 	make win

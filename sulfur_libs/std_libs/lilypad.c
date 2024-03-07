@@ -72,8 +72,8 @@ Object std_set_val_byte(Object* argv, int argc){
         printf("ERROR in malloc\n");
         exit(1);
     }
-    if(argv[0].type != Obj_ount_t, argv[1].type != Obj_ount_t){
-        printf("ERRRIR in malloc\n");
+    if(argv[0].type != Obj_ount_t || argv[1].type != Obj_ount_t){
+        printf("ERRROR in malloc\n");
         exit(1);
     }
 
@@ -135,3 +135,4 @@ Object __load_lilypad(Sulfur_ctx ctx) {
 }
 
 #endif
+

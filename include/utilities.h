@@ -91,4 +91,6 @@ char *uti_strdup(char *src);
 #define FORR_RANGE(var, start, end) \
     for(int var = start; var > end; var--)
 
+char *normalize_path(char *path);
+
 #endif

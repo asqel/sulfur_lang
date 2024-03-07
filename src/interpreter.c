@@ -47,6 +47,7 @@ Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
             add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
         }
     }
+    return nil_Obj;
 }
 
 Object import_func(Object*arg,int argc){

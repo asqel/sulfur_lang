@@ -46,8 +46,6 @@ Object eval_Ast(Ast*x){
         else{
             int args_len = 0;
             Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
-            sizeof(Funcdef);
-            sizeof(Object);
             Object res = eval_func(args, args_len, *func.val.funcid);
             Obj_free_array(args, args_len);
             return res;
@@ -716,6 +714,7 @@ Object eval_Ast(Ast*x){
             }
         }
     }
+    return nil_Obj;
 }
 
 
