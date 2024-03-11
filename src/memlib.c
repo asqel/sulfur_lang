@@ -371,6 +371,7 @@ void add_count(void* address, int type){
 void remove_count(void* address, int type){
     for(int i = 0; i < REFS_len; i++){
         if(REFS[i].address == address){
+            REFS[i].count -= 1;
             int is_protected = 0;
             for(int i =0; i < protected_refs_len; i++) {
                 if (protected_refs[i] == address) {
@@ -381,7 +382,6 @@ void remove_count(void* address, int type){
             if (is_protected) {
                 return ;
             }
-            REFS[i].count -= 1;
             if(REFS[i].count == 0){
                 if(type == Obj_list_t){
                     Obj_free_array(((list*)address)->elements, ((list*)address)->elements[0].val.i);
