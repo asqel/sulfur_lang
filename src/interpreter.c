@@ -22,6 +22,9 @@ memory MEMORY;
 ref_count* REFS;
 int REFS_len;
 
+void **protected_refs = NULL;
+int protected_refs_len = 0;
+
 Instruction *current_instructions = NULL;
 int *current_index = NULL;
 int instruction_len = 0;

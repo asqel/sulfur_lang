@@ -331,8 +331,29 @@ int get_list_len(Object l){
 
 extern ref_count* REFS;
 extern int REFS_len;
+extern void **protected_refs;
+extern int protected_refs_len;
+
+void add_protected(void *address) {
+    protected_refs_len++;
+    protected_refs = realloc(protected_refs, sizeof(void *) * protected_refs_len);
+    protected_refs[protected_refs_len - 1] = address;
+
+}
 
 void add_count(void* address, int type){
+    for(int i =0; i < protected_refs_len; i++) {
+        if (protected_refs[i] == address) {
+            for(int k = i + 1; i < protected_refs_len; i++) {
+                protected_refs[k - 1] = protected_refs[k];
+            }
+            break;
+        }
+        protected_refs_len--;
+        protected_refs = realloc(protected_refs, sizeof(void *) * protected_refs_len);
+    }
+
+
     for(int i = 0; i < REFS_len; i++){
         if(REFS[i].address == address){
             REFS[i].count += 1;
@@ -350,6 +371,16 @@ void add_count(void* address, int type){
 void remove_count(void* address, int type){
     for(int i = 0; i < REFS_len; i++){
         if(REFS[i].address == address){
+            int is_protected = 0;
+            for(int i =0; i < protected_refs_len; i++) {
+                if (protected_refs[i] == address) {
+                    is_protected = 1;
+                    break;
+                }
+            }
+            if (is_protected) {
+                return ;
+            }
             REFS[i].count -= 1;
             if(REFS[i].count == 0){
                 if(type == Obj_list_t){

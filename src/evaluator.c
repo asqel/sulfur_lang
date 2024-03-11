@@ -47,6 +47,13 @@ Object eval_Ast(Ast*x){
             int args_len = 0;
             Object *args = eval_args(x->root.fun->args, x->root.fun->nbr_arg, &args_len);
             Object res = eval_func(args, args_len, *func.val.funcid);
+
+            if (res.type == Obj_list_t)
+                add_protected(res.val.li);
+            if (res.type == Obj_funcid_t) 
+                add_protected(res.val.funcid);
+            if (res.type == obj_module_t) 
+                add_protected(res.val.module);
             Obj_free_array(args, args_len);
             return res;
         }
