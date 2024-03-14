@@ -128,8 +128,6 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             free(loops);
             
             Object res = func_eval_Ast(code[p].value.ret);
-            if (func.args_mod != 'A')
-                remove_one_stack();
             return res;
         }
 
