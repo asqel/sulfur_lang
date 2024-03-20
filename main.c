@@ -68,6 +68,7 @@ int execute_file(sulfur_args_t *args) {
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
     code = make_jmp_links(code, instruction_len);
+    //code = finish_instrcutions(code, instruction_len);
 
     if (args->show_parse) {
         instructions_print(code, instruction_len);
