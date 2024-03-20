@@ -22,6 +22,9 @@ memory MEMORY;
 ref_count* REFS;
 int REFS_len;
 
+void **protected_refs = NULL;
+int protected_refs_len = 0;
+
 Instruction *current_instructions = NULL;
 int *current_index = NULL;
 int instruction_len = 0;
@@ -47,6 +50,7 @@ Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
             add_object(&MEMORY,o.val.module->MEM->keys[i],o.val.module->MEM->values[i]);
         }
     }
+    return nil_Obj;
 }
 
 Object import_func(Object*arg,int argc){

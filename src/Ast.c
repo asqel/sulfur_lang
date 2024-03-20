@@ -105,6 +105,7 @@ char* get_op_as_str(int type){
         case Ast_minus_assign_t:
             return "-=";
     }
+    return "";
 }
 
 int print_ast(Ast x){
@@ -168,6 +169,7 @@ int print_ast(Ast x){
             printf("Sy %c%c ", SYNTAX[x.root.sy][0], SYNTAX[x.root.sy][1]);
             return 0;
     }
+    return 0;
 }
 
 void free_ast(Ast x){
@@ -203,10 +205,12 @@ char *get_op_str(Ast x)
 {
     if(x.type == Ast_op_t)
         return get_op(x.root.op);
-    else if(x.type == Ast_syntax_t)
+    else if(x.type == Ast_syntax_t) {
         if(x.root.sy == dot)
             return ".";
         if(x.root.sy == colon)
             return ":";
+    }
+    return NULL;
             
 }

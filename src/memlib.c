@@ -28,7 +28,7 @@ int Obj_cmp(Object obj1,Object obj2){
             case Obj_complex_t:
                 return *obj1.val.c == *obj2.val.c && obj1.val.c[1] == obj2.val.c[1];
             case Obj_boolean_t:
-                obj1.val.b == obj2.val.b;
+                return obj1.val.b == obj2.val.b;
             default:
                 //ERROR
                 break;
@@ -135,6 +135,8 @@ void*get_obj_pointer(Object o){
             return o.val.s;
         case Obj_typeid_t:
             return o.val.typeid;
+        default:
+            return NULL;
     }
 }
 
@@ -283,7 +285,6 @@ Object new_complex(long double re, long double im){
     o.type = Obj_complex_t;
     o.val.c[0] = re;
     o.val.c[1] = im;
-    sizeof(Object);
     return o;
 }
 
@@ -330,8 +331,29 @@ int get_list_len(Object l){
 
 extern ref_count* REFS;
 extern int REFS_len;
+extern void **protected_refs;
+extern int protected_refs_len;
+
+void add_protected(void *address) {
+    protected_refs_len++;
+    protected_refs = realloc(protected_refs, sizeof(void *) * protected_refs_len);
+    protected_refs[protected_refs_len - 1] = address;
+
+}
 
 void add_count(void* address, int type){
+    for(int i =0; i < protected_refs_len; i++) {
+        if (protected_refs[i] == address) {
+            for(int k = i + 1; i < protected_refs_len; i++) {
+                protected_refs[k - 1] = protected_refs[k];
+            }
+            break;
+        }
+        protected_refs_len--;
+        protected_refs = realloc(protected_refs, sizeof(void *) * protected_refs_len);
+    }
+
+
     for(int i = 0; i < REFS_len; i++){
         if(REFS[i].address == address){
             REFS[i].count += 1;
@@ -350,6 +372,16 @@ void remove_count(void* address, int type){
     for(int i = 0; i < REFS_len; i++){
         if(REFS[i].address == address){
             REFS[i].count -= 1;
+            int is_protected = 0;
+            for(int i =0; i < protected_refs_len; i++) {
+                if (protected_refs[i] == address) {
+                    is_protected = 1;
+                    break;
+                }
+            }
+            if (is_protected) {
+                return ;
+            }
             if(REFS[i].count == 0){
                 if(type == Obj_list_t){
                     Obj_free_array(((list*)address)->elements, ((list*)address)->elements[0].val.i);

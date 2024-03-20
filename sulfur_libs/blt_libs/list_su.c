@@ -35,6 +35,7 @@ Object append_list(Object*obj,int n_arg){
             return nil_Obj;
         }
     }
+    return nil_Obj;
     
 }
 

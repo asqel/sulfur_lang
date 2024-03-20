@@ -734,6 +734,7 @@ int cond_parse(int start,int end,int len,int p){
     if(start!=-1){
         return p<end;
     }
+    return 0;
     
 }
 

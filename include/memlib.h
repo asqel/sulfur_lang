@@ -227,6 +227,11 @@ memory*add_object_cpy(memory *MEMORY, char *name, Object x);
 extern void (**TO_CALL)();
 extern int TO_CALL_LEN;
 
+extern void **protected_refs;
+extern int protected_refs_len;
+
+void add_protected(void *address);
+
 void  init_to_call();
 
 void add_to_call(void (*func)());
