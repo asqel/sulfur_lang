@@ -1,4 +1,11 @@
-import os
+import os, sys
+
+profan_path = "../profanOS"
+if sys.argv[1:]:
+    profan_path = sys.argv[1]
+if not os.path.exists(profan_path):
+    print(f"path {profan_path} does not exist")
+    exit(1)
 
 CC      = "gcc"
 LD      = "ld"
@@ -6,7 +13,7 @@ LD      = "ld"
 OUTPUT  = "build/sulfur"
 
 CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE -D __profanOS__"
-LDFLAGS = " -nostdlib -L../profanOS/out/zlibs -T build/profan/_link.ld -z max-page-size=0x1000 -lc -lm"
+LDFLAGS = f"-nostdlib -L {profan_path}/out/zlibs -T build/profan/_link.ld -z max-page-size=0x1000 -lc -lm"
 
 OBJDIR  = "build/profan_objects"
 
