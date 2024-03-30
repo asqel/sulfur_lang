@@ -1,27 +1,23 @@
 #include <syscall.h>
 #include <stdlib.h>
 #include <string.h>
+#include <profan.h>
 #include <stdio.h>
 
 
 extern int main(int argc, char **argv);
-int entry2(int argc, char **argv);
 
-int entry(int argc, char **argv) {
-    return entry2(argc, argv);
-}
+int entry(int argc, char **argv, char **envp) {
+    // init the environ pointer
+    init_environ_ptr(envp);
 
-char *current_dir;
-
-int entry2(int argc, char **argv) {
-    current_dir = getenv("PWD");
-
-    main(argc, argv);
+    // we need to call a other entry function
+    int exit_code = main(argc, argv);
 
     // free memory
-    c_mem_free_all(c_process_get_pid());
+    profan_cleanup();
 
-    return 0;
+    return exit_code;
 }
 
 long long __moddi3(long long a, long long b) {
