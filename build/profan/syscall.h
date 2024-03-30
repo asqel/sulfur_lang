@@ -70,14 +70,15 @@
 
 #define c_sys_reboot ((void (*)(void)) hi_func_addr(24))
 #define c_sys_shutdown ((void (*)(void)) hi_func_addr(25))
-#define c_binary_exec ((int (*)(sid_t, int, char **)) hi_func_addr(26))
+
+#define c_binary_exec ((int (*)(sid_t, int, char **, char **)) hi_func_addr(26))
 #define c_sys_kinfo ((char *(*)(void)) hi_func_addr(27))
 
 #define c_serial_read ((void (*)(int, char *, uint32_t)) hi_func_addr(28))
 #define c_serial_write ((void (*)(int, char *, uint32_t)) hi_func_addr(29))
 #define c_mouse_call ((int (*)(int, int)) hi_func_addr(30))
 
-#define c_process_set_sheduler ((void (*)(int)) hi_func_addr(31))
+#define c_process_set_scheduler ((void (*)(int)) hi_func_addr(31))
 #define c_process_create ((int (*)(void *func, int, char *, int, ...)) hi_func_addr(32))
 #define c_process_fork ((int (*)(void)) hi_func_addr(33))
 #define c_process_sleep ((int (*)(uint32_t, uint32_t)) hi_func_addr(34))
@@ -92,5 +93,7 @@
 
 #define c_dily_unload ((int (*)(uint32_t)) hi_func_addr(42))
 #define c_dily_load ((int (*)(char *, uint32_t)) hi_func_addr(43))
+
+#define c_scuba_generate ((void (*)(void *, uint32_t)) hi_func_addr(44))
 
 #endif

@@ -15,11 +15,11 @@
 #endif
 
 typedef struct tm {
-    int    tm_sec ;  // seconds [0,61]
-    int    tm_min ;  // minutes [0,59]
+    int    tm_sec;   // seconds [0,61]
+    int    tm_min;   // minutes [0,59]
     int    tm_hour;  // hour [0,23]
     int    tm_mday;  // day of month [1,31]
-    int    tm_mon ;  // month of year [0,11]
+    int    tm_mon;   // month of year [0,11]
     int    tm_year;  // years since 1900
     int    tm_wday;  // day of week [0,6] (Sunday = 0)
     int    tm_yday;  // day of year [0,365]
@@ -68,12 +68,10 @@ typedef struct {
 
 typedef struct {
     char *path;     // path to file
-    sid_t sid;      // sector id (can be null)
 
     int argc;       // argument count
     char **argv;    // argument list
-
-    uint32_t vcunt; // virtual count
+    char **envp;    // environment list
 
     uint8_t sleep_mode;  // sleep mode
 } runtime_args_t;
@@ -167,7 +165,6 @@ typedef struct FILE {
 
     char *buffer;
     int   buffer_size;
-    int   buffer_pid;
     int   old_offset;
 
     int   fd;
@@ -191,7 +188,7 @@ union sigval { /* Data passed with notification */
     void *sival_ptr; /* Pointer value */
 };
 
-typedef struct sigevent_t {
+typedef struct sigevent {
     int    sigev_notify;  /* Notification method */
     int    sigev_signo;   /* Notification signal */
     union sigval sigev_value; /* Data passed with notification */
