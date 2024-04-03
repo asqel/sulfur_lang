@@ -267,7 +267,7 @@ Object _pow(Object a,Object b){
         }
         return new_floap(sulfur_pow(a.val.i, b.val.f));
     }
-    printf("ERROR : operation(^) between 2 types not supported %s %s\n",
+    printf("ERROR : operation(**) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -595,4 +595,13 @@ Object fl_div(Object a,Object b){
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 
+}
+
+Object xor_op(Object a, Object b) {
+    if(a.type == Obj_ount_t && b.type == Obj_ount_t){
+        return new_ount(a.val.i ^ b.val.i);
+    }
+    printf("ERROR : operation(^) between 2 types not supported %s %s\n",
+        Obj_type_as_str(a.type), Obj_type_as_str(b.type));
+    exit(1);
 }

@@ -80,6 +80,7 @@ typedef struct Instruction{
         char *goto_sec;
         int jmp;
         Object *obj;
+        int jmp_length;
     }value;
     int line;
     char facultative; // used by expression / pass
@@ -107,9 +108,14 @@ enum instruction_type{
     inst_proceed_t,
     inst_stop_t,
     inst_jmp_t, // jump to index of instruction
-    inst_op_t,
-    inst_push_t,
-    inst_pop_t,
+    // instructions of bytecode
+    inst_S_op_t,
+    inst_S_push_t,
+    inst_S_push_1b_t,
+    inst_S_push_0b_t,
+    inst_S_push_nil_t,
+    inst_S_push_i_t,
+    inst_S_pop_t,
 };
 
 enum instruction_op_stack {

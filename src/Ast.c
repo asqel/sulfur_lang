@@ -53,6 +53,7 @@ int op_tok_to_op_ast(int v,int type){
             case OP_MINUS_ASSIGN : return Ast_minus_assign_t;
             case OP_LSHIFT : return Ast_lshift_t;
             case OP_RSHIFT : return Ast_rshift_t;
+            case OP_BIT_XOR : return Ast_bit_xor_t;
         }
     }
     return -1;
@@ -69,7 +70,7 @@ char* get_op_as_str(int type){
         case Ast_div_t:
             return "/";
         case Ast_pow_t:
-            return "^";
+            return "**";
         case Ast_mod_t:
             return "%";
         case Ast_fldiv_t:

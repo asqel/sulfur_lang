@@ -173,23 +173,28 @@ the anonymous function scope is the same as before entering the anonymous functi
 
 ## Operatos
 ### Arithmetic operators
-- `+` : addition
-- `*` : multiplication
-- `-` : substraction
-- `/` : division
-- `^` : power
-- `%` : modulo
-- `\` : floor division
+- `+`  : addition
+- `*`  : multiplication
+- `-`  : substraction
+- `/`  : division
+- `**` : power
+- `%`  : modulo
+- `\`  : floor division
 ### Bitwise operators
 - `>>` : right shift bit
 - `<<` : left shift bit
+- `|`  : bitwise AND
+- `&`  : bitwise OR
+- `~`  : bitwise NOT
+- `^`  : bitwise XOR
 ### Logical operators
 - `&&` : logical AND
 - `||` : logical OR
-- `!` : logical NOT
+- `!`  : logical NOT
+- `^^` : logical XOR
 ### acces members operators
-- `.` : dot used to acces module members or methods
-- `:` : colon used to acces list members or string characters
+- `.`  : dot used to acces module members or methods
+- `:`  : colon used to acces list members or string characters
 ### comparison operators
 - `==` : equal
 - `!=` : not equal
@@ -203,7 +208,7 @@ import(`'file name'`,`'alias'`); \
 or \
 import(`'file name'`);
 
-`'file_name'` is the name of the file tha will be loaded it can also be one of the std libs
+`'file name'` is the name of the file tha will be loaded it can also be one of the std libs
 `'alias'` will be the name used to access its members
 
 #### example :

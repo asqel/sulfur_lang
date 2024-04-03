@@ -23,6 +23,12 @@ Token *lexe(char *input) {
     toks[n_tok-1] = nil_token;
 
     while (p < len) {
+        if (text[p] == '#' && p + 1 < len && text[p + 1] == '!') {
+            p += 2;
+            while (p < len && text[p] != '\n')
+                p++;
+            continue;
+        }
         if (text[p] == '/' && p+1 < len && text[p+1] == '/') {
             while (p < len && text[p] != '\n')
                 p++;

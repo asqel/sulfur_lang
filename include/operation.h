@@ -54,4 +54,6 @@ Object lshift(Object a,Object b);
 
 Object rshift(Object a,Object b);
 
+Object xor_op(Object a, Object b);
+
 #endif
