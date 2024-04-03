@@ -1,0 +1,12 @@
+
+- `__path__` : The path of the executed .su file.
+- `__interpreter_path__` : The path of the interpreter.
+- `__dir_path__` : The directory path of the interpreter.
+- `__os__` : The name of the OS, or "UNKNOWN" if not known.
+- `__version__` : The version of the interpreter.
+- `__base_precision__` : The base precision for printing floap.
+- `nil` : A constant used as null.
+- `_` : A variable guaranteed to exist, set to nil by default.
+- `__` : A variable guaranteed to exist, set to nil by default.
+- `___` : A variable guaranteed to exist, set to nil by default.
+- `____` : A variable guaranteed to exist, set to nil by default.

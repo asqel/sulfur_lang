@@ -1,6 +1,6 @@
 # Sulfur programming language documentation
 
-## Introduction
+# Introduction
 
 Sulfur is a programming language written in C that supports Windows, Linux, and partially macOS. This documentation provides an overview of the language's features, syntax, and built-in functions.
 
@@ -16,6 +16,13 @@ you need to have gcc installed in order To compile and run the interpreter:
 - For profanOS : `make profan` and follow the instructions
 
 it will generate a file called sulfur and run it without argument
+
+### Identifier
+Sequence of character that can contain any alphanumerical character and cannot start with a number,
+it can also contain some special character such as `_` but not if the character is an opeartor
+    ```
+    ```
+
 ## Built-in types
 
 - `ount`     : Signed integer (e.g., `7` or `0x7` for hex notation)
@@ -26,58 +33,71 @@ it will generate a file called sulfur and run it without argument
 - `list`     : Untyped lists (e.g., `list(3, 4, "salut", 1b, list(0, -1))`)
 - `nil` : Any variable can be set to `nil` (e.g., `a = nil;`)
 
-## Instructions / statements syntax 
+# Instructions / statements syntax 
 
-### Setting / changing the value of a variable
-`Var_name` = *Expression*; \
 
-#### example :
+## Setting / changing the value of a variable
+a variable name must be a valide [identifier](#identifier)
+
+```js
+var_name = *Expression*;
 ```
+
+### example :
+```js
 pi = 3.14;
 ```
 
-### conditons
-if ( *Expression* ) { //first condition \
-    &emsp;**Instructions**
 
-} elif ( *Expression* ) { // secondary condition \
-    &emsp;**Instructions**
+## conditons
+conditions are used to control the flow of instructions
 
-} elif ( *Expression* ) { // third condition \
-    &emsp;**Instructions**
+```js
+if ( *Expression* ) { //first condition 
+    **Instructions**
 
-} else { \
-    &emsp;**Instructions**
+} elif ( *Expression* ) { // secondary condition 
+    **Instructions**
+
+} elif ( *Expression* ) { // third condition 
+    **Instructions**
+
+} else {
+    **Instructions**
 
 }
-
-#### example :
 ```
+
+### example :
+```php
 if (pi > 4) {
     print("pi is greater than 4");
 }
-
 elif (pi == "hi") {
     print("pi is a string");
 }
-
 else {
     print("pi is pi");
 }
 ```
 
-### for loop
-for (`name_of_var` from **Expression** to **Expression**) {
+## for loop
+for loops are used to perform instructions multiple times with an iterator that will take value according to the values of start and end expressions
+```js
+for (name_of_var from *Expression** to *Expression*) {
     Instructions
 }
-
-#### example :
 ```
+
+### example :
+```js
 for (i from 0 to 10) {
     println(i);
 }
 ```
-#### technical explanations
+
+
+### technical explanations
     if start_Value < end_Value then 
         for loop will execute the instruction in it while the var `name_of_var` < end_Value
         by first setting the var with name `name_of_var` to start_Value
@@ -91,44 +111,57 @@ for (i from 0 to 10) {
     if start_Value == end_Value then
         nothing will be executed and the var `name_of_var` will be set to start_Value
 
-### while loop
-while(**Expression**){ \ // while condition
-    instructions \
+## while loop
+while loops are used to performe instructions until a condtion is unmet
+
+```js
+while(**Expression**){  // while condition
+    instructions 
 }
-#### example :
 ```
+
+## example :
+```js
 i = 0;
 while (i < 10) {
     println(i);
     i += 1;
 }
 ```
-### include
+
+## include
+> !! this section is in work in progress !!
 include "path to file"
 
-include will juste copy and paste the code of the file into the current file after lexing
+include will juste copy and paste the code of the file into the current file after lexing   
 you can put '//' in front of the file for a relative path
 
 DONT DO CIRCULAR INCLUDE (when 'a' include 'b' and 'b' include 'a')
 
-#### example :
+### example :
 ```
 include "/my_libs/hello.su"
 include "//relative_file.su"
 ```
 
-### goto / sections 
-goto section_name // go to that section
+## goto / sections 
+gotos are used to control the flow of instruction
 
-section_name:: // section declaration
-
-#### example :
+```C
+goto section_name
 ```
+
+```js
+section_name:: // section declaration
+```
+
+### example :
+```js
 goto a
 println("this will not be printed");
 a::
 ```
-#### techanical explanation :
+### techanical explanation :
 the goto statement fisrt search the section downward
 then if it does not find it will search upward
 
@@ -136,12 +169,15 @@ multiple sections can have the same name
 
 a section can have the same name as a variable and that will cause no issues
 
-### anonymous function 
+## anonymous function 
+anonymous functions are block of instruction that can return a value and can be used in expressions
 
+```js
 {**Instructions**}
-
-#### example :
 ```
+
+### example :
+```js
 pi = 3;
 println({
     if (pi > 3){
@@ -151,10 +187,10 @@ println({
     }
 });
 ```
-#### techanical explanation :
-the anonymous function scope is the same as before entering the anonymous function
+### techanical explanation :
+the anonymous function scope is the same as before entering the anonymous function every variable declared within the anonymous function will also be declared in the said scope
 
-## Keywords
+# Keywords
 - `if`      : Used for conditional statements.
 - `else`    : Used in conditional statements.
 - `elif`    : Used in conditional statements.
@@ -162,14 +198,13 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `for`     : Used for loop constructs.
 - `class`   : Used to declare a class (not impleted yet).
 - `return`  : Used to return a value from a function.
-- `Example` : return Value;
-- `def`     : Used to declare a function (not implemented yet).
+- `def`     : Used to declare a function.
 - `from`    : Used in for-loops to declare the starting value.
 - `to`      : Used in for-loops to declare the ending value.
 - `goto`    : Used to jump to a labeled section.
 - `proceed` : goto next iteration of the loop.
 - `stop`    : break out of a loop earlier.
-- `include`
+- `include` : include every token of a file depending on the including mode
 
 ## Operatos
 ### Arithmetic operators
@@ -202,39 +237,71 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `<=` : less or equal
 - `>`  : greater
 - `<`  : less
+## other operators
+- `$` : unpack an object into arguments in function call
 
-## imports
-import(`'file name'`,`'alias'`); \
-or \
-import(`'file name'`);
+# imports
+import function is used to import modules from files
+```js
+import('file name','alias'); 
+```
+or 
+```js
+import('file name'); 
+```
 
 `'file name'` is the name of the file tha will be loaded it can also be one of the std libs
 `'alias'` will be the name used to access its members
 
-#### example :
-```
+### example :
+```js
 import("math","mt");
 println(mt.pi);
 ```
 
-## accessing list / string
+# accessing list / string
 a list is mutable  \
 a string is immutable \
 mutable means its members can be changed \
 immutable means its members can't be changed
 
-`l : index`
-`s : index`
-
-if index is less than 0 the length will be returned
-
-#### example :
+```js
+l : index
 ```
+```js
+s : index
+```
+
+if index is -1 the length will be returned
+
+### example :
+```js
 l = list(3,4);
 println("fist element", l:0);
 println("length", l : -1);
 ```
-## the interpreter
+
+# defining a function
+> work in progress
+
+commas are optionals in function declaration
+if last param has $ it will be a packed param
+use arg:index to acces elements, it can be emptyu
+```js
+def func_name(arg1, arg2) {
+    instructions
+}
+```
+
+```js
+def func_name(arg1, $arg2) {
+    instructions
+}
+```
+
+
+
+# the interpreter
 if it is run without a path to a file the shell will be launched \
 available flags :
 ```
@@ -245,7 +312,7 @@ available flags :
 -v, --version       show sulfur version and exit
 ```
 
-## Makefile
+# Makefile
 
 - `win` : Compile for Windows
 - `linux` : Compile for Linux
@@ -262,40 +329,7 @@ Files can also be downloaded from [stable releases](https://github.com/asqel/sul
 and from the automated [repository](https://github.com/elydre/sulfur_lang/releases/tag/latest) (linux, one-file and profanOS)
 
 
-## Built-in Functions
-- `print(...)` : Print values to stdout, separated by spaces.
-- `println(...)` : Print values to stdout with a newline character.
-- `input()` : Read input from stdin until a newline and return it as a string.
-- `time()` : Return the Unix time in milliseconds as an ount.
-- `import(File, As)` : Import a file as As.
-- `sleep(x)` : Pause execution for x milliseconds.
-- `bool(x)` : Return the boolean value of x.
-- `ount(x)` : Return the ount value of x.
-- `floap(x)` : Return the floap value of x.
-- `list(...)` : Return a list composed of its arguments.
-- `type(x)` : Return the type of x as a string.
-- `__set_precision(x)` : Set the precision of floap when printing.
-- `__get_precision()` : Return the precision of floap when printing.
-- `var_exists(x)` : Check if the variable x exists.
-- `chr(...)` : Return a string composed of the values in the arguments.
-- `asc_val(x)` : Return the ASCII value of the first character in x.
-- `method(x)` : Return the methods of x as a string.
-- `pop(x)` : Remove the last element of x (x must be a list).
-- `rand()` : Return a random floap between 0 and 1.
-- `__print_memory__()` : Print the memory.
-- `__set_flush__(x)` : Control whether the interpreter should fflush(stdout) when printing.
+## [Built-in functions](doc/built-in/functions/intro.md)
 
-## Built-in Variables
-
-- `__path__` : The path of the executed .su file.
-- `__interpreter_path__` : The path of the interpreter.
-- `__dir_path__` : The directory path of the interpreter.
-- `__os__` : The name of the OS, or "UNKNOWN" if not known.
-- `__version__` : The version of the interpreter.
-- `__base_precision__` : The base precision for printing floap.
-- `nil` : A constant used as null.
-- `_` : A variable guaranteed to exist, set to nil by default.
-- `__` : A variable guaranteed to exist, set to nil by default.
-- `___` : A variable guaranteed to exist, set to nil by default.
-- `____` : A variable guaranteed to exist, set to nil by default.
+## [Built-in variables](doc/built-in/vars/intro.md)
 
