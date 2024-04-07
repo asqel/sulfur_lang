@@ -1,19 +1,26 @@
-import os
+import os, sys
+
+profan_path = "../profanOS"
+if sys.argv[1:]:
+    profan_path = sys.argv[1]
+if not os.path.exists(profan_path):
+    print(f"path {profan_path} does not exist")
+    exit(1)
 
 CC      = "gcc"
 LD      = "ld"
 
 OUTPUT  = "build/sulfur"
 
-CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE -D __profanOS__"
-LDFLAGS = "-T build/profan/_link.ld"
+CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE -D __profanOS__ -nostdinc"
+LDFLAGS = f"-nostdlib -L {profan_path}/out/zlibs -T build/profan/_link.ld -z max-page-size=0x1000 -lc -lm"
 
 OBJDIR  = "build/profan_objects"
 
 SRC_DIRS = ["src", "sulfur_libs/blt_libs", "sulfur_libs/std_libs", "sulfur_libs/std_libs/graphic"]
 
 ENDNOTE = """
-    The  file  "sulfur.bin"  was  successfully
+    The  file  "sulfur.elf"  was  successfully
      generated from the output folder "build/"
     please move it to the profanOS file system!
 """
@@ -33,8 +40,7 @@ def compile_file(src, dir):
     return obj
 
 def link_files(entry, objs, output = OUTPUT):
-    execute_command(f"{LD} {LDFLAGS} -o {output}.pe {entry} {' '.join(objs)}")
-    execute_command(f"objcopy -O binary {output}.pe {output}.bin")
+    execute_command(f"{LD} {LDFLAGS} -o {output}.elf {entry} {' '.join(objs)}")
 
 def main():
     execute_command(f"mkdir -p {OBJDIR}")
@@ -48,11 +54,10 @@ def main():
         )
 
     objs.append(compile_file("main.c", "."))
+    objs.append(compile_file("_i3.c", "build/profan"))
 
     entry = compile_file("_entry.c", "build/profan")
     link_files(entry, objs)
-
-    execute_command(f"rm {OUTPUT}.pe")
 
     print(ENDNOTE)
 

@@ -15,11 +15,11 @@
 #endif
 
 typedef struct tm {
-    int    tm_sec ;  // seconds [0,61]
-    int    tm_min ;  // minutes [0,59]
+    int    tm_sec;   // seconds [0,61]
+    int    tm_min;   // minutes [0,59]
     int    tm_hour;  // hour [0,23]
     int    tm_mday;  // day of month [1,31]
-    int    tm_mon ;  // month of year [0,11]
+    int    tm_mon;   // month of year [0,11]
     int    tm_year;  // years since 1900
     int    tm_wday;  // day of week [0,6] (Sunday = 0)
     int    tm_yday;  // day of year [0,365]
@@ -68,12 +68,10 @@ typedef struct {
 
 typedef struct {
     char *path;     // path to file
-    sid_t sid;      // sector id (can be null)
 
     int argc;       // argument count
     char **argv;    // argument list
-
-    uint32_t vcunt; // virtual count
+    char **envp;    // environment list
 
     uint8_t sleep_mode;  // sleep mode
 } runtime_args_t;
@@ -109,10 +107,6 @@ struct drand48_data {
     unsigned long long __a; /* Factor in congruential formula.  */
 };
 
-// more things for stdlib :
-typedef unsigned int size_t;
-typedef unsigned short wchar_t;
-
 typedef struct _Mbstatet
 { // state of a multibyte translation
     unsigned long _Wchar;
@@ -120,24 +114,6 @@ typedef struct _Mbstatet
 } _Mbstatet;
 
 typedef _Mbstatet mbstate_t;
-
-typedef signed char        int_least8_t;
-typedef short              int_least16_t;
-typedef int                int_least32_t;
-typedef long long          int_least64_t;
-typedef unsigned char      uint_least8_t;
-typedef unsigned short     uint_least16_t;
-typedef unsigned int       uint_least32_t;
-typedef unsigned long long uint_least64_t;
-
-typedef signed char        int_fast8_t;
-typedef int                int_fast16_t;
-typedef int                int_fast32_t;
-typedef long long          int_fast64_t;
-typedef unsigned char      uint_fast8_t;
-typedef unsigned int       uint_fast16_t;
-typedef unsigned int       uint_fast32_t;
-typedef unsigned long long uint_fast64_t;
 
 typedef void (*oefuncp)(int, void *);  /* on_exit function pointer */
 typedef int (*__compar_fn_t)(const void *, const void *);
@@ -155,6 +131,7 @@ struct random_data {
 
 typedef void *locale_t; // TODO : implement locale_t
 
+typedef __SIZE_TYPE__ size_t;
 typedef unsigned char __string_uchar_t;
 typedef int            errno_t;
 typedef unsigned short wctype_t;
@@ -163,11 +140,11 @@ typedef size_t rsize_t;
 
 typedef struct FILE {
     char *filename;
-    uint32_t mode;
+    uint8_t mode;
+    uint8_t error;
 
     char *buffer;
     int   buffer_size;
-    int   buffer_pid;
     int   old_offset;
 
     int   fd;
@@ -191,7 +168,7 @@ union sigval { /* Data passed with notification */
     void *sival_ptr; /* Pointer value */
 };
 
-typedef struct sigevent_t {
+typedef struct sigevent {
     int    sigev_notify;  /* Notification method */
     int    sigev_signo;   /* Notification signal */
     union sigval sigev_value; /* Data passed with notification */

@@ -15,7 +15,7 @@
 #include "../../include/interpreter.h"
 
 #ifdef __profanOS__
-    #include <syscall.h>
+    #include <profan/syscall.h>
 #endif
 
 

@@ -1,9 +1,9 @@
 #ifndef FILESYS_LIB_ID
-#define FILESYS_LIB_ID 1010
-#define DEVIO_LIB_ID   1015
-#define FMOPEN_LIB_ID  1016
+#define FILESYS_LIB_ID 1002
+#define DEVIO_LIB_ID   1003
+#define FMOPEN_LIB_ID  1004
 
-#include <type.h>
+#include <profan/type.h>
 
 #ifndef NULL_SID
 #define NULL_SID ((sid_t) {0, 0})
@@ -29,17 +29,11 @@
 #define IS_SAME_SID(sid1, sid2) (sid1.device == sid2.device && sid1.sector == sid2.sector)
 #endif
 
-#define DEVIO_STDOUT 0
-#define DEVIO_STDERR 1
-#define DEVIO_BUFFER 2
-
 #define fu_get_file_size(sid) (c_fs_cnt_get_size(c_fs_get_main(), sid))
 #define fu_set_file_size(sid, size) (c_fs_cnt_set_size(c_fs_get_main(), sid, size))
 
 #define fu_fctf_write(sid, buf, offset, size) (fu_fctf_rw(sid, buf, offset, size, 0))
 #define fu_fctf_read(sid, buf, offset, size) (fu_fctf_rw(sid, buf, offset, size, 1))
-#define fu_fctf_flush(sid) (fu_fctf_rw(sid, NULL, 0, 0, 2))
-
 
 #define get_func_addr ((uint32_t (*)(uint32_t, uint32_t)) *(uint32_t *) 0x1ffffb)
 
@@ -65,6 +59,19 @@
 #define fu_get_vdisk_info ((uint32_t *(*)(void)) get_func_addr(FILESYS_LIB_ID, 19))
 
 #endif
+
+#ifndef SEEK_SET
+#define SEEK_SET 0
+#endif
+
+#ifndef SEEK_CUR
+#define SEEK_CUR 1
+#endif
+
+#ifndef SEEK_END
+#define SEEK_END 2
+#endif
+
 #ifndef FMOPEN_LIB_C
 
 #define fm_open ((int (*)(char *)) get_func_addr(FMOPEN_LIB_ID, 2))
