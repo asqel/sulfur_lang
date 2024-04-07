@@ -1,7 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include <type.h>
+#include <profan/type.h>
 
 extern int signgam;
 
@@ -113,5 +113,6 @@ double ceil(double x);
 double tan(double x);
 double sin(double x);
 double pow(double x, double y);
+double fmod(double x, double y);
 
 #endif

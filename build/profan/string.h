@@ -1,7 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <type.h>
+#include <profan/type.h>
+#include <stddef.h>
 
 char  *basename(const char *path);
 void   bcopy(const void *s2, void *s1, size_t n);

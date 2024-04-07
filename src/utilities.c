@@ -14,12 +14,14 @@
 #include <mach-o/dyld.h>
 #else
 #include <unistd.h>
-#include <linux/limits.h>
 #endif
 
 #ifdef __profanOS__
-#include "filesys.h"
-#include "syscall.h"
+#include <profan/filesys.h>
+#include <profan/syscall.h>
+#define PATH_MAX 256
+#else
+#include <linux/limits.h>
 #endif
 
 //check if a char is in a string

@@ -5,7 +5,7 @@
 #else
     #include "../../../include/memlib.h"
 #endif
-#include <syscall.h>
+#include <profan/syscall.h>
 
 int width = 400;
 int height = 300;

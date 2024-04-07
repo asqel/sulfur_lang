@@ -107,10 +107,6 @@ struct drand48_data {
     unsigned long long __a; /* Factor in congruential formula.  */
 };
 
-// more things for stdlib :
-typedef unsigned int size_t;
-typedef unsigned short wchar_t;
-
 typedef struct _Mbstatet
 { // state of a multibyte translation
     unsigned long _Wchar;
@@ -118,24 +114,6 @@ typedef struct _Mbstatet
 } _Mbstatet;
 
 typedef _Mbstatet mbstate_t;
-
-typedef signed char        int_least8_t;
-typedef short              int_least16_t;
-typedef int                int_least32_t;
-typedef long long          int_least64_t;
-typedef unsigned char      uint_least8_t;
-typedef unsigned short     uint_least16_t;
-typedef unsigned int       uint_least32_t;
-typedef unsigned long long uint_least64_t;
-
-typedef signed char        int_fast8_t;
-typedef int                int_fast16_t;
-typedef int                int_fast32_t;
-typedef long long          int_fast64_t;
-typedef unsigned char      uint_fast8_t;
-typedef unsigned int       uint_fast16_t;
-typedef unsigned int       uint_fast32_t;
-typedef unsigned long long uint_fast64_t;
 
 typedef void (*oefuncp)(int, void *);  /* on_exit function pointer */
 typedef int (*__compar_fn_t)(const void *, const void *);
@@ -153,6 +131,7 @@ struct random_data {
 
 typedef void *locale_t; // TODO : implement locale_t
 
+typedef __SIZE_TYPE__ size_t;
 typedef unsigned char __string_uchar_t;
 typedef int            errno_t;
 typedef unsigned short wctype_t;
@@ -161,7 +140,8 @@ typedef size_t rsize_t;
 
 typedef struct FILE {
     char *filename;
-    uint32_t mode;
+    uint8_t mode;
+    uint8_t error;
 
     char *buffer;
     int   buffer_size;

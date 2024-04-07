@@ -1,29 +1,31 @@
-#include <syscall.h>
-#include <stdlib.h>
-#include <string.h>
+// standard entry point for ELF compiled files
+
+#include <setjmp.h>
 #include <profan.h>
-#include <stdio.h>
 
+extern int main(int argc, char **argv, char **envp);
 
-extern int main(int argc, char **argv);
+extern void __init_libc(char **envp, void *exit_func);
+extern void __exit_libc();
+
+void __entry_exit(int ret);
+
+jmp_buf env;
 
 int entry(int argc, char **argv, char **envp) {
-    // init the environ pointer
-    init_environ_ptr(envp);
+    __init_libc(envp, __entry_exit);
 
-    // we need to call a other entry function
-    int exit_code = main(argc, argv);
+    int val = setjmp(env);
 
-    // free memory
-    profan_cleanup();
+    if (val == 0) {
+        val = main(argc, argv, envp) + 1;
+        profan_cleanup();
+    }
+    __exit_libc();
 
-    return exit_code;
+    return val - 1;
 }
 
-long long __moddi3(long long a, long long b) {
-    return (long long) ((int) a % (int) b);
-}
-
-long long __divdi3(long long a, long long b) {
-    return (long long) ((int) a / (int) b);
+void __entry_exit(int ret) {
+    longjmp(env, ret + 1);
 }

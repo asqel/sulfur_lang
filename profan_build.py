@@ -12,7 +12,7 @@ LD      = "ld"
 
 OUTPUT  = "build/sulfur"
 
-CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE -D __profanOS__"
+CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE -D __profanOS__ -nostdinc"
 LDFLAGS = f"-nostdlib -L {profan_path}/out/zlibs -T build/profan/_link.ld -z max-page-size=0x1000 -lc -lm"
 
 OBJDIR  = "build/profan_objects"
@@ -54,6 +54,7 @@ def main():
         )
 
     objs.append(compile_file("main.c", "."))
+    objs.append(compile_file("_i3.c", "build/profan"))
 
     entry = compile_file("_entry.c", "build/profan")
     link_files(entry, objs)
