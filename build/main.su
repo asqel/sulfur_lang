@@ -1,1 +1,9 @@
-3^5
+for (i from 0 to 10) {
+	for (k from 0 to 10) {
+		println('hi2')
+		stop 2;
+	}
+	println('hi')
+}
+println("hhh\n".esc())
+

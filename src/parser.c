@@ -137,7 +137,7 @@ int find_highest_op(Ast*e,int len){
             return i;
         }
     }
-    //search for ^(pow)
+    //search for **(pow)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&& e[i].root.op==OP_EXPONENT&&!e[i].isAst){
             return i;
@@ -183,7 +183,15 @@ int find_highest_op(Ast*e,int len){
             }
         }
     }
-    //search for &(and)
+    //search for ^(bit xor)
+    for (int i = 0; i < len; i++) {
+        if(e[i].type == Ast_op_t &&! e[i].isAst){
+            if(e[i].root.op==OP_BIT_XOR){
+                return i;
+            }
+        }
+    }
+    //search for &&(and)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&&!e[i].isAst){
             if(e[i].root.op==OP_AND){
@@ -191,7 +199,7 @@ int find_highest_op(Ast*e,int len){
             }
         }
     }
-    //search for |(or)
+    //search for ||(or)
     for(int i=0;i<len;i++){
         if(e[i].type==Ast_op_t&&!e[i].isAst){
             if(e[i].root.op==OP_OR){
@@ -857,6 +865,11 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             inst=realloc(inst,sizeof(Instruction) * (*n_inst));
             inst[*n_inst-1].type = inst_proceed_t;
             inst[*n_inst - 1].facultative = 0;
+            inst[*n_inst - 1].value.jmp_length = 1;
+            if (*p + 1 < len && tok[*p + 1].type == ount) {
+                inst[*n_inst - 1].value.jmp_length = *tok[*p + 1].value.i;
+                *p += 1;
+            }
             *p += 1;
             return inst;
         }
@@ -865,6 +878,11 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type = inst_stop_t;
             inst[*n_inst - 1].facultative = 0;
+            inst[*n_inst - 1].value.jmp_length = 1;
+            if (*p + 1 < len && tok[*p + 1].type == ount) {
+                inst[*n_inst - 1].value.jmp_length = *tok[*p + 1].value.i;
+                *p += 1;
+            }
             *p += 1;
             return inst;
         }

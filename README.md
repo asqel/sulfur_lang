@@ -206,26 +206,31 @@ the anonymous function scope is the same as before entering the anonymous functi
 - `stop`    : break out of a loop earlier.
 - `include` : include every token of a file depending on the including mode
 
-# Operatos
-## Arithmetic operators
-- `+` : addition
-- `*` : multiplication
-- `-` : substraction / negation
-- `/` : division
-- `^` : power
-- `%` : modulo
-- `\` : floor division
-## Bitwise operators
+## Operatos
+### Arithmetic operators
+- `+`  : addition
+- `*`  : multiplication
+- `-`  : substraction
+- `/`  : division
+- `**` : power
+- `%`  : modulo
+- `\`  : floor division
+### Bitwise operators
 - `>>` : right shift bit
 - `<<` : left shift bit
-## Logical operators
+- `|`  : bitwise AND
+- `&`  : bitwise OR
+- `~`  : bitwise NOT
+- `^`  : bitwise XOR
+### Logical operators
 - `&&` : logical AND
 - `||` : logical OR
-- `!` : logical NOT
-## acces members operators
-- `.` : dot used to acces module members or methods
-- `:` : colon used to acces list members or string characters
-## comparison operators
+- `!`  : logical NOT
+- `^^` : logical XOR
+### acces members operators
+- `.`  : dot used to acces module members or methods
+- `:`  : colon used to acces list members or string characters
+### comparison operators
 - `==` : equal
 - `!=` : not equal
 - `>=` : greater or equal
@@ -245,8 +250,8 @@ or
 import('file name'); 
 ```
 
-`'file_name'` is the name of the file tha will be loaded it can also be one of the std libs
-`'alias'` will be the name of the variable where it will be stored
+`'file name'` is the name of the file tha will be loaded it can also be one of the std libs
+`'alias'` will be the name used to access its members
 
 ### example :
 ```js

@@ -43,9 +43,13 @@ Instruction *make_jmp_links(Instruction *code, int len) {
 			continue;
 		}
 		if (code[i].type == inst_proceed_t) {
-			if (loop_count) {
+			if (code[i].value.jmp_length <= 0) {
+				printf("ERROR proceed keyword only accept positive non null integers\n");
+				exit(1);
+			}
+			if (loop_count && code[i].value.jmp_length <= loop_count) {
 				code[i].type = inst_jmp_t;
-				int idx = loops[loop_count - 1];
+				int idx = loops[loop_count - code[i].value.jmp_length];
 				if (code[idx].type == inst_while_t) {
 					code[i].value.jmp = code[idx].value.wh->endwhile;
 				}
@@ -61,9 +65,13 @@ Instruction *make_jmp_links(Instruction *code, int len) {
 			}
 		}
 		if (code[i].type == inst_stop_t) {
-			if (loop_count) {
+			if (code[i].value.jmp_length <= 0) {
+				printf("ERROR stop keyword only accept positive non null integers\n");
+				exit(1);
+			}
+			if (loop_count && code[i].value.jmp_length <= loop_count) {
 				code[i].type = inst_jmp_t;
-				int idx = loops[loop_count - 1];
+				int idx = loops[loop_count - code[i].value.jmp_length];
 				if (code[idx].type == inst_while_t) {
 					code[i].value.jmp = code[idx].value.wh->endwhile + 1;
 				}

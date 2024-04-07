@@ -472,7 +472,7 @@ char *uti_strdup(char *src) {
 char *normalize_path(char *path) {
     // normalize absolute files (/folder/folder2/../file.txt -> /folder/file.txt)
     // may return a copy of path
-    // windows path must have / not back slash
+    // path must have / not back slash as separator
     int len = strlen(path);
     char *res = calloc(1 + len, sizeof(char));
     int p = 0;

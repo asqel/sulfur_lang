@@ -29,7 +29,7 @@ enum Token_t{
     end,
     boolean_t,
     comp,//complex nnumber value : {double float , double float}
-    op,//+ * - / ^(pow) %(mod) \(floor div) |(or) &(and) !(not) = == += -= != <= >= < >
+    op,//+ * - / **(pow) %(mod) \(floor div) |(or) &(and) !(not) = == += -= != <= >= < >
     keyword,//if while for else elif class return def
     syntax,//#"'{}[]()`@:;.?,
     identifier
@@ -58,7 +58,7 @@ enum Operators {
   OP_MULTIPLY,// *
   OP_MINUS,// -
   OP_DIVIDE,// /
-  OP_EXPONENT,// ^
+  OP_EXPONENT,// **
   OP_MODULUS,// %
   OP_FLOOR_DIVIDE,/* \  */
   OP_OR,// ||
@@ -75,7 +75,8 @@ enum Operators {
   OP_GREATER,// >
   OP_LSHIFT,// <<
   OP_RSHIFT,// >>
-  OP_UNPACK
+  OP_UNPACK,
+  OP_BIT_XOR
 };
 
 //Token value for keywords
@@ -104,7 +105,7 @@ extern Token end_token;
 
 extern char DIGITS[11];
 
-extern char OPS[22][3];
+extern char OPS[23][3];
 extern int ops_len;
 
 extern char SYNTAX[13][2];

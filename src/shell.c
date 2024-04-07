@@ -13,10 +13,13 @@
 
 extern void instructions_print(Instruction* code, int code_len);
 
+/* 
+    return 0 if code is incomplete
+    return 1 if code is good
+    return 2 if code is 'q'
+*/
 int does_code_is_good(char *code) {
-    // return 0 if code is incomplete
-    // return 1 if code is good
-    // return 2 if code is 'q'
+   
 
     int nub = 0;
     int len = strlen(code);
@@ -119,7 +122,7 @@ int interactive_shell(sulfur_args_t *args) {
         while (1) {
             char *line = fgets(code + decl, 1000 - decl, stdin);
             if (!line) {
-                exit_code = 2;
+                exit_code = 3;
                 break;
             }
             decl += strlen(line);
@@ -134,7 +137,8 @@ int interactive_shell(sulfur_args_t *args) {
             decl = 0;
             continue;
         }
-
+        if (exit_code > 1)
+            goto free_mem;
         // tokenize
         Token *l = lexe(code);
         int len = token_len(l);
@@ -148,16 +152,20 @@ int interactive_shell(sulfur_args_t *args) {
         if (args->show_parse) {
             instructions_print(insts, instruction_len);
         }
-
         // execute
-        execute(insts, "*shell*", instruction_len);
+            execute(insts, "*shell*", instruction_len);
 
         // free memory
         for(int i = 0; i < len; i++){
             free_tok_val(l[i]);
         }
         free(l);
+        free_mem:
         if (exit_code == 2) break;
+        if (exit_code == 3) {
+            printf("\n");
+             break;
+        }
         // clean up
         decl = 0;
     }

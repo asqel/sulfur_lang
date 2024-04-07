@@ -118,6 +118,7 @@ char* str_escape(char *str) {
                 case 'r': result[j++] = '\r'; break;
                 case 't': result[j++] = '\t'; break;
                 case 'v': result[j++] = '\v'; break;
+                case 'e': result[j++] = '\e'; break;
                 case '\\': result[j++] = '\\'; break;
                 default: result[j++] = '\\'; result[j++] = str[i]; break;
             }
@@ -131,7 +132,10 @@ char* str_escape(char *str) {
 }
 
 Object str_convert_escape(Object* argv, int argc){
-    return new_string(str_escape(argv[0].val.s));
+    char *r = str_escape(argv[0].val.s);
+    Object res = new_string(r);
+    free(r);
+    return res;
 }
 
 Object str_get(Object* argv, int argc){

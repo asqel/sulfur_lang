@@ -284,6 +284,14 @@ Object eval_Ast(Ast*x){
             Obj_free_val(b);
             return o;
         }
+        if(x->type==Ast_bit_xor_t){
+            Object a = Obj_cpy(eval_Ast(x->left));
+            Object b = Obj_cpy(eval_Ast(x->right));
+            Object o = xor_op(a,b);
+            Obj_free_val(a);
+            Obj_free_val(b);
+            return o;
+        }
         if(x->type==Ast_not_t){
             Object b = Obj_cpy(eval_Ast(x->right));
             Object o = not(b);
