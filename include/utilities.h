@@ -93,4 +93,5 @@ char *uti_strdup(char *src);
 
 char *normalize_path(char *path);
 
+char *uti_escape_str(char *s);
 #endif

@@ -520,3 +520,102 @@ char *normalize_path(char *path) {
     res[str_end] = '\0';
     return realloc(res, sizeof(char) * (str_end + 1));
 }
+
+
+char *uti_escape_str(char *s) {
+    char *res = calloc(1 + strlen(s), sizeof(char *));
+    int end = 0;
+    while ('\0' != *s) {
+        if (*s == '\\') {
+            s++;
+            switch (*s) {
+                case 'n' :
+                    res[end++] = '\n';
+                    s += 1;
+                    break;
+                case 'r' :
+                    res[end++] = '\r';
+                    s += 1;
+                    break;
+                case 't':
+                    res[end++] = '\t';
+                    s += 1;
+                    break;
+                case 'b':
+                    res[end++] = '\b';
+                    s += 1;
+                    break;
+                case 'f':
+                    res[end++] = '\f';
+                    s += 1;
+                    break;
+                case 'v':
+                    res[end++] = '\v';
+                    s += 1;
+                    break;
+                case 'e':
+                    res[end++] = '\e';
+                    s += 1;
+                    break;
+                case 'x':
+                    if (
+                        (
+                            ('A' <= s[1] && s[1] <= 'F') ||
+                            ('a' <= s[1] && s[1] <= 'f') ||
+                            ('0' <= s[1] && s[1] <= '9')
+                        ) && 
+                        (
+                            ('A' <= s[2] && s[2] <= 'F') || 
+                            ('a' <= s[2] && s[2] <= 'f') ||
+                            ('0' <= s[2] && s[2] <= '9'))
+                        ) {
+                        char left = s[1];
+                        if (s[1] <= 'F' && 'A' <= s[1]) {
+                            left -= 'A';
+                            left += 10;
+                            left <<=4;
+                        }
+                        else if (s[1] <= 'f' && 'a' <= s[1]) {
+                            left -= 'a';
+                            left += 10;
+                            left <<=4;
+                        }
+                        else {
+                            left -= '0';
+                            left <<=4;
+                        }
+
+                        char right = s[2];
+                        if (s[2] <= 'F' && 'A' <= s[2]) {
+                            right -= 'A';
+                            right+= 10;
+                        }
+                        else if (s[2] <= 'f' && 'a' <= s[2]) {
+                            right -= 'a';
+                            right += 10;
+                        }
+                        else
+                            right -= '0';
+                        res[end++] = left | right;
+                        s += 3;
+                    }
+                    else {
+                        res[end++] = '\\';
+                        res[end++] = 'x';
+                        s += 1;
+                    }
+                    break;
+                default:
+                    res[end++] = '\\';
+                    res[end++] = *s;
+                    s += 1;
+                    break;
+            }
+        }
+        else {
+            res[end++] = *s;
+            s++;
+        }
+    } 
+    return realloc(res, sizeof(char) * (strlen(res) + 1));
+}
