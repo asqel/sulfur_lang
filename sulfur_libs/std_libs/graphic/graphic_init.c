@@ -1,17 +1,17 @@
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
     #include "../../../build/API/memlib.h"
 #else
     #include "../../../include/memlib.h"
 #endif
 #include "graphic.h"
 
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
     Sulfur_ctx context;
 #else
     #include "../../blt_libs/std.h"
 #endif
 
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
 Object __loader(Sulfur_ctx ctx){
     context = ctx;
     Object mod = new_Module();

@@ -1,6 +1,6 @@
 #if __profanOS__
 
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
     #include "../../../build/API/memlib.h"
 #else
     #include "../../../include/memlib.h"

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE < 2
     #ifdef _WIN32
         #include <windows.h>
     #elif __profanOS__
@@ -28,7 +28,7 @@ void add_dyn_lib(void *lib) {
 }
 
 void free_dyn_libs() {
-    #ifndef ONE_FILE
+    #if !defined(ONE_FILE) || ONE_FILE == 0
         #ifdef _WIN32
             for (int i = 0; i < DYN_LIBS_COUNT; i++) {
                 FreeLibrary(DYN_LIBS[i]);

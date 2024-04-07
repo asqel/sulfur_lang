@@ -322,7 +322,8 @@ available flags :
 - `stdlibs_linux` : Compile the standard libraries for Linux
 - `win_all` : Compile for Windows and start the interpreter
 - `linux_all` : Compile for Linux and start the interpreter
-- `linux_one_file` : Compile for Linux without separate libraries
+- `linux_one_file1` : Compile for Linux without separate libraries but can still open external libs
+- `linux_one_file2` : Compile for Linux without separate libraries and cannot open external libs
 - `help` : Show Makefile details
 
 Files can also be downloaded from [stable releases](https://github.com/asqel/sulfur_lang/releases) (windows and linux)

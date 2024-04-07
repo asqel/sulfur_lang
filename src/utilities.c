@@ -20,7 +20,7 @@
 #include <profan/filesys.h>
 #include <profan/syscall.h>
 #define PATH_MAX 256
-#else
+#elif !defined(_WIN32)
 #include <linux/limits.h>
 #endif
 
@@ -350,7 +350,25 @@ int is_letter(char v){
     return 0;
 }
 
-#ifndef ONE_FILE
+char *LIB_STANDAR[] = {
+    "math",  
+    "graphic",  
+    "poppy",  
+    "lilypad",  
+    "why",  
+    NULL
+};
+
+char is_lib_standar(char *filename) {
+    for(int i = 0; LIB_STANDAR[i] != NULL; i++) {
+        if (!strcmp(filename, LIB_STANDAR[i])) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+#if !defined(ONE_FILE)  || ONE_FILE < 2
     #ifdef _WIN32
         #include <windows.h>
     #elif __profanOS__
@@ -365,15 +383,20 @@ int is_letter(char v){
 
 
 void *get_module_loader(char* filename) {
-    #ifdef ONE_FILE
+    #if defined(ONE_FILE) && ONE_FILE == 2
     void* mod = get_standard_module(filename);
     if (mod) {
         return mod;
     }
     return NULL;
-    #endif
-
-    #ifndef ONE_FILE
+    #elif defined(ONE_FILE) && ONE_FILE == 1
+    if (is_lib_standar(filename)) {
+        void* mod = get_standard_module(filename);
+        if (mod) {
+            return mod;
+        }
+    }
+    #else
     filename = uti_strdup(filename);
     if(!(is_letter(filename[0]) && filename[1]==':') && filename[0] != '/'){//check if it's absolute
         char * interpreter =abs_path();
@@ -407,9 +430,7 @@ void *get_module_loader(char* filename) {
                 exit(1);
             }
         }
-    #elif __profanOS__
-        //nothing
-    #elif __APPLE__ || __linux__
+    #elif __APPLE__ || __linux__ || __profanOS__
         void* handle = dlopen(filename, RTLD_LAZY);
         if (handle != NULL) {
             add_dyn_lib(handle);
@@ -435,7 +456,7 @@ void *get_module_loader(char* filename) {
     #endif
 }
 
-#ifdef ONE_FILE
+#if defined(ONE_FILE) && ONE_FILE > 0
 
 extern Object __load_math(Sulfur_ctx ctx);
 extern Object __load_graphic(Sulfur_ctx ctx);

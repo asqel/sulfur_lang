@@ -1,12 +1,12 @@
 #ifndef GRAPHIC_GRAPHIC_H
 #define GRAPHIC_GRAPHIC_H
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
     #include "../../../build/API/memlib.h"
 #else
     #include "../../../include/memlib.h"
 #endif
 
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
     extern Sulfur_ctx context;
 #endif
 
@@ -40,7 +40,7 @@ Object GetWindowEvents(Object * argv, int argc);
 Object graphic_get_height(Object *argv, int argc);
 Object graphic_get_width(Object *argv, int argc);
 
-#ifndef ONE_FILE
+#if !defined(ONE_FILE) || ONE_FILE == 0
 Object __loader();
 #else
 Object __load_graphic();
