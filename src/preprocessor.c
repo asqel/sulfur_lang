@@ -28,7 +28,7 @@ char *add_semicolon(char *input) {
 
     int t_index = 0;
     for (int i = 0; input[i] != '\0'; i++) {
-        if (input[i] == '"') {
+        if (input[i] == '"' && (in_string && input[i - 1] != '\\')) {
             in_string = !in_string;
         }
 

@@ -36,7 +36,7 @@ int does_code_is_good(char *code) {
         if (code[i] == '"') {
             int end = -1;
             for(int k = i + 1; k < len; k++) {
-                if (code[k] == '"') {
+                if (code[k] == '"' && code[k - 1] != '\\') {
                     end = k;
                     break;
                 }
@@ -56,7 +56,7 @@ int does_code_is_good(char *code) {
         if (code[i] == '"') {
             int end = -1;
             for(int k = i + 1; k < len; k++) {
-                if (code[k] == '"') {
+                if (code[k] == '"' && code[k - 1] != '\\') {
                     end = k;
                     break;
                 }
@@ -76,7 +76,7 @@ int does_code_is_good(char *code) {
         if (code[i] == '"') {
             int end = -1;
             for(int k = i + 1; k < len; k++) {
-                if (code[k] == '"') {
+                if (code[k] == '"' && code[k - 1] != '\\') {
                     end = k;
                     break;
                 }
@@ -143,7 +143,6 @@ int interactive_shell(sulfur_args_t *args) {
         Token *l = lexe(code);
         int len = token_len(l);
         l = make_include(l, &len, args->filepath);
-    
 
         // parse
         int instruction_len = 0;

@@ -557,6 +557,14 @@ char *uti_escape_str(char *s) {
                     res[end++] = '\e';
                     s += 1;
                     break;
+                case '"':
+                    res[end++] = '"';
+                    s += 1;
+                    break;
+                case '\'':
+                    res[end++] = '\'';
+                    s += 1;
+                    break;
                 case 'x':
                     if (
                         (
