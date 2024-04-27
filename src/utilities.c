@@ -59,6 +59,7 @@ char*abs_path(){
             exit(EXIT_FAILURE);
         }
     #endif
+    path[PATH_MAX] = '\0';
     return path;
 }
 
