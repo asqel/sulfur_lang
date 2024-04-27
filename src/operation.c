@@ -151,6 +151,47 @@ Object mul(Object a,Object b){
             a.val.c[0] * b.val.c[0] - a.val.c[1] * b.val.c[1],
             a.val.c[0] * b.val.c[1] + a.val.c[1] * b.val.c[0]
         );
+    if (a.type == Obj_list_t && b.type == Obj_ount_t) {
+        Object x;
+        x.type=Obj_list_t;
+        int len = a.val.li->elements[0].val.i + b.val.i;
+        x.val.li=malloc(sizeof(list));
+        x.val.li->elements=malloc(sizeof(Object)*(len+1));
+        x.val.li->elements[0] = new_ount(len);
+        int len1 = a.val.li->elements[0].val.i;
+        int len2 = a.val.li->elements[0].val.i;
+        int end = 1;
+        while (len) {
+            for (int i = 0; i < a.val.li->elements[0].val.i; i++) {
+                x.val.li->elements[end] = a.val.li->elements[i + 1];
+                end++;
+                len--;
+            }
+        }
+        return x;
+    }
+    if (b.type == Obj_list_t && a.type == Obj_ount_t) {
+        Object tmp = a;
+        a = b;
+        b = tmp;
+        Object x;
+        x.type=Obj_list_t;
+        int len = a.val.li->elements[0].val.i + b.val.i;
+        x.val.li=malloc(sizeof(list));
+        x.val.li->elements=malloc(sizeof(Object)*(len+1));
+        x.val.li->elements[0] = new_ount(len);
+        int len1 = a.val.li->elements[0].val.i;
+        int len2 = a.val.li->elements[0].val.i;
+        int end = 1;
+        while (len) {
+            for (int i = 0; i < a.val.li->elements[0].val.i; i++) {
+                x.val.li->elements[end] = a.val.li->elements[i + 1];
+                end++;
+                len--;
+            }
+        }
+        return x;
+    }
 
     printf("ERROR : operation(*) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));

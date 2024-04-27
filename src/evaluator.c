@@ -121,6 +121,7 @@ Object eval_Ast(Ast*x){
             ast.right->type = Ast_add_t;
             ast.right->left = x->left;
             ast.right->right = x->right;
+            ast.right->isAst = 1;
             Object o = Obj_cpy(eval_Ast(&ast));
             free(ast.right);
             return o;
