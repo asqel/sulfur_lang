@@ -1,3 +1,14 @@
+/*****************************************************************************\
+|   === type.h : 2024 ===                                                     |
+|                                                                             |
+|    Type definitions form missing headers and kernel types        .pi0iq.    |
+|                                                                 d"  . `'b   |
+|    This file is part of profanOS and is released under          q. /|\  "   |
+|    the terms of the GNU General Public License                   `// \\     |
+|                                                                  //   \\    |
+|   === elydre : https://github.com/elydre/profanOS ===         #######  \\   |
+\*****************************************************************************/
+
 #ifndef TYPE_H
 #define TYPE_H
 
@@ -139,13 +150,11 @@ typedef long           __time32_t;
 typedef size_t rsize_t;
 
 typedef struct FILE {
-    char *filename;
     uint8_t mode;
     uint8_t error;
 
     char *buffer;
     int   buffer_size;
-    int   old_offset;
 
     int   fd;
 } FILE;
@@ -155,8 +164,6 @@ typedef struct fpos_t {
 } fpos_t;
 
 typedef unsigned long DWORD, *PDWORD, *LPDWORD;
-
-typedef int bool;
 
 typedef uint64_t time_t;
 typedef int timer_t;
