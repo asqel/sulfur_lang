@@ -102,6 +102,19 @@ Object str_starts_with(Object* argv, int argc){
     return new_boolean(res);
 }
 
+Object str_is_ountable(Object *argv, int argc) {
+    if (argc != 1)
+        return new_boolean(0);
+    if (argv[0].type != Obj_string_t)
+        return new_boolean(0);
+    int len = strlen(argv[0].val.s);
+    for(int i = 0; i < len; i++) {
+        if (!(argv[0].val.s[i] <= '9' && '0' <= argv[0].val.s[i]))
+            return new_boolean(0);
+    }
+    return new_boolean(1);
+}
+
 char* str_escape(char *str) {
     size_t len = strlen(str);
     char* result = malloc(sizeof(char) * (len + 1));
@@ -199,6 +212,8 @@ Object init_string(memory *MEMORY,char*path){
     add_func_Module(mod,"esc",&str_convert_escape,"");
     add_func_Module(mod,"reverse",&std_reverse, "");
     add_func_Module(mod,"rev",&std_reverse, "");
+    add_func_Module(mod,"is_ountable",&str_is_ountable, "");
+    add_func_Module(mod,"is_number",&str_is_ountable, "");
     //CamelCaseTo_snake_case
     //snake_case_toCamelCase
     //function to add upper case every each space like "salut ici " -> "Salut Ici"
