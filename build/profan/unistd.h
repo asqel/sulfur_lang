@@ -1,3 +1,14 @@
+/*****************************************************************************\
+|   === unistd.h : 2024 ===                                                   |
+|                                                                             |
+|    Implementation of the unistd.h header file from libC          .pi0iq.    |
+|                                                                 d"  . `'b   |
+|    This file is part of profanOS and is released under          q. /|\  "   |
+|    the terms of the GNU General Public License                   `// \\     |
+|                                                                  //   \\    |
+|   === elydre : https://github.com/elydre/profanOS ===         #######  \\   |
+\*****************************************************************************/
+
 #ifndef UNISTD_H
 #define UNISTD_H
 
@@ -22,6 +33,11 @@
 #define STDIN_FILENO  0
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
+
+#define F_OK 0
+#define R_OK 4
+#define W_OK 2
+#define X_OK 1
 
 int access(const char *a, int b);
 unsigned alarm(unsigned a);
