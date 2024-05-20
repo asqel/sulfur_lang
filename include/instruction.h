@@ -30,7 +30,7 @@ typedef struct If{
 
 
 typedef struct For{
-    char*var_name;
+    int var_name;
     struct Ast*start;
     struct Ast*end;
     S_sulfur_int endfor;
@@ -81,6 +81,9 @@ typedef struct Instruction{
         int jmp;
         Object *obj;
         int jmp_length;
+        int op;
+        S_ount_t ount;
+        double floap;
     }value;
     int line;
     char facultative; // used by expression / pass
@@ -115,7 +118,15 @@ enum instruction_type{
     inst_S_push_0b_t,
     inst_S_push_nil_t,
     inst_S_push_i_t,
+    inst_S_push_ount_t,
+    inst_S_push_floap_t,
     inst_S_pop_t,
+    inst_S_op_add_t,
+    inst_S_op_sub_t,
+    inst_S_op_mul_t,
+    inst_S_op_div_t,
+    inst_S_op_fldiv_t,
+    inst_S_op_modulo_t
 };
 
 enum instruction_op_stack {

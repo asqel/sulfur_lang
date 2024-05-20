@@ -217,6 +217,8 @@ typedef struct Sulfur_ctx{
     char **argv; // args passed after filename can be NULL
     int argc;
 
+    char **requested_vars; // used by the bytecode and interpreter and libs
+
 } Sulfur_ctx;
 
 char *Obj_type_as_str(short int type);

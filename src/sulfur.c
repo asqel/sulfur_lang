@@ -5,9 +5,7 @@
 #if !defined(ONE_FILE) || ONE_FILE < 2
     #ifdef _WIN32
         #include <windows.h>
-    #elif __profanOS__
-        //nothing dont import dlfcn
-    #elif __APPLE__ || __linux__
+    #elif __APPLE__ || __linux__ || __profanOS__
         #include <dlfcn.h>
     #endif
 #endif

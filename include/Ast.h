@@ -45,6 +45,7 @@ typedef struct Ast{
         funccall*fun;
         Token*tok;
         char*varcall;
+        int var_idx;
         short int op;
         short int sy;
         short int kw;
@@ -65,6 +66,7 @@ enum Ast_types{
     Ast_object_t,
     Ast_token_t,
     Ast_varcall_t,//stored 
+    Ast_varcall_idx_t,
     Ast_funccall_t,
     Ast_tempexpr_t,//.obj that start with an object int that contains the length
     Ast_add_t,
@@ -95,7 +97,7 @@ enum Ast_types{
     Ast_anonym_func_t,
     Ast_list_comprehension_t,
     Ast_colon_t,
-    Ast_expr_funccall_t, //function called like this : (...)(a,b)
+    Ast_expr_funccall_t, //function called like this : (...)(a,b) NOT SUPPORTED YET
     Ast_unpack_t,
     Ast_bit_xor_t
 

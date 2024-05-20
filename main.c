@@ -47,6 +47,9 @@ extern void instructions_print(Instruction* code, int code_len);
 
 char IS_SHELL = 0;
 
+Instruction	*finish_instrcutions(Instruction *code, int *instruction_len);
+
+
 int execute_file(sulfur_args_t *args) {
     char *text = read_file(args->filepath);
 
@@ -68,7 +71,7 @@ int execute_file(sulfur_args_t *args) {
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
     code = make_jmp_links(code, instruction_len);
-    //code = finish_instrcutions(code, instruction_len);
+    //code = finish_instrcutions(code, &instruction_len);
 
     if (args->show_parse) {
         instructions_print(code, instruction_len);

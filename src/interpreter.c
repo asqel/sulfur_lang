@@ -132,6 +132,7 @@ Object execute(Instruction* code, char* file_name, int len){
         }
         if(code[p].type == inst_pass_t){
             p++;
+            continue;
         }
         if(code[p].type == inst_if_t){
             Object condition = Obj_cpy(eval_Ast(code[p].value.i->condition));

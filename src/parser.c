@@ -272,6 +272,54 @@ typedef struct parse_arg{
     int l;
 }parse_arg;
 
+Ast *check_do_what_here_why(Ast *x, int *why) {
+    if (x->type == Ast_object_t) {
+        if ((*x).root.obj->type == Obj_ount_t && (*x).root.obj->val.i == 42) {
+            Ast *res = malloc(sizeof(Ast));
+            res->type = Ast_funccall_t;
+            res->isAst = 1;
+            res->root.fun = malloc(sizeof(funccall));
+            res->root.fun->name = uti_strdup("println");
+            res->root.fun->args = malloc(sizeof(Ast));
+            res->root.fun->nbr_arg = 1;
+            res->root.fun->args[0].type = Ast_object_t;
+            res->root.fun->args[0].isAst = 0;
+            res->root.fun->args[0].right = NULL;
+            res->root.fun->args[0].left = NULL;
+            res->root.fun->args[0].root.obj = malloc(sizeof(Object));
+            res->root.fun->args[0].root.obj->type = Obj_string_t;
+            res->root.fun->args[0].root.obj->val.s = uti_strdup("the answer to life the universe and everything");
+            free_ast(*x);
+            free(x);
+            *why = 1;
+            return res;
+        }
+        else if ((*x).root.obj->type == Obj_ount_t && (*x).root.obj->val.i == 69) {
+            Ast *res = malloc(sizeof(Ast));
+            res->type = Ast_funccall_t;
+            res->isAst = 1;
+            res->root.fun = malloc(sizeof(funccall));
+            res->root.fun->name = uti_strdup("println");
+            res->root.fun->args = malloc(sizeof(Ast));
+            res->root.fun->nbr_arg = 1;
+            res->root.fun->args[0].type = Ast_object_t;
+            res->root.fun->args[0].isAst = 0;
+            res->root.fun->args[0].right = NULL;
+            res->root.fun->args[0].left = NULL;
+            res->root.fun->args[0].root.obj = malloc(sizeof(Object));
+            res->root.fun->args[0].root.obj->type = Obj_string_t;
+            res->root.fun->args[0].root.obj->val.s = uti_strdup("nice");
+            free_ast(*x);
+            free(x);
+            *why = 1;
+            return res;
+        }
+    }
+    *why = 0;
+    return x;
+}
+
+
 //start included
 //end not included
 //there no check if end and start are out of range
@@ -886,6 +934,23 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             *p += 1;
             return inst;
         }
+        //else if (tok[*p].type == keyword && *tok[*p].value.t == import_t) {
+        //    // check import(...)
+        //    if (*p + 1 >= len || tok[*p + 1].type != syntax || par_L != *tok[*p + 1].value.t) {
+        //        printf("ERROR import expected an opening '('\n");
+        //        exit(1);
+        //    }
+        //    int par_l = *p + 1;
+        //    int par_r = search_rpar(tok, par_l);
+        //    if (par_r == -1) {
+        //        printf("ERROR import expected a closing ')'\n");
+        //        exit(1);
+        //    }
+        //    // check import(lib)
+        //    if (par_l + 2 == par_r && tok[par_l + 1].type == identifier) {
+
+        //    }
+        //}
         else{
             if(tok[*p].type == syntax && *tok[*p].value.t == semicolon){
                 (*p)++;
@@ -915,12 +980,14 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             }
             ast_and_len val=tok_to_Ast(tok,*p,n);
             Ast*x=make_ast(val.value, val.len);
+            int why = 0;
+            x = check_do_what_here_why(x, &why);
             (*n_inst)++;
             inst=realloc(inst,sizeof(Instruction)*(*n_inst));
             inst[*n_inst-1].type=inst_expr_t;
             inst[*n_inst-1].value.expr=x;
             inst[*n_inst - 1].facultative = 0;
-            inst[*n_inst - 1].facultative = *p + 1 == n ? 1 : 0;
+            inst[*n_inst - 1].facultative = ((*p + 1 == n) && !why) ? 1 : 0;
             *p = n + 1;
             return inst;
 
@@ -944,12 +1011,17 @@ Instruction *parse(Token *tok, int start, int end, Instruction *inst, int *n_ins
     }
 
     while (cond_parse(start,end,len,p)) {
-        //les else et les elif sont gerer par la partie if make du parser
+        //les else et les elif sont gerer par la partie make if du parser
         if(tok[p].type==keyword&&(*tok[p].value.t==elif_t||*tok[p].value.t==else_t)){
             printf("ERROR expected if instruction above on line %d\n",tok[p].line);
             exit(1);
         }
         inst = parse_next_inst(tok, start, end, inst, n_inst, &p, len, &result);
     }
-    return inst;
+    inst = realloc(inst, sizeof(Instruction) * (*n_inst + 1));
+    inst[*n_inst].type = inst_pass_t;
+    inst[*n_inst].facultative = 1;
+    inst[*n_inst].line = -1;
+    (*n_inst)++;
+    return make_requested_vars(inst, n_inst);
 }

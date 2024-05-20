@@ -6,6 +6,8 @@ int next_uid = 0;
 
 #define get_uid() (next_uid++)
 
+Instruction *ast_to_inst(Ast *x, int *res_len);
+
 Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 	// do uid
 	// uid will be stored in .line
@@ -79,8 +81,15 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 	Instruction *res = NULL;
 	int res_len = 0;
 	for (int i = 0; i < *instruction_len; i++)  {
-		if (code[i].type == inst_for_t) {
-			
+		if (code[i].type == inst_expr_t) {
+			int ops_len = 0;
+			Instruction *ops = NULL;
+			ops = ast_to_inst(code[i].value.expr, &ops_len);
+			ops[0].line = code[i].line;
+			res = realloc(res, sizeof(Instruction) * (res_len + ops_len));
+			for (int i = 0; i < ops_len; i++)
+				res[res_len++] = ops[i];
+			free(ops);
 		}
 		//if (code[i].type == inst_expr_t) {
 		//	int ast_len = 0;
@@ -100,6 +109,19 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 //
 		//}
 	}
+	//for(int i = 0; i < res_len; i++) {
+	//	if (res[i].type == inst_S_push_ount_t) {
+	//		printf("push %d\n", res[i].value.ount);
+	//	}
+	//	if (res[i].type == inst_S_op_t) {
+	//		if (res[i].value.op == inst_S_op_add_t) {
+	//			printf("ADD\n");
+	//		}
+	//		else {
+	//			printf("UNKNOWN OP\n");
+	//		}
+	//	}
+	//}
 	// make link a again replace .line (uid) by .line (index)
 	return NULL;
 
@@ -135,29 +157,131 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 			return res;
 		}
 		// can only  push string / floap / ount from constants
-		if ((*x->root.obj).type != Obj_string_t && (*x->root.obj).type != Obj_floap_t && (*x->root.obj).type != Obj_ount_t)
+		if ((*x->root.obj).type != Obj_string_t && (*x->root.obj).type != Obj_floap_t && (*x->root.obj).type != Obj_ount_t) {
+			printf("ERROR cannot push value of type %s\n", Obj_type_as_str(x->root.obj->type));
+			exit(1);
+		}
+		if ((*x->root.obj).type == Obj_ount_t) {
+			(*res_len)++;
+			res = realloc(res, sizeof(Instruction) *(*res_len));
+			res[*res_len - 1].facultative = 0;
+			res[*res_len - 1].line = -1;
+			res[*res_len - 1].type = inst_S_push_ount_t;
+			res[*res_len - 1].value.ount = x->root.obj->val.i;
+			return res;
+		}
+		elif (x->root.obj->type == Obj_floap_t) {
+			(*res_len)++;
+			res = realloc(res, sizeof(Instruction) *(*res_len));
+			res[*res_len - 1].facultative = 0;
+			res[*res_len - 1].line = -1;
+			res[*res_len - 1].type = inst_S_push_floap_t;
+			res[*res_len - 1].value.ount = x->root.obj->val.f;
+			return res;
+		}
 		(*res_len)++;
 		res = realloc(res, sizeof(Instruction) *(*res_len));
 		res[*res_len - 1].facultative = 0;
 		res[*res_len - 1].line = -1;
 		res[*res_len - 1].type = inst_S_push_t;
 		res[*res_len - 1].value.obj = malloc(sizeof(Object));
-		*res[*res_len - 1].value.obj = Obj_cpy(*x->root.obj);
+		res[*res_len - 1].value.obj->type = Obj_string_t;
+		res[*res_len - 1].value.obj->val.s = strdup(x->root.obj->val.s);
 		return res;
 
 	}
-	if (x->type == Ast_add_t) {
-		int right_len = 0;
-		Instruction *right = ast_to_inst(x->right, &right_len);
-		int left_len = 0;
-		Instruction *left = ast_to_inst(x->right, &left_len);
-		res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
-		for (int i = 0; i < right_len; i++)
-			res[(*res_len)++] = right[i];
-		free(right);
-		for (int i = 0; i < left_len; i++)
-			res[(*res_len)++] = left[i];
-		free(left);
+	if (x->type == Ast_sub_t) {
+		// check if unary
+		if(x->left==NULL && x->right!=NULL){
+		
+		}
+
 	}
+	//elif (is_op_simple(x->type)) {
+	//	int right_len = 0;
+	//	Instruction *right = ast_to_inst(x->right, &right_len);
+	//	int left_len = 0;
+	//	Instruction *left = ast_to_inst(x->left, &left_len);
+	//	res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
+	//	for (int i = 0; i < right_len; i++)
+	//		res[(*res_len)++] = right[i];
+	//	free(right);
+	//	for (int i = 0; i < left_len; i++)
+	//		res[(*res_len)++] = left[i];
+	//	free(left);
+	//	res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+	//	res[*res_len].type = inst_S_op_t;
+	//	res[*res_len].value.op = get_bytecode_op(x->type);
+	//	(*res_len)++;
+	//	return res;
+	//}
 	return NULL;
 }
+
+
+
+
+int is_op_simple(int type) {
+	switch (type){
+		case Ast_add_t:
+		case Ast_sub_t:
+		case Ast_mul_t:
+		case Ast_div_t:
+		case Ast_fldiv_t:
+		case Ast_mod_t:
+		case Ast_eq_t:
+		case Ast_ge_t:
+		case Ast_geq_t:
+		case Ast_le_t:
+		case Ast_leq_t:
+		case Ast_lshift_t:
+		case Ast_rshift_t:
+		case Ast_noteq_t:
+			return 1;
+			
+		default:
+			return 0;
+	}
+}
+
+/*
+X && Y	:
+	0 | push X
+	1 | jmp ifn 6
+	2 | push y
+	3 | jmp ifn 6
+	4 | push 1b
+	5 | jmp 7
+	6 | push 0b
+
+	relative jumps:
+	0 | push X
+	1 | jmp ifn 5
+	2 | push y
+	3 | jmp ifn 3
+	4 | push 1b
+	5 | jmp 2
+	6 | push 0b
+
+
+X || Y	 :
+	0 | push X
+	1 | jmp if 6
+	2 | push Y
+	3 | jmp if 6
+	4 | push 0b
+	5 | jmp 7
+	6 | push 1b
+
+	relative jumps:
+	0 | push X
+	1 | jmp if 5
+	2 | push Y
+	3 | jmp if 3
+	4 | push 0b
+	5 | jmp 2
+	6 | push 1b
+
+while(1) {;} :
+    jmp 0
+*/

@@ -1,10 +1,13 @@
 #include "../include/instruction.h"
 #include "../include/utilities.h"
+#include "../include/make_requested_vars.h"
+#include "../include/make_context.h"
+#include "../include/sulfur.h"
 
 int inst_to_str(Instruction*i){
 	if(i->type==inst_for_t){
 
-		printf("For:[%s,%d]",i->value.fo->var_name,i->value.fo->endfor);
+		printf("For:[%s,%d]",i->value.fo->var_name, CTX.requested_vars[i->value.fo->endfor]);
 		return 1;
 	}
 	if(i->type==inst_endfor_t){

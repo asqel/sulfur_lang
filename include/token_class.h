@@ -94,10 +94,11 @@ enum keyword{
     goto_t,
     proceed_t,
     stop_t,
-    include_t
+    include_t,
+    import_t
 };
 
-extern char KEYWORDS[14][8];
+extern char KEYWORDS[15][8];
 extern int keyword_len;
 
 extern Token nil_token;

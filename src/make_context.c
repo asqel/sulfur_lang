@@ -7,7 +7,7 @@
 int	CTX_ERRNO[4];
 extern memory MEMORY;
 
-Sulfur_ctx CTX;
+Sulfur_ctx CTX = {0};
 
 
 void *(*MEMLIB_FUNC[])() = {
@@ -95,4 +95,6 @@ void make_context(){
 	CTX.std_func = STD_FUNC;
 	CTX.vars = NULL;
 	CTX.operations = OPERATIONS;
+	CTX.requested_vars = malloc(sizeof(char *));
+	CTX.requested_vars[0] = NULL;
 }
