@@ -1,4 +1,1 @@
-ount = 10
-floap = 0
-for(println from ount to floap)
-	print(println, '\n')
+nil;

@@ -12,6 +12,7 @@
 #include "../include/token_class.h"
 #include "../include/evaluator.h"
 #include "../include/memlib.h"
+#include "../include/sulfur.h"
 
 extern memory MEMORY;
 
@@ -194,13 +195,13 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
 
             int n = -1;
             for(int i = 0; i < STACK.MEM[STACK.len - 1].len; i++){
-                if(!strcmp(STACK.MEM[STACK.len - 1].keys[i], code[p].value.fo->var_name)){
+                if(!strcmp(STACK.MEM[STACK.len - 1].keys[i], CTX.requested_vars[code[p].value.fo->var_name])){
                     n = i;
                     break;
                 }
             }
             if(n == -1){
-                add_object(&(STACK.MEM[STACK.len - 1]), code[p].value.fo->var_name,start);
+                add_object(&(STACK.MEM[STACK.len - 1]),  CTX.requested_vars[code[p].value.fo->var_name],start);
             }
             else{
                 Obj_free_val(STACK.MEM[STACK.len - 1].values[n]);
@@ -235,7 +236,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             if(start.val.i < end.val.i){
                 int n = -1;
                 for(int i = 0; i < STACK.MEM[STACK.len - 1].len; i++){
-                    if(!strcmp(STACK.MEM[STACK.len - 1].keys[i],code[for_p].value.fo->var_name)){
+                    if(!strcmp(STACK.MEM[STACK.len - 1].keys[i],  CTX.requested_vars[code[for_p].value.fo->var_name])){
                         n = i;
                         break;
                     }
@@ -251,7 +252,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
                 Obj_free_val(old_obj);
 
                 if(STACK.MEM[STACK.len - 1].values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
+                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 STACK.MEM[STACK.len - 1].values[n].val.i++;
@@ -273,7 +274,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             else{
                 int n = -1;
                 for(int i = 0; i < STACK.MEM[STACK.len - 1].len; i++){
-                    if(!strcmp(STACK.MEM[STACK.len - 1].keys[i],code[for_p].value.fo->var_name)){
+                    if(!strcmp(STACK.MEM[STACK.len - 1].keys[i],  CTX.requested_vars[code[for_p].value.fo->var_name])){
                         n = i;
                         break;
                     }
@@ -289,7 +290,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
                 Obj_free_val(old_obj);
 
                 if(STACK.MEM[STACK.len - 1].values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
+                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 STACK.MEM[STACK.len - 1].values[n].val.i--;

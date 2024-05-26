@@ -52,6 +52,7 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len);
 
 int execute_file(sulfur_args_t *args) {
     char *text = read_file(args->filepath);
+    make_context();
 
     if (!text) {
         printf("File not found: %s\n",args->filepath);
@@ -71,7 +72,7 @@ int execute_file(sulfur_args_t *args) {
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
     code = make_jmp_links(code, instruction_len);
-    //code = finish_instrcutions(code, &instruction_len);
+    code = finish_instrcutions(code, &instruction_len);
 
     if (args->show_parse) {
         instructions_print(code, instruction_len);
@@ -83,7 +84,6 @@ int execute_file(sulfur_args_t *args) {
     init_memory();
     init_stack(); 
     init_libs(args->filepath);  
-    make_context();
 
     //make bytecode
     //if (args->make_bytecode) {
@@ -126,6 +126,10 @@ int execute_file(sulfur_args_t *args) {
     free(MEMORY.keys);
     free(MEMORY.values);
 
+    for (int i = 0; CTX.requested_vars[i] != NULL; i++) {
+        free(CTX.requested_vars[i]);
+    }
+    free(CTX.requested_vars);
     ///print refs
     //printf("            total %d\n", REFS_len);
     //for(int i = 0; i <  REFS_len; i++) {

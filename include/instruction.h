@@ -126,7 +126,15 @@ enum instruction_type{
     inst_S_op_mul_t,
     inst_S_op_div_t,
     inst_S_op_fldiv_t,
-    inst_S_op_modulo_t
+    inst_S_op_mod_t,
+    inst_S_op_eq_t,
+    inst_S_op_ge_t,
+    inst_S_op_geq_t,
+    inst_S_op_le_t,
+    inst_S_op_leq_t,
+    inst_S_op_lshift_t,
+    inst_S_op_rshift_t,
+    inst_S_op_noteq_t,
 };
 
 enum instruction_op_stack {

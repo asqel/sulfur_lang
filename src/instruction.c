@@ -7,7 +7,7 @@
 int inst_to_str(Instruction*i){
 	if(i->type==inst_for_t){
 
-		printf("For:[%s,%d]",i->value.fo->var_name, CTX.requested_vars[i->value.fo->endfor]);
+		printf("For:[%s,%d]",CTX.requested_vars[i->value.fo->var_name], CTX.requested_vars[i->value.fo->endfor]);
 		return 1;
 	}
 	if(i->type==inst_endfor_t){
@@ -61,7 +61,6 @@ void instruction_free(Instruction code){
 			free(code.value.fo->end);
 			free_ast(*code.value.fo->start);
 			free(code.value.fo->start);
-			free(code.value.fo->var_name);
 			free(code.value.fo);
 			break;
 		case inst_expr_t:

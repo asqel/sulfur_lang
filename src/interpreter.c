@@ -218,13 +218,13 @@ Object execute(Instruction* code, char* file_name, int len){
 
             int n = -1;
             for(int i = 0; i < MEMORY.len; i++){
-                if(!strcmp(MEMORY.keys[i], code[p].value.fo->var_name)){
+                if(!strcmp(MEMORY.keys[i], CTX.requested_vars[code[p].value.fo->var_name])){
                     n = i;
                     break;
                 }
             }
             if(n == -1){
-                add_object(&MEMORY, code[p].value.fo->var_name,start);
+                add_object(&MEMORY, CTX.requested_vars[code[p].value.fo->var_name],start);
             }
             else{
                 Obj_free_val(MEMORY.values[n]);
@@ -258,7 +258,7 @@ Object execute(Instruction* code, char* file_name, int len){
             if(start.val.i < end.val.i){
                 int n = -1;
                 for(int i = 0; i < MEMORY.len; i++){
-                    if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
+                    if(!strcmp(MEMORY.keys[i], CTX.requested_vars[code[for_p].value.fo->var_name])){
                         n = i;
                         break;
                     }
@@ -274,7 +274,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 Obj_free_val(old_obj);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
+                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 MEMORY.values[n].val.i++;
@@ -295,7 +295,7 @@ Object execute(Instruction* code, char* file_name, int len){
             else{
                 int n = -1;
                 for(int i = 0; i < MEMORY.len; i++){
-                    if(!strcmp(MEMORY.keys[i],code[for_p].value.fo->var_name)){
+                    if(!strcmp(MEMORY.keys[i], CTX.requested_vars[code[for_p].value.fo->var_name])){
                         n = i;
                         break;
                     }
@@ -311,7 +311,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 Obj_free_val(old_obj);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n",code[for_p].value.fo->var_name);
+                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 MEMORY.values[n].val.i--;

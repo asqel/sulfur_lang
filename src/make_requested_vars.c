@@ -1,6 +1,7 @@
 #include "../include/make_requested_vars.h"
 #include "../include/sulfur.h"
 #include "../include/instruction.h"
+#include "../include/utilities.h"
 #include "../include/Ast.h"
 
 #include <stdlib.h>
@@ -21,10 +22,10 @@ int add_requested_var(char *var) {
 }
 
 Instruction *make_requested_vars(Instruction *inst, int len) {
-	Instruction *old = inst;
-	while (len--)
-		make_req_vars_inst(*(inst++));
-	return old;
+	for (int i = 0; i < len; i++)  {
+		make_req_vars_inst(inst[i]);
+	}
+	return inst;
 }
 
 
@@ -72,9 +73,9 @@ void make_req_vars_ast(Ast *x) {
 		return ;
 	}
 	if (x->left != NULL)
-		add_requested_var(x->left);
+		make_req_vars_ast(x->left);
 	if (x->right != NULL)
-		add_requested_var(x->right);
+		make_req_vars_ast(x->right);
 	if (x->type == Ast_anonym_func_t) {
 		make_requested_vars(x->root.ano_func->code, x->root.ano_func->code_len);
 		return ;

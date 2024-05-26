@@ -11,6 +11,7 @@
 #include "../include/make_while.h"
 #include "../include/make_funcdef.h"
 #include "../include/make_jmp_links.h"
+#include "../include/make_requested_vars.h"
 
 //take a math expression and see if it ok
 //return nothing 
@@ -1023,5 +1024,5 @@ Instruction *parse(Token *tok, int start, int end, Instruction *inst, int *n_ins
     inst[*n_inst].facultative = 1;
     inst[*n_inst].line = -1;
     (*n_inst)++;
-    return make_requested_vars(inst, n_inst);
+    return make_requested_vars(inst, *n_inst);
 }

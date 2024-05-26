@@ -1,4 +1,6 @@
 #include "../include/instruction.h"
+#include "../include/make_requested_vars.h"
+#include "../include/sulfur.h"
 
 int next_uid = 0;
 
@@ -70,8 +72,6 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 		}
 	}
 	/*
-	arr[i] = arr + i*4
-	i[arr] = i + arr*4
 	EXPR:
 		-> push/pop/op
 		ex:
@@ -82,14 +82,13 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 	int res_len = 0;
 	for (int i = 0; i < *instruction_len; i++)  {
 		if (code[i].type == inst_expr_t) {
-			int ops_len = 0;
-			Instruction *ops = NULL;
-			ops = ast_to_inst(code[i].value.expr, &ops_len);
-			ops[0].line = code[i].line;
-			res = realloc(res, sizeof(Instruction) * (res_len + ops_len));
+			int expr_len = 0;
+			Instruction *expr = NULL;
+			expr = ast_to_inst(code[i].value.expr, &expr_len);
+			res = realloc(res, sizeof(Instruction) * (res_len + expr_len));
 			for (int i = 0; i < ops_len; i++)
-				res[res_len++] = ops[i];
-			free(ops);
+				res[res_len++] = expr[i];
+			free(expr);
 		}
 		//if (code[i].type == inst_expr_t) {
 		//	int ast_len = 0;
@@ -123,14 +122,83 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 	//	}
 	//}
 	// make link a again replace .line (uid) by .line (index)
-	return NULL;
+	instruction_free_array(code, *instruction_len);
+	*instruction_len = res_len;
+	return res;
 
 }
 
+int is_op_simple(int type) {
+	switch (type){
+		case Ast_add_t:
+		case Ast_sub_t:
+		case Ast_mul_t:
+		case Ast_div_t:
+		case Ast_fldiv_t:
+		case Ast_mod_t:
+		case Ast_eq_t:
+		case Ast_ge_t:
+		case Ast_geq_t:
+		case Ast_le_t:
+		case Ast_leq_t:
+		case Ast_lshift_t:
+		case Ast_rshift_t:
+		case Ast_noteq_t:
+			return 1;
+			
+		default:
+			return 0;
+	}
+}
 
+int get_bytecode_op(int type) {
+	switch (type) {
+		case Ast_add_t:
+			return inst_S_op_add_t;
+		case Ast_sub_t:
+			return inst_S_op_sub_t;
+		case Ast_mul_t:
+			return inst_S_op_mul_t;
+		case Ast_div_t:
+			return inst_S_op_div_t;
+		case Ast_fldiv_t:
+			return inst_S_op_fldiv_t;
+		case Ast_mod_t:
+			return inst_S_op_mod_t;
+		case Ast_eq_t:
+			return inst_S_op_eq_t;
+		case Ast_ge_t:
+			return inst_S_op_ge_t;
+		case Ast_geq_t:
+			return inst_S_op_geq_t;
+		case Ast_le_t:
+			return inst_S_op_le_t;
+		case Ast_leq_t:
+			return inst_S_op_leq_t;
+		case Ast_lshift_t:
+			return inst_S_op_lshift_t;
+		case Ast_rshift_t:
+			return inst_S_op_rshift_t;
+		case Ast_noteq_t:
+			return inst_S_op_noteq_t;
+		default:
+			return 0;
+			break;
+	}
+}
 
 Instruction *ast_to_inst(Ast *x, int *res_len) {
 	Instruction *res = NULL;
+	if (x->type == Ast_varcall_idx_t) {
+		if (!strcmp(CTX.requested_vars[x->root.var_idx], "nil")) {
+			(*res_len)++;
+			res = realloc(res, sizeof(Instruction) *(*res_len));
+			res[*res_len - 1].facultative = 0;
+			res[*res_len - 1].line = -1;
+			res[*res_len - 1].type = inst_S_push_nil_t;
+			return res;
+		}
+	}
 	if (x->type == Ast_object_t) {
 		if ((*x->root.obj).type == Obj_boolean_t) {
 			(*res_len)++;
@@ -179,6 +247,10 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 			res[*res_len - 1].value.ount = x->root.obj->val.f;
 			return res;
 		}
+		if (x->root.obj->type != Obj_string_t) {
+			printf("ERROR cannot convert ast obj type %d to bytecode ast\n", x->root.obj->type);
+			exit(1);
+		}
 		(*res_len)++;
 		res = realloc(res, sizeof(Instruction) *(*res_len));
 		res[*res_len - 1].facultative = 0;
@@ -197,52 +269,30 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		}
 
 	}
-	//elif (is_op_simple(x->type)) {
-	//	int right_len = 0;
-	//	Instruction *right = ast_to_inst(x->right, &right_len);
-	//	int left_len = 0;
-	//	Instruction *left = ast_to_inst(x->left, &left_len);
-	//	res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
-	//	for (int i = 0; i < right_len; i++)
-	//		res[(*res_len)++] = right[i];
-	//	free(right);
-	//	for (int i = 0; i < left_len; i++)
-	//		res[(*res_len)++] = left[i];
-	//	free(left);
-	//	res = realloc(res, sizeof(Instruction) * (*res_len + 1));
-	//	res[*res_len].type = inst_S_op_t;
-	//	res[*res_len].value.op = get_bytecode_op(x->type);
-	//	(*res_len)++;
-	//	return res;
-	//}
+	elif (is_op_simple(x->type)) {
+		int right_len = 0;
+		Instruction *right = ast_to_inst(x->right, &right_len);
+		int left_len = 0;
+		Instruction *left = ast_to_inst(x->left, &left_len);
+		res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
+		for (int i = 0; i < right_len; i++)
+			res[(*res_len)++] = right[i];
+		free(right);
+		for (int i = 0; i < left_len; i++)
+			res[(*res_len)++] = left[i];
+		free(left);
+		res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+		res[*res_len].type = inst_S_op_t;
+		res[*res_len].value.op = get_bytecode_op(x->type);
+		(*res_len)++;
+		return res;
+	}
 	return NULL;
 }
 
 
 
 
-int is_op_simple(int type) {
-	switch (type){
-		case Ast_add_t:
-		case Ast_sub_t:
-		case Ast_mul_t:
-		case Ast_div_t:
-		case Ast_fldiv_t:
-		case Ast_mod_t:
-		case Ast_eq_t:
-		case Ast_ge_t:
-		case Ast_geq_t:
-		case Ast_le_t:
-		case Ast_leq_t:
-		case Ast_lshift_t:
-		case Ast_rshift_t:
-		case Ast_noteq_t:
-			return 1;
-			
-		default:
-			return 0;
-	}
-}
 
 /*
 X && Y	:
