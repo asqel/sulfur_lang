@@ -218,6 +218,7 @@ typedef struct Sulfur_ctx{
     int argc;
 
     char **requested_vars; // used by the bytecode and interpreter and libs
+    char **requested_vars_right; // same but for the right side of the dot operator
 
 } Sulfur_ctx;
 

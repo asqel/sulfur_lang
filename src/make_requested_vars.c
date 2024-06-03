@@ -70,6 +70,23 @@ void make_req_vars_ast(Ast *x) {
 	}
 	if (x->type == Ast_dot_t) {
 		make_req_vars_ast(x->left);
+		
+		int len = 0;
+		while (CTX.requested_vars_right[len] != NULL) {
+			if (!strcmp(CTX.requested_vars_right[len], x->right->root.varcall)) {
+				free(x->right->root.varcall);
+				x->right->root.var_idx = len;
+				x->right->type = Ast_varcall_idx_t;
+				return ;
+			}
+			len++;
+		}
+		CTX.requested_vars_right = realloc(CTX.requested_vars_right, sizeof(char *) * (len + 2));
+		CTX.requested_vars_right[len] = strdup(x->right->root.varcall);
+		CTX.requested_vars_right[len + 1] = NULL;
+		free(x->right->root.varcall);
+		x->right->root.var_idx = len;
+		x->right->type = Ast_varcall_idx_t;
 		return ;
 	}
 	if (x->left != NULL)

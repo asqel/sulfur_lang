@@ -38,7 +38,7 @@ int str_contains_char(char *x,char v){
 }
 
 char*abs_path(){
-    char *path=malloc(sizeof(char)*(PATH_MAX+1));
+    char *path = calloc(PATH_MAX+1, sizeof(char));
     #ifdef _WIN32
         if (GetModuleFileName(NULL, path, PATH_MAX) == 0) {
             perror("GetModuleFileName");

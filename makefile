@@ -10,6 +10,8 @@ GRAPGIC_LIB = $(STD_LIBS)/graphic
 COMMON-FLAG = -fno-builtin-printf -lm -Wall -Wextra -Werror -Wno-format  -Wno-cast-function-type -Wno-unused-variable -Wno-unused-parameter
 COMPILER = "gcc"
 
+DEBUG_FLAG = -g #-fsanitize=address
+
 win:
 	if not exist build mkdir build
 	if not exist "build/libs" mkdir "build/libs"
@@ -19,7 +21,7 @@ win:
 linux:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG)
+	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG) $(DEBUG_FLAG)
 	make stdlibs_linux
 
 linux_debug:
