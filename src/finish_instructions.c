@@ -390,13 +390,70 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		(*res_len)++;
-		res[(*res_len)].type = inst_S_jmpifn_uid_t;
+		res[(*res_len)].type = inst_S_jmp_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
 		jmp3_idx = *res_len;
 		(*res_len)++;
 		res[(*res_len)].type = inst_S_push_0b_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		(*res_len)++;
+		res[jmp1_idx].value.jmp = (*res_len) - 1;
+		res[jmp2_idx].value.jmp = (*res_len) - 1;
+		res[jmp3_idx].value.jmp = *res_len;
+		return res;
+	}
+	elif (x->type == Ast_and_t) {
+		/*
+		X || Y	 :
+			0 | push X
+			1 | jmp if 6
+			2 | push Y
+			3 | jmp if 6
+			4 | push 0b
+			5 | jmp 7
+			6 | push 1b
+		*/
+		int jmp1_idx;
+		int jmp2_idx;
+		int jmp3_idx;
+		int left_len = 0;
+		Instruction *left = ast_to_inst(x->left, &left_len);
+		res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 1));
+		for (int i = 0; i < left_len; i++)
+			res[(*res_len)++] = left[i];
+		free(left);
+		res[(*res_len)].type = inst_S_jmpif_uid_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		res[(*res_len)].value.jmp = 0xFFFFFFFF;
+		jmp1_idx = *res_len;
+		(*res_len)++;
+		int right_len = 0;
+		Instruction *right = ast_to_inst(x->right, &right_len);
+		res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 4));
+		for (int i = 0; i < right_len; i++)
+			res[(*res_len)++] = right[i];
+		free(right);
+		res[(*res_len)].type = inst_S_jmpif_uid_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		res[(*res_len)].value.jmp = 0xFFFFFFFF;
+		jmp2_idx = *res_len;
+		(*res_len)++;
+		res[(*res_len)].type = inst_S_push_0b_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		(*res_len)++;
+		res[(*res_len)].type = inst_S_jmp_uid_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		res[(*res_len)].value.jmp = 0xFFFFFFFF;
+		jmp3_idx = *res_len;
+		(*res_len)++;
+		res[(*res_len)].type = inst_S_push_1b_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		(*res_len)++;

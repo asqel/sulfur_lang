@@ -114,7 +114,13 @@ void instruction_print(Instruction code){
         printf("pass");
     }
     elif (code.type == inst_S_jmp_uid_t) {
-        printf("jmp %d\n", code.value.jmp);
+        printf("jmp %d", code.value.jmp);
+    }
+    elif (code.type == inst_S_jmpif_uid_t) {
+        printf("jmpif %d", code.value.jmp);
+    }
+    elif (code.type == inst_S_jmpifn_uid_t) {
+        printf("jmpifn %d", code.value.jmp);
     }
     elif (code.type == inst_S_push_0b_t) {
         printf("PUSH 0b");
