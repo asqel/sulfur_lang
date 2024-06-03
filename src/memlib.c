@@ -342,7 +342,7 @@ void add_protected(void *address) {
 }
 
 void add_count(void* address, int type){
-    for(int i =0; i < protected_refs_len; i++) {
+    for(int i = 0; i < protected_refs_len; i++) {
         if (protected_refs[i] == address) {
             for(int k = i + 1; i < protected_refs_len; i++) {
                 protected_refs[k - 1] = protected_refs[k];

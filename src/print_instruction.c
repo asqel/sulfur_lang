@@ -102,19 +102,76 @@ void instruction_print(Instruction code){
         printf("}");
     }
     elif(code.type == inst_proceed_t){
-        printf("PROCEED\n");
+        printf("PROCEED");
     }
     elif(code.type == inst_stop_t){
-        printf("STOP\n");
+        printf("STOP");
     }
     elif (code.type == inst_S_push_nil_t) {
-        //printf("PUSH nil\n");
+        printf("PUSH nil");
     }
     elif (code.type == inst_pass_t) {
-        //printf("pass\n");
+        printf("pass");
     }
+    elif (code.type == inst_S_push_0b_t) {
+        printf("PUSH 0b");
+    }
+    elif (code.type == inst_S_push_1b_t) {
+        printf("PUSH 1b");
+    }
+    elif (code.type == inst_S_push_ount_t) {
+        printf("PUSH %d", code.value.ount);
+    }
+    elif (code.type == inst_S_push_floap_t) {
+        printf("PUSH %f", code.value.floap);
+    }
+    elif (code.type == inst_S_push_i_t) {
+        printf("PUSH $i");
+    }
+    elif (code.type == inst_S_pop_t) {
+        printf("POP");
+    }
+    elif (code.type == inst_S_op_t) {
+	    if (code.value.op == inst_S_op_add_t)
+            printf("add");
+	    elif (code.value.op == inst_S_op_sub_t)
+            printf("sub");
+	    elif (code.value.op == inst_S_op_mul_t)
+            printf("mul");
+	    elif (code.value.op == inst_S_op_div_t)
+            printf("div");
+	    elif (code.value.op == inst_S_op_fldiv_t)
+            printf("fldiv");
+	    elif (code.value.op == inst_S_op_mod_t)
+            printf("mod");
+	    elif (code.value.op == inst_S_op_eq_t)
+            printf("eq");
+	    elif (code.value.op == inst_S_op_ge_t)
+            printf("ge");
+	    elif (code.value.op == inst_S_op_geq_t)
+            printf("geq");
+	    elif (code.value.op == inst_S_op_le_t)
+            printf("le");
+	    elif (code.value.op == inst_S_op_leq_t)
+            printf("leq");
+	    elif (code.value.op == inst_S_op_lshift_t)
+            printf("lshift");
+	    elif (code.value.op == inst_S_op_rshift_t)
+            printf("rshift");
+	    elif (code.value.op == inst_S_op_noteq_t)
+            printf("noteq");
+        elif (code.value.op == inst_S_op_negate_t)
+            printf("negate");
+        elif (code.value.op == inst_S_op_pow_t)
+            printf("pow");
+        else
+            printf("OP INVALID (%d)", code.value.op);
+    }
+    elif (code.type == inst_S_push_var_t)
+        printf("push $(%d)", code.value.var_idx);
+    else
+        printf("inst INVALID (%d)", code.type);
 }
-
 
 void instructions_print(Instruction* code, int code_len){
     for(int i = 0; i < code_len; i++){

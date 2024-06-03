@@ -71,6 +71,14 @@ int execute_file(sulfur_args_t *args) {
 
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
+    DEBUG("req vars\n");
+    for(int i = 0; CTX.requested_vars[i] != NULL; i++) {
+        DEBUG("    %d : %s\n", i, CTX.requested_vars[i]);
+    }
+    DEBUG("req vars\n");
+    for(int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
+        DEBUG("    %d : %s\n", i, CTX.requested_vars_right[i]);
+    }
     code = make_jmp_links(code, instruction_len);
     code = finish_instrcutions(code, &instruction_len);
 
@@ -130,6 +138,10 @@ int execute_file(sulfur_args_t *args) {
         free(CTX.requested_vars[i]);
     }
     free(CTX.requested_vars);
+    for (int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
+        free(CTX.requested_vars_right[i]);
+    }
+    free(CTX.requested_vars_right);
     ///print refs
     //printf("            total %d\n", REFS_len);
     //for(int i = 0; i <  REFS_len; i++) {

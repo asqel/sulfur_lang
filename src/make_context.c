@@ -97,4 +97,6 @@ void make_context(){
 	CTX.operations = OPERATIONS;
 	CTX.requested_vars = malloc(sizeof(char *));
 	CTX.requested_vars[0] = NULL;
+	CTX.requested_vars_right = malloc(sizeof(char *));
+	CTX.requested_vars_right[0] = NULL;
 }

@@ -83,6 +83,7 @@ typedef struct Instruction{
         int jmp_length;
         int op;
         S_ount_t ount;
+        int var_idx;
         double floap;
     }value;
     int line;
@@ -114,6 +115,7 @@ enum instruction_type{
     // instructions of bytecode
     inst_S_op_t,
     inst_S_push_t,
+    inst_S_push_var_t,
     inst_S_push_1b_t,
     inst_S_push_0b_t,
     inst_S_push_nil_t,
@@ -125,6 +127,7 @@ enum instruction_type{
     inst_S_op_sub_t,
     inst_S_op_mul_t,
     inst_S_op_div_t,
+    inst_S_op_pow_t,
     inst_S_op_fldiv_t,
     inst_S_op_mod_t,
     inst_S_op_eq_t,
@@ -135,18 +138,7 @@ enum instruction_type{
     inst_S_op_lshift_t,
     inst_S_op_rshift_t,
     inst_S_op_noteq_t,
-};
-
-enum instruction_op_stack {
-    instOp_add,
-    instOp_sub,
-    instOp_mul,
-    instOp_div,
-    instOp_fl_div,
-    instOp_negate,
-    instOp_not,
-    instOp_pow,
-    
+    inst_S_op_negate_t
 };
 
 //to acces an element
