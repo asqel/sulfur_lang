@@ -102,16 +102,19 @@ void instruction_print(Instruction code){
         printf("}");
     }
     elif(code.type == inst_proceed_t){
-        printf("PROCEED\n");
+        printf("PROCEED");
     }
     elif(code.type == inst_stop_t){
-        printf("STOP\n");
+        printf("STOP");
     }
     elif (code.type == inst_S_push_nil_t) {
-        //printf("PUSH nil\n");
+        printf("PUSH nil");
     }
     elif (code.type == inst_pass_t) {
-        //printf("pass\n");
+        printf("pass");
+    }
+    elif (code.type == inst_S_jmp_uid_t) {
+        printf("jmp %d\n", code.value.jmp);
     }
 }
 

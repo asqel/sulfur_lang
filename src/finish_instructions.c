@@ -10,6 +10,21 @@ int next_uid = 0;
 
 Instruction *ast_to_inst(Ast *x, int *res_len);
 
+/*
+everything will be pushed from ledt to right
+a + b -> push a; push b; add
+f(a, b, $c, d) ->
+			push prepare_call
+			push a
+			push b
+			push c
+			unpack
+			push d
+			push f
+			call_func
+
+*/
+
 Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 	// do uid
 	// uid will be stored in .line
@@ -275,23 +290,77 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		int left_len = 0;
 		Instruction *left = ast_to_inst(x->left, &left_len);
 		res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
-		for (int i = 0; i < right_len; i++)
-			res[(*res_len)++] = right[i];
-		free(right);
 		for (int i = 0; i < left_len; i++)
 			res[(*res_len)++] = left[i];
 		free(left);
+		for (int i = 0; i < right_len; i++)
+			res[(*res_len)++] = right[i];
+		free(right);
 		res = realloc(res, sizeof(Instruction) * (*res_len + 1));
 		res[*res_len].type = inst_S_op_t;
 		res[*res_len].value.op = get_bytecode_op(x->type);
 		(*res_len)++;
 		return res;
 	}
+	elif (x->type == Ast_and_t) {
+		/*
+		X && Y	:
+			0 | push X
+			1 | jmp ifn 6
+			2 | push y
+			3 | jmp ifn 6
+			4 | push 1b
+			5 | jmp 7
+			6 | push 0b
+		*/
+		int jmp1_idx;
+		int jmp2_idx;
+		int jmp3_idx;
+		int left_len = 0;
+		Instruction *left = ast_to_inst(x->left, &left_len);
+		res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 1));
+		for (int i = 0; i < left_len; i++)
+			res[(*res_len)++] = left[i];
+		free(left);
+		res[(*res_len)].type = inst_S_jmpifn_uid_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		res[(*res_len)].value.jmp = 0xFFFFFFFF;
+		jmp1_idx = *res_len;
+		(*res_len)++;
+		int right_len = 0;
+		Instruction *right = ast_to_inst(x->right, &right_len);
+		res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 4));
+		for (int i = 0; i < right_len; i++)
+			res[(*res_len)++] = right[i];
+		free(right);
+		res[(*res_len)].type = inst_S_jmpifn_uid_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		res[(*res_len)].value.jmp = 0xFFFFFFFF;
+		jmp2_idx = *res_len;
+		(*res_len)++;
+		res[(*res_len)].type = inst_S_push_1b_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		(*res_len)++;
+		res[(*res_len)].type = inst_S_jmpifn_uid_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		res[(*res_len)].value.jmp = 0xFFFFFFFF;
+		jmp3_idx = *res_len;
+		(*res_len)++;
+		res[(*res_len)].type = inst_S_push_0b_t;
+		res[(*res_len)].facultative = 0;
+		res[(*res_len)].line = -1;
+		(*res_len)++;
+		res[jmp1_idx].value.jmp = (*res_len) - 1;
+		res[jmp2_idx].value.jmp = (*res_len) - 1;
+		res[jmp3_idx].value.jmp = *res_len;
+		return res;
+	}
 	return NULL;
 }
-
-
-
 
 
 /*

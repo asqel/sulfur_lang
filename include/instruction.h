@@ -135,6 +135,9 @@ enum instruction_type{
     inst_S_op_lshift_t,
     inst_S_op_rshift_t,
     inst_S_op_noteq_t,
+    inst_S_jmp_uid_t,
+    inst_S_jmpif_uid_t,
+    inst_S_jmpifn_uid_t
 };
 
 enum instruction_op_stack {
