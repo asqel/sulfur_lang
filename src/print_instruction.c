@@ -113,14 +113,14 @@ void instruction_print(Instruction code){
     elif (code.type == inst_pass_t) {
         printf("pass");
     }
-    elif (code.type == inst_S_jmp_uid_t) {
-        printf("jmp %d", code.value.jmp);
+    elif (code.type == inst_S_rjmp_uid_t) {
+        printf("rjmp %d", code.value.jmp);
     }
-    elif (code.type == inst_S_jmpif_uid_t) {
-        printf("jmpif %d", code.value.jmp);
+    elif (code.type == inst_S_rjmpif_uid_t) {
+        printf("rjmpif %d", code.value.jmp);
     }
-    elif (code.type == inst_S_jmpifn_uid_t) {
-        printf("jmpifn %d", code.value.jmp);
+    elif (code.type == inst_S_rjmpifn_uid_t) {
+        printf("rjmpifn %d", code.value.jmp);
     }
     elif (code.type == inst_S_push_0b_t) {
         printf("PUSH 0b");
@@ -178,6 +178,8 @@ void instruction_print(Instruction code){
     }
     elif (code.type == inst_S_push_var_t)
         printf("push $(%d)", code.value.var_idx);
+    elif (code.type == inst_S_push_global_var_t)
+        printf("push #(%d)", code.value.var_idx);
     else
         printf("inst INVALID (%d)", code.type);
 }
