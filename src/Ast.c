@@ -169,6 +169,9 @@ int print_ast(Ast x){
         case Ast_syntax_t:
             printf("Sy %c%c ", SYNTAX[x.root.sy][0], SYNTAX[x.root.sy][1]);
             return 0;
+        case Ast_varcall_idx_t:
+            printf("Vc_i[%d] ", x.root.var_idx);
+            return 0;
     }
     return 0;
 }

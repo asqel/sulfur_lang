@@ -100,11 +100,11 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 						int include_tokens_len = 0;
 						//include tokens == NULL : ERROR, error is stored in include_tokens_len 0 if we can use the else
 						Token *include_tokens = get_include_tokens(&include_tokens_len, toks[p + 2].value.s, new_path);
-						free(new_path);
 						if (include_tokens == NULL && include_tokens_len != 0) {
 							printf("ERROR on include file '%s' with mod '%s'\n", new_path, toks[p + 2].value.s);
 							exit(1);
 						}
+						free(new_path);
 						if (include_tokens == NULL) {
 							// p-1    p    p+1  p+2  p+3 p+4
 							// ... include path mode else (...) ...

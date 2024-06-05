@@ -177,8 +177,16 @@ void free_paths() {
     free(LIBS_DIR);
     free(S_INCLUDE_DIR);
 }
+#include <signal.h>
+
+void segvHandler(int s) {
+    printf("Segmentation Fault\n");
+    exit(EXIT_FAILURE);
+}
 
 int main(int argc,char **argv) {
+    signal(SIGSEGV, segvHandler);
+
     init_paths(argv[0]);
 
     init_dyn_libs();

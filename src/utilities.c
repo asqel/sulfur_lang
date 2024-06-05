@@ -385,6 +385,8 @@ char is_lib_standar(char *filename) {
 
 
 void *get_module_loader(char* filename) {
+    if (!filename)
+        return NULL;
     #if defined(ONE_FILE) && ONE_FILE == 2
     void* mod = get_standard_module(filename);
     if (mod) {
@@ -420,7 +422,7 @@ void *get_module_loader(char* filename) {
         }
         else{
             char *old_filename = filename;
-            char *filename=str_cat_new(filename,".dll");
+            filename = str_cat_new(filename,".dll");
             free(old_filename);
             HINSTANCE handle = LoadLibrary(filename);
             if (handle != NULL) {

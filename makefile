@@ -7,7 +7,7 @@ BLT_LIBS = "sulfur_libs/blt_libs"
 STD_LIBS = "sulfur_libs/std_libs"
 GRAPGIC_LIB = $(STD_LIBS)/graphic
 
-COMMON-FLAG = -fno-builtin-printf -lm -Wall -Wextra -Werror -Wno-format  -Wno-cast-function-type -Wno-unused-variable -Wno-unused-parameter
+COMMON-FLAG = -fno-builtin-printf -lm -Wall -Wextra -Werror -Wno-format  -Wno-cast-function-type -Wno-unused-variable -Wno-unused-parameter -Wno-dangling-pointer
 COMPILER = "gcc"
 
 DEBUG_FLAG = -g #-fsanitize=address

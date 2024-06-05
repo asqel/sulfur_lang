@@ -141,6 +141,7 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
 	//		}
 	//	}
 	//}
+
 	// make link a again replace .line (uid) by .line (index)
 	instruction_free_array(code, *instruction_len);
 	*instruction_len = res_len;
@@ -213,16 +214,17 @@ int get_bytecode_op(int type) {
 Instruction *ast_to_inst(Ast *x, int *res_len) {
 	Instruction *res = NULL;
 	if (x->type == Ast_varcall_idx_t) {
-		if (!strcmp(CTX.requested_vars[x->root.var_idx], "nil")) {
-			(*res_len)++;
-			res = realloc(res, sizeof(Instruction) *(*res_len));
-			res[*res_len - 1].facultative = 0;
-			res[*res_len - 1].line = -1;
-			res[*res_len - 1].type = inst_S_push_nil_t;
-			return res;
-		}
-		else {
-			if (x->root.var_idx >= 0) {
+		if (x->root.var_idx >= 0) {
+			if (!strcmp(CTX.requested_vars[x->root.var_idx], "nil")) {
+				(*res_len)++;
+				res = realloc(res, sizeof(Instruction) *(*res_len));
+				res[*res_len - 1].facultative = 0;
+				res[*res_len - 1].line = -1;
+				res[*res_len - 1].type = inst_S_push_nil_t;
+				return res;
+			}
+			else {
+			
 				(*res_len)++;
 				res = realloc(res, sizeof(Instruction) *(*res_len));
 				res[*res_len - 1].facultative = 0;
@@ -231,16 +233,15 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 				res[*res_len - 1].value.var_idx = x->root.var_idx;
 				return res;
 			}
-			else {
-				(*res_len)++;
-				res = realloc(res, sizeof(Instruction) *(*res_len));
-				res[*res_len - 1].facultative = 0;
-				res[*res_len - 1].line = -1;
-				res[*res_len - 1].type = inst_S_push_global_var_t;
-				res[*res_len - 1].value.var_idx = -x->root.var_idx - 1;
-				return res;
-			}
-
+		}
+		else {
+			(*res_len)++;
+			res = realloc(res, sizeof(Instruction) *(*res_len));
+			res[*res_len - 1].facultative = 0;
+			res[*res_len - 1].line = -1;
+			res[*res_len - 1].type = inst_S_push_global_var_t;
+			res[*res_len - 1].value.var_idx = -x->root.var_idx - 1;
+			return res;
 		}
 	}
 	if (x->type == Ast_object_t) {
@@ -327,12 +328,12 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 			int left_len = 0;
 			Instruction *left = ast_to_inst(x->left, &left_len);
 			res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
-			for (int i = 0; i < right_len; i++)
-				res[(*res_len)++] = right[i];
-			free(right);
 			for (int i = 0; i < left_len; i++)
 				res[(*res_len)++] = left[i];
 			free(left);
+			for (int i = 0; i < right_len; i++)
+				res[(*res_len)++] = right[i];
+			free(right);
 			res = realloc(res, sizeof(Instruction) * (*res_len + 1));
 			res[*res_len].type = inst_S_op_t;
 			res[*res_len].value.op = inst_S_op_sub_t;

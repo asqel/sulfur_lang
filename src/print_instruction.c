@@ -180,6 +180,8 @@ void instruction_print(Instruction code){
         printf("push $(%d)", code.value.var_idx);
     elif (code.type == inst_S_push_global_var_t)
         printf("push #(%d)", code.value.var_idx);
+    elif (code.type == inst_S_dot_get_t)
+        printf("dot_get(%d)", code.value.var_idx);
     else
         printf("inst INVALID (%d)", code.type);
 }
