@@ -116,6 +116,7 @@ enum instruction_type{
     inst_S_op_t,
     inst_S_push_t,
     inst_S_push_var_t,
+    inst_S_push_global_var_t,
     inst_S_push_1b_t,
     inst_S_push_0b_t,
     inst_S_push_nil_t,
@@ -139,9 +140,10 @@ enum instruction_type{
     inst_S_op_rshift_t,
     inst_S_op_noteq_t,
     inst_S_op_negate_t,
-    inst_S_jmp_uid_t,
-    inst_S_jmpif_uid_t,
-    inst_S_jmpifn_uid_t
+    inst_S_rjmp_uid_t,
+    inst_S_rjmpif_uid_t,
+    inst_S_rjmpifn_uid_t,
+    inst_S_dot_get_t
 };
 
 enum instruction_op_stack {

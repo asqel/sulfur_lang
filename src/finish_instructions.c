@@ -222,13 +222,24 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 			return res;
 		}
 		else {
-			(*res_len)++;
-			res = realloc(res, sizeof(Instruction) *(*res_len));
-			res[*res_len - 1].facultative = 0;
-			res[*res_len - 1].line = -1;
-			res[*res_len - 1].type = inst_S_push_var_t;
-			res[*res_len - 1].value.var_idx = x->root.var_idx;
-			return res;
+			if (x->root.var_idx >= 0) {
+				(*res_len)++;
+				res = realloc(res, sizeof(Instruction) *(*res_len));
+				res[*res_len - 1].facultative = 0;
+				res[*res_len - 1].line = -1;
+				res[*res_len - 1].type = inst_S_push_var_t;
+				res[*res_len - 1].value.var_idx = x->root.var_idx;
+				return res;
+			}
+			else {
+				(*res_len)++;
+				res = realloc(res, sizeof(Instruction) *(*res_len));
+				res[*res_len - 1].facultative = 0;
+				res[*res_len - 1].line = -1;
+				res[*res_len - 1].type = inst_S_push_global_var_t;
+				res[*res_len - 1].value.var_idx = -x->root.var_idx - 1;
+				return res;
+			}
 
 		}
 	}
@@ -297,7 +308,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 	}
 	if (x->type == Ast_sub_t) {
 		// check if unary
-		if(x->left==NULL && x->right!=NULL){
+		if(x->left == NULL && x->right != NULL){
 			int left_len = 0;
 			Instruction *left = ast_to_inst(x->left, &left_len);
 			res = realloc(res, sizeof(Instruction) * (*res_len + left_len));
@@ -352,11 +363,11 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		/*
 		X && Y	:
 			0 | push X
-			1 | jmp ifn 6
+			1 | jmp ifn +5
 			2 | push y
-			3 | jmp ifn 6
+			3 | jmp ifn +3
 			4 | push 1b
-			5 | jmp 7
+			5 | jmp +2
 			6 | push 0b
 		*/
 		int jmp1_idx;
@@ -368,7 +379,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		for (int i = 0; i < left_len; i++)
 			res[(*res_len)++] = left[i];
 		free(left);
-		res[(*res_len)].type = inst_S_jmpifn_uid_t;
+		res[(*res_len)].type = inst_S_rjmpifn_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -380,7 +391,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		for (int i = 0; i < right_len; i++)
 			res[(*res_len)++] = right[i];
 		free(right);
-		res[(*res_len)].type = inst_S_jmpifn_uid_t;
+		res[(*res_len)].type = inst_S_rjmpifn_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -390,7 +401,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		(*res_len)++;
-		res[(*res_len)].type = inst_S_jmp_uid_t;
+		res[(*res_len)].type = inst_S_rjmp_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -400,12 +411,12 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		(*res_len)++;
-		res[jmp1_idx].value.jmp = (*res_len) - 1;
-		res[jmp2_idx].value.jmp = (*res_len) - 1;
-		res[jmp3_idx].value.jmp = *res_len;
+		res[jmp1_idx].value.jmp = 4 + right_len;
+		res[jmp2_idx].value.jmp = 3;
+		res[jmp3_idx].value.jmp = 2;
 		return res;
 	}
-	elif (x->type == Ast_and_t) {
+	elif (x->type == Ast_or_t) {
 		/*
 		X || Y	 :
 			0 | push X
@@ -425,7 +436,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		for (int i = 0; i < left_len; i++)
 			res[(*res_len)++] = left[i];
 		free(left);
-		res[(*res_len)].type = inst_S_jmpif_uid_t;
+		res[(*res_len)].type = inst_S_rjmpif_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -437,7 +448,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		for (int i = 0; i < right_len; i++)
 			res[(*res_len)++] = right[i];
 		free(right);
-		res[(*res_len)].type = inst_S_jmpif_uid_t;
+		res[(*res_len)].type = inst_S_rjmpif_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -447,7 +458,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		(*res_len)++;
-		res[(*res_len)].type = inst_S_jmp_uid_t;
+		res[(*res_len)].type = inst_S_rjmp_uid_t;
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -457,10 +468,31 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 		res[(*res_len)].facultative = 0;
 		res[(*res_len)].line = -1;
 		(*res_len)++;
-		res[jmp1_idx].value.jmp = (*res_len) - 1;
-		res[jmp2_idx].value.jmp = (*res_len) - 1;
-		res[jmp3_idx].value.jmp = *res_len;
+		res[jmp1_idx].value.jmp = 4 + right_len;
+		res[jmp2_idx].value.jmp =  3;
+		res[jmp3_idx].value.jmp = 2;
 		return res;
+	}
+	elif (x->type == Ast_dot_t) {
+		// right can only be varcall (non global)
+		/*
+		a.b
+		push a
+		dot_get(b)
+		*/
+		int left_len = 0;
+		Instruction *left = ast_to_inst(x->left, &left_len);
+		res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 1));
+		for (int i = 0; i < left_len; i++)
+			res[(*res_len)++] = left[i];
+		res[*res_len].facultative = 0;
+		res[*res_len].line = -1;
+		res[*res_len].type = inst_S_dot_get_t;
+		res[*res_len].value.var_idx = x->right->root.var_idx;
+	}
+	else {
+		printf("cannot convert ast of type %d to bytecode\n", x->type);
+		exit(1);
 	}
 	return NULL;
 }

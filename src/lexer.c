@@ -217,7 +217,34 @@ Token *lexe(char *input) {
         }
 
         char s2[2] = {text[p], '\0'};
-
+        if (text[p] == '#') {
+            p++;
+            int start = p;
+            int end = start;
+            while (end < len && id_acceptable(text[end]))
+                end++;
+            char *id = malloc((end - start + 2) *sizeof(char));
+            id[0] = '#';
+            id[end - start + 2 - 1] = '\0';
+            for (int i = start; i < end; i++)
+                id[i - start + 1] = text[i];
+            int n = kw_to_enum(&(id[1]));
+            if (n != -1) {
+                printf("ERROR lexer: global variable cannot be keyword\n");
+                exit(1);
+            }
+            if (!strcmp(&(id[1]), "nil")) {
+                printf("ERROR lexer: global variable cannot be nil\n");
+                exit(1);
+            }
+            n_tok++;
+            toks = realloc(toks, sizeof(Token) * n_tok);
+            toks[n_tok-1].type = identifier;
+            toks[n_tok-1].value.s = id;
+            toks[n_tok-1].line = line;
+            p = end;
+            continue;
+        }
         if (sy_to_enum(s2) != -1) {
             // syntax
             n_tok++;
@@ -229,6 +256,7 @@ Token *lexe(char *input) {
             p++;
             continue;
         }
+        
 
         if (text[p] == '\'') {
             p++;

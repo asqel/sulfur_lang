@@ -9,6 +9,8 @@
 #include <stdio.h>
 
 int add_requested_var(char *var) {
+	if (var[0] == '#')
+		var = &(var[1]);
 	int len = 0;
 	while (CTX.requested_vars[len] != NULL) {
 		if (!strcmp(CTX.requested_vars[len], var))
@@ -59,18 +61,28 @@ void make_req_vars_inst(Instruction inst) {
 		break;
 	}
 }
-
+/*
+globals are negative - 1
+*/
 void make_req_vars_ast(Ast *x) {
 	if (x->type == Ast_varcall_t) {
+		char is_global = (x->root.varcall[0] == '#');
 		int v = add_requested_var(x->root.varcall);
 		free(x->root.varcall);
-		x->root.var_idx = v;
+		x->root.var_idx = is_global ? -v - 1 : v;
 		x->type = Ast_varcall_idx_t;
 		return ;
 	}
 	if (x->type == Ast_dot_t) {
 		make_req_vars_ast(x->left);
-		
+		if (x->right->type != Ast_varcall_t) {
+			printf("ERROR dot operator accept only identifier as right operend\n");
+			exit(1);
+		}
+		if (x->right->root.varcall[0] == '#') {
+			printf("ERROR dot operator accept only identifier as right operend (no #)\n");
+			exit(1);
+		}
 		int len = 0;
 		while (CTX.requested_vars_right[len] != NULL) {
 			if (!strcmp(CTX.requested_vars_right[len], x->right->root.varcall)) {
