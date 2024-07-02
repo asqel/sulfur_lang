@@ -35,7 +35,7 @@ Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
     if(as != NULL){
         Object o = (*loader)(CTX);
         if(o.type !=obj_module_t){
-            printf("ERROR in loading module '%s' as '%s', value return by loader incorrect\n", name, as);
+            PRINT_ERR("ERROR in loading module '%s' as '%s', value return by loader incorrect\n", name, as);
             exit(1);
         }
         add_object(&MEMORY, as, o);
@@ -43,7 +43,7 @@ Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
     else{
         Object o=(*loader)(CTX);
         if(o.type !=obj_module_t){
-            printf("ERROR in loading module %s , value return by loader incorrect\n",name);
+            PRINT_ERR("ERROR in loading module %s , value return by loader incorrect\n",name);
             exit(1);
         }
         for(int i=0;i<o.val.module->MEM->len;i++){
@@ -55,26 +55,26 @@ Object add_module_mem(Object (*loader)(Sulfur_ctx), char* name, char* as){
 
 Object import_func(Object*arg,int argc){
     if (argc>2){
-        printf("ERROR in import maximum 2 arguments\n");
+        PRINT_ERR("ERROR in import maximum 2 arguments\n");
         exit(1);
     }  
     for (int i = 0; i < argc; i++){
         if (arg[i].type != Obj_string_t){
-            printf("ERROR in import only string arguments accepted\n");
+            PRINT_ERR("ERROR in import only string arguments accepted\n");
             exit(1);
         }
     }
     if(argc == 1){
         if (!id_acceptable_ptr(arg[0].val.s)){
-            printf("ERROR cannot import file with space in its name (%s)\n",arg[0].val.s);
-            printf("use second argument to import as\n");
+            PRINT_ERR("ERROR cannot import file with space in its name (%s)\n",arg[0].val.s);
+            PRINT_ERR("use second argument to import as\n");
             exit(1);
         }
         add_module_mem(get_module_loader(arg[0].val.s), arg[0].val.s, arg[0].val.s);
     }
     if (argc==2){
         if (strcmp(arg[1].val.s,"") && !id_acceptable_ptr(arg[1].val.s)){
-            printf("ERROR cannot import file as if alias contains space (%s)\n",arg[1].val.s);
+            PRINT_ERR("ERROR cannot import file as if alias contains space (%s)\n",arg[1].val.s);
             exit(1);
         }
         if (strcmp(arg[1].val.s,"")){
@@ -208,11 +208,11 @@ Object execute(Instruction* code, char* file_name, int len){
             Obj_free_val(old_end);
 
             if(start.type == Obj_nil_t){
-                printf("ERROR cant convert the value of start to ount in for\n");
+                PRINT_ERR("ERROR cant convert the value of start to ount in for\n");
                 exit(1);
             }
             if(end.type == Obj_nil_t){
-                printf("ERROR cant convert the value of end to ount in for\n");
+                PRINT_ERR("ERROR cant convert the value of end to ount in for\n");
                 exit(1);
             }
 
@@ -274,7 +274,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 Obj_free_val(old_obj);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
+                    PRINT_ERR("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 MEMORY.values[n].val.i++;
@@ -311,7 +311,7 @@ Object execute(Instruction* code, char* file_name, int len){
                 Obj_free_val(old_obj);
 
                 if(MEMORY.values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
+                    PRINT_ERR("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 MEMORY.values[n].val.i--;
@@ -410,7 +410,7 @@ Object execute(Instruction* code, char* file_name, int len){
         //        p++;
         //    }
         //    else{
-        //        printf("ERROR function has same name as variable or another function\n");
+        //        PRINT_ERR("ERROR function has same name as variable or another function\n");
         //        exit(1);
 //
         //    }
@@ -418,7 +418,7 @@ Object execute(Instruction* code, char* file_name, int len){
         //}
 
         else {
-            printf("ERROR in execute unknown instruction type %d\n", code[p].type);
+            PRINT_ERR("ERROR in execute unknown instruction type %d\n", code[p].type);
             exit(1);
         }
     }

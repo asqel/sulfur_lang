@@ -23,6 +23,21 @@ int add_requested_var(char *var) {
 	return len;
 }
 
+int add_requested_var_right(char *var) {
+	if (var[0] == '#')
+		var = &(var[1]);
+	int len = 0;
+	while (CTX.requested_vars_right[len] != NULL) {
+		if (!strcmp(CTX.requested_vars_right[len], var))
+			return len;
+		len++;
+	}
+	CTX.requested_vars_right = realloc(CTX.requested_vars_right, sizeof(char *) * (len + 2));
+	CTX.requested_vars_right[len] = strdup(var);
+	CTX.requested_vars_right[len + 1] = NULL;
+	return len;
+}
+
 Instruction *make_requested_vars(Instruction *inst, int len) {
 	for (int i = 0; i < len; i++)  {
 		make_req_vars_inst(inst[i]);
@@ -75,41 +90,42 @@ void make_req_vars_ast(Ast *x) {
 	}
 	if (x->type == Ast_dot_t) {
 		make_req_vars_ast(x->left);
-		if (x->right->type != Ast_varcall_t) {
-			printf("ERROR dot operator accept only identifier as right operend\n");
+		if (x->right->type != Ast_varcall_t && x->right->type != Ast_funccall_t ) {
+			PRINT_ERR("ERROR dot operator accept only identifier as right operend\n");
 			exit(1);
 		}
-		if (x->right->root.varcall[0] == '#') {
-			printf("ERROR dot operator accept only identifier as right operend (no #)\n");
+		if (x->right->type == Ast_varcall_t && x->right->root.varcall[0] == '#') {
+			PRINT_ERR("ERROR dot operator accept only identifier as right operend (no #)\n");
 			exit(1);
 		}
-		int len = 0;
-		while (CTX.requested_vars_right[len] != NULL) {
-			if (!strcmp(CTX.requested_vars_right[len], x->right->root.varcall)) {
-				free(x->right->root.varcall);
-				x->right->root.var_idx = len;
-				x->right->type = Ast_varcall_idx_t;
-				return ;
-			}
-			len++;
+		if (x->right->type == Ast_varcall_t) {
+			char *old = x->right->root.varcall;
+			x->right->root.var_idx = add_requested_var_right(x->right->root.varcall);
+			x->right->type = Ast_varcall_idx_t;
+			free(old);
+			return ;
 		}
-		CTX.requested_vars_right = realloc(CTX.requested_vars_right, sizeof(char *) * (len + 2));
-		CTX.requested_vars_right[len] = strdup(x->right->root.varcall);
-		CTX.requested_vars_right[len + 1] = NULL;
-		free(x->right->root.varcall);
-		x->right->root.var_idx = len;
-		x->right->type = Ast_varcall_idx_t;
+		x->right->root.fun->name_idx = add_requested_var_right(x->right->root.fun->name);
+		for (int i = 0; i < x->right->root.fun->nbr_arg; i++)
+			make_req_vars_ast(&(x->right->root.fun->args[i]));
 		return ;
 	}
-	if (x->left != NULL)
-		make_req_vars_ast(x->left);
-	if (x->right != NULL)
-		make_req_vars_ast(x->right);
 	if (x->type == Ast_anonym_func_t) {
 		make_requested_vars(x->root.ano_func->code, x->root.ano_func->code_len);
 		return ;
 	}
 	if (x->type == Ast_funccall_t) {
-		
+		x->root.fun->name_idx = add_requested_var(x->root.fun->name);
+		for (int i = 0; i < x->root.fun->nbr_arg; i++)
+			make_req_vars_ast(&(x->root.fun->args[i]));
+		return;
 	}
+	if (x->type == Ast_anonym_func_t) {
+		make_requested_vars(x->root.ano_func->code, x->root.ano_func->code_len);
+		return;
+	}
+	if (x->left != NULL)
+		make_req_vars_ast(x->left);
+	if (x->right != NULL)
+		make_req_vars_ast(x->right);
 }

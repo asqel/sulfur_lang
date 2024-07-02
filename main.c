@@ -71,11 +71,16 @@ int execute_file(sulfur_args_t *args) {
 
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
-    DEBUG("req vars\n");
+
+    //if (args->show_parse) {
+    //    instructions_print(code, instruction_len);
+    //}
+
+    if (CTX.requested_vars[0] != NULL) DEBUG("req vars left\n");
     for(int i = 0; CTX.requested_vars[i] != NULL; i++) {
         DEBUG("    %d : %s\n", i, CTX.requested_vars[i]);
     }
-    DEBUG("req vars\n");
+    if (CTX.requested_vars_right[0] != NULL) DEBUG("req vars right\n");
     for(int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
         DEBUG("    %d : %s\n", i, CTX.requested_vars_right[i]);
     }
@@ -180,7 +185,7 @@ void free_paths() {
 #include <signal.h>
 
 void segvHandler(int s) {
-    printf("Segmentation Fault\n");
+    PRINT_ERR("Segmentation Fault\n");
     exit(EXIT_FAILURE);
 }
 

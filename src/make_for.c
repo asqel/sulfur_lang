@@ -15,11 +15,11 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 		if(*p + 1 < len && tok[*p + 1].type == syntax && *tok[*p+1].value.t == par_L){
 			int n = search_rpar(tok, *p + 1);
 			if(n == -1){
-				printf("ERROR missing closing ')' on line %d after for\n",tok[*p + 1].line);
+				PRINT_ERR("ERROR missing closing ')' on line %d after for\n",tok[*p + 1].line);
 				exit(1);
 			}
 			if(n == *p + 2){
-				printf("ERROR empty for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[*p + 1].line);
+				PRINT_ERR("ERROR empty for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[*p + 1].line);
 				exit(1);
 			}
 			if(*p + 2 < len && tok[*p + 2].type == identifier){
@@ -33,13 +33,13 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 						}
 					}
 					if(n2 == -1){
-						printf("ERROR missing 'to' in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[*p + 1].line);
+						PRINT_ERR("ERROR missing 'to' in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[*p + 1].line);
 						exit(1);
 					}
 					if(n + 1 < len && tok[n + 1].type == syntax && *tok[n + 1].value.t == r_brack_L){
 						int k = search_rrbrack(tok, n + 1);
 						if(k == -1){
-							printf("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[n + 1].line);
+							PRINT_ERR("ERROR missing closing '}' after for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[n + 1].line);
 							exit(1);
 						}
 						ast_and_len val = tok_to_Ast(tok, *p + 4, n2);
@@ -104,7 +104,7 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 
 			}
 			else{
-				printf("ERROR in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[*p + 1].line);
+				PRINT_ERR("ERROR in for-statement on line %d after for\nCorrect for-statement: for(i from a to b){\n",tok[*p + 1].line);
 				exit(1);
 			}
 		}

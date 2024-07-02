@@ -48,7 +48,7 @@ extern void remove_loop_count(int *loops_count, int **loops);
 
 Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int add_stack){
     if (!add_stack && argc) {
-        printf("ERROR func_excute cannot execute a function with arg without creating stack (%s)\n", name);
+        PRINT_ERR("ERROR func_excute cannot execute a function with arg without creating stack (%s)\n", name);
         exit(1);
     }
     if (add_stack)
@@ -165,7 +165,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
                 }
             }
             if(n == -1){
-                printf("section %s doesnt exists\n", code[p].value.goto_sec);
+                PRINT_ERR("section %s doesnt exists\n", code[p].value.goto_sec);
                 exit(1);
             }
             p = n;
@@ -185,11 +185,11 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             Obj_free_val(old_end);
 
             if(start.type == Obj_nil_t){
-                printf("ERROR cant convert the value of start to ount in for\n");
+                PRINT_ERR("ERROR cant convert the value of start to ount in for\n");
                 exit(1);
             }
             if(end.type == Obj_nil_t){
-                printf("ERROR cant convert the value of end to ount in for\n");
+                PRINT_ERR("ERROR cant convert the value of end to ount in for\n");
                 exit(1);
             }
 
@@ -252,7 +252,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
                 Obj_free_val(old_obj);
 
                 if(STACK.MEM[STACK.len - 1].values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
+                    PRINT_ERR("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 STACK.MEM[STACK.len - 1].values[n].val.i++;
@@ -290,7 +290,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
                 Obj_free_val(old_obj);
 
                 if(STACK.MEM[STACK.len - 1].values[n].type==Obj_nil_t){
-                    printf("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
+                    PRINT_ERR("ERROR in for cant convert loop var '%s' to ount\n", CTX.requested_vars[code[for_p].value.fo->var_name]);
                     exit(1);
                 }
                 STACK.MEM[STACK.len - 1].values[n].val.i--;
@@ -393,7 +393,7 @@ Object func_execute(Object* argv, int argc, sulfur_func func, char *name, int ad
             continue;
         }
         else {
-            printf("ERROR in execute unknown instruction type %d\n", code[p].type);
+            PRINT_ERR("ERROR in execute unknown instruction type %d\n", code[p].type);
             exit(1);
         }
     }

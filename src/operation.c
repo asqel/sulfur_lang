@@ -68,7 +68,7 @@ Object add(Object a,Object b){
         return new_complex(a.val.c[0] + b.val.c[1], a.val.c[1] + b.val.c[1]);
 
     
-    printf("ERROR : operation(+) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(+) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -111,7 +111,7 @@ Object sub(Object a,Object b){
         return new_complex(a.val.c[0] + b.val.c[1], a.val.c[1] + b.val.c[1]);
 
 
-    printf("ERROR : operation(-) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(-) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -193,7 +193,7 @@ Object mul(Object a,Object b){
         return x;
     }
 
-    printf("ERROR : operation(*) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(*) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -201,28 +201,28 @@ Object mul(Object a,Object b){
 Object _div(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_ount_t){
         if(b.val.i == 0){
-            printf("ERROR division by zero (ount)\n");
+            PRINT_ERR("ERROR division by zero (ount)\n");
             exit(1);
         }
         return new_floap((long double)a.val.i / (long double)b.val.i);
     }
     if(a.type == Obj_floap_t && b.type == Obj_floap_t){
         if(b.val.f == 0){
-            printf("ERROR division by zero (floap)\n");
+            PRINT_ERR("ERROR division by zero (floap)\n");
             exit(1);
         }
         return new_floap(a.val.f / b.val.f);
     }
     if(a.type == Obj_floap_t && b.type == Obj_ount_t){
         if(b.val.i == 0){
-            printf("ERROR division by zero (ount)\n");
+            PRINT_ERR("ERROR division by zero (ount)\n");
             exit(1);
         }
         return new_floap(a.val.f / b.val.i);
     }
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         if(b.val.f == 0){
-            printf("ERROR division by zero (floap)\n");
+            PRINT_ERR("ERROR division by zero (floap)\n");
             exit(1);
         }
         return new_floap(a.val.i / b.val.f );
@@ -231,7 +231,7 @@ Object _div(Object a,Object b){
 
     if (a.type == Obj_complex_t && b.type == Obj_ount_t) {
         if(b.val.i == 0){
-            printf("ERROR division by zero (ount)\n");
+            PRINT_ERR("ERROR division by zero (ount)\n");
             exit(1);
         }
         return new_complex(a.val.c[0] * b.val.i, a.val.c[1] * b.val.i);
@@ -239,7 +239,7 @@ Object _div(Object a,Object b){
 
     if (a.type == Obj_ount_t && b.type == Obj_complex_t) {
         if(b.val.c[0] == 0 && b.val.c[1] == 0){
-            printf("ERROR division by zero (complex)\n");
+            PRINT_ERR("ERROR division by zero (complex)\n");
             exit(1);
         }
         return new_complex(
@@ -254,7 +254,7 @@ Object _div(Object a,Object b){
 
     if (a.type == Obj_floap_t && b.type == Obj_complex_t) {
         if(b.val.c[0] == 0 && b.val.c[1] == 0){
-            printf("ERROR division by zero (complex)\n");
+            PRINT_ERR("ERROR division by zero (complex)\n");
             exit(1);
         }
         return new_complex(
@@ -269,7 +269,7 @@ Object _div(Object a,Object b){
         float _c = b.val.c[0];
         float _d = b.val.c[1];
         if(_c == 0 && _d == 0){
-            printf("ERROR division by zero (complex)\n");
+            PRINT_ERR("ERROR division by zero (complex)\n");
             exit(1);
         }
         return new_complex(
@@ -278,7 +278,7 @@ Object _div(Object a,Object b){
         );
     }
 
-    printf("ERROR : operation(/) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(/) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -308,7 +308,7 @@ Object _pow(Object a,Object b){
         }
         return new_floap(sulfur_pow(a.val.i, b.val.f));
     }
-    printf("ERROR : operation(**) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(**) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -329,7 +329,7 @@ Object less(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         return new_boolean(a.val.i < b.val.f );
     }
-    printf("ERROR : operation(<) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(<) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -350,7 +350,7 @@ Object greater(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         return new_boolean(a.val.i > b.val.f );
     }
-    printf("ERROR : operation(>) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(>) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -434,7 +434,7 @@ Object lshift(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_ount_t){
         return new_ount(a.val.i << b.val.i);
     }
-    printf("ERROR : operation(<<) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(<<) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -443,7 +443,7 @@ Object rshift(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_ount_t){
         return new_ount(a.val.i >> b.val.i);
     }
-    printf("ERROR : operation(>>) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(>>) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -460,7 +460,7 @@ Object negate(Object a){
     if(a.type == Obj_boolean_t){
         return new_ount(-a.val.b);
     }
-    printf("ERROR : operation(-(unary)) not supported for type %s", Obj_type_as_str(a.type));
+    PRINT_ERR("ERROR : operation(-(unary)) not supported for type %s", Obj_type_as_str(a.type));
     exit(1);
 }
 Object not(Object a){
@@ -476,33 +476,33 @@ Object not(Object a){
 Object mod(Object a,Object b){
     if(a.type==Obj_ount_t&&b.type==Obj_ount_t){
         if(b.val.i == 0){
-            printf("ERROR modulo by 0 (ount)\n");
+            PRINT_ERR("ERROR modulo by 0 (ount)\n");
             exit(1);
         }
         return new_ount(a.val.i % b.val.i);
     }
     if(a.type==Obj_floap_t && b.type==Obj_floap_t){
         if(b.val.f == 0){
-            printf("ERROR modulo by 0 (floap)\n");
+            PRINT_ERR("ERROR modulo by 0 (floap)\n");
             exit(1);
         }
         return new_floap((long long int)a.val.f % (long long int)b.val.f);
     }
     if(a.type == Obj_floap_t && b.type == Obj_ount_t){
         if(b.val.i == 0){
-            printf("ERROR modulo by 0 (ount)\n");
+            PRINT_ERR("ERROR modulo by 0 (ount)\n");
             exit(1);
         }
         return new_ount((long long int)a.val.f % b.val.i);
     }
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         if((long long int)b.val.f == 0){
-            printf("ERROR modulo by 0 (floap)\n");
+            PRINT_ERR("ERROR modulo by 0 (floap)\n");
             exit(1);
         }
         return new_ount(a.val.i % (long long int)b.val.f);
     }
-    printf("ERROR : operation(%) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(%) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -525,7 +525,7 @@ Object greater_eq(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         return new_boolean(a.val.i >= b.val.f );
     }
-    printf("ERROR : operation(>=) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(>=) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -547,7 +547,7 @@ Object less_eq(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         return new_boolean(a.val.i <= b.val.f );
     }
-    printf("ERROR : operation(<=) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(<=) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }
@@ -606,33 +606,33 @@ Object not_eq(Object a,Object b){
 Object fl_div(Object a,Object b){
     if(a.type == Obj_ount_t && b.type == Obj_ount_t){
         if(b.val.i == 0){
-            printf("ERROR floor division by zero (ount)\n");
+            PRINT_ERR("ERROR floor division by zero (ount)\n");
             exit(1);
         }
         return new_ount(a.val.i / b.val.i);
     }
     if(a.type == Obj_floap_t && b.type == Obj_floap_t){
         if(b.val.f == 0){
-            printf("ERROR floor division by zero (floap)\n");
+            PRINT_ERR("ERROR floor division by zero (floap)\n");
             exit(1);
         }
         return new_ount(a.val.f / b.val.f);
     }
     if(a.type == Obj_floap_t && b.type == Obj_ount_t){
         if(b.val.i == 0){
-            printf("ERROR floor division by zero (ount)\n");
+            PRINT_ERR("ERROR floor division by zero (ount)\n");
             exit(1);
         }
         return new_ount(a.val.f / b.val.i);
     }
     if(a.type == Obj_ount_t && b.type == Obj_floap_t){
         if(b.val.f == 0){
-            printf("ERROR floor division by zero (floap)\n");
+            PRINT_ERR("ERROR floor division by zero (floap)\n");
             exit(1);
         }
         return new_ount(a.val.i / b.val.f );
     }
-    printf("ERROR : operation(\\) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(\\) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 
@@ -642,7 +642,7 @@ Object xor_op(Object a, Object b) {
     if(a.type == Obj_ount_t && b.type == Obj_ount_t){
         return new_ount(a.val.i ^ b.val.i);
     }
-    printf("ERROR : operation(^) between 2 types not supported %s %s\n",
+    PRINT_ERR("ERROR : operation(^) between 2 types not supported %s %s\n",
         Obj_type_as_str(a.type), Obj_type_as_str(b.type));
     exit(1);
 }

@@ -22,7 +22,7 @@ Object func_eval_Ast(Ast *x){
         if(func.type == Obj_not_found_t){
             func = get_Obj_mem(MEMORY, x->root.fun->name);
             if(func.type == Obj_not_found_t){
-                printf("ERROR function '%s' not found\n",x->root.fun->name);
+                PRINT_ERR("ERROR function '%s' not found\n",x->root.fun->name);
                 exit(1);
             }
         }
@@ -30,12 +30,12 @@ Object func_eval_Ast(Ast *x){
             if (func.type == obj_module_t) {
                 func = get_Obj_mem(*func.val.module->MEM, "__call");
                 if(func.type == Obj_not_found_t){
-                    printf("ERROR function '%s' not found\n",x->root.fun->name);
+                    PRINT_ERR("ERROR function '%s' not found\n",x->root.fun->name);
                     exit(1);
                 }
             }
             else {
-                printf("ERROR can't call a non function Object '%s'\n",x->root.fun->name);
+                PRINT_ERR("ERROR can't call a non function Object '%s'\n",x->root.fun->name);
                 exit(1);
             }
         }
@@ -72,7 +72,7 @@ Object func_eval_Ast(Ast *x){
             if(val.type == Obj_not_found_t){
                 val = get_Obj_mem(MEMORY, x->root.varcall);
                 if(val.type == Obj_not_found_t){
-                    printf("ERROR var '%s' not found\n", x->root.varcall);
+                    PRINT_ERR("ERROR var '%s' not found\n", x->root.varcall);
                     exit(1);
                 }
             }
@@ -82,7 +82,7 @@ Object func_eval_Ast(Ast *x){
             return *x->root.obj;
         }
         else{
-            printf("ERROR in Ast\n");
+            PRINT_ERR("ERROR in Ast\n");
             exit(1);
         }
     }
@@ -291,7 +291,7 @@ Object func_eval_Ast(Ast *x){
             return o;
         }
         if(x->type == Ast_unpack_t){
-            printf("ERROR cannot unpack here\n");
+            PRINT_ERR("ERROR cannot unpack here\n");
             exit(1);
         }
         if(x->type == Ast_assign_t){
@@ -308,7 +308,7 @@ Object func_eval_Ast(Ast *x){
                 return nil_Obj;
             }
             if(x->left->type != Ast_dot_t && x->left->type != Ast_colon_t){
-                printf("ERROR in expression cannot assign %d\n",x->left->type);
+                PRINT_ERR("ERROR in expression cannot assign %d\n",x->left->type);
                 exit(1);
             }
             Ast* left = x->left;
@@ -316,7 +316,7 @@ Object func_eval_Ast(Ast *x){
             Object in_what = Obj_cpy(func_eval_Ast(left->left));
             if(in_what.type == obj_module_t){
                 if(x->left->type != Ast_dot_t){// check a.b = right
-                    printf("ERROR in assign with module\n");
+                    PRINT_ERR("ERROR in assign with module\n");
                     exit(1);
                 }
                 if(left->right->type == Ast_varcall_t){
@@ -334,12 +334,12 @@ Object func_eval_Ast(Ast *x){
                     return nil_Obj;
                 }   
                 else{
-                    printf("ERROR cannot assign\n");
+                    PRINT_ERR("ERROR cannot assign\n");
                 }
             }
             if(in_what.type == Obj_list_t){
                 if(x->left->type != Ast_colon_t){
-                    printf("ERROR in assign with list\n");
+                    PRINT_ERR("ERROR in assign with list\n");
                     exit(1);
                 }
                 Object index_obj = Obj_cpy(func_eval_Ast(left->right));
@@ -349,12 +349,12 @@ Object func_eval_Ast(Ast *x){
                 Obj_free_val(old_index);
 
                 if(index_obj.type == Obj_nil_t){
-                    printf("ERROR in assign index not ount\n");
+                    PRINT_ERR("ERROR in assign index not ount\n");
                     exit(1);
                 }
                 int index = index_obj.val.i;
                 if(!( -1 <= index && index < (in_what.val.li->elements[0].val.i))){
-                    printf("ERROR cannot assign out of range\n");
+                    PRINT_ERR("ERROR cannot assign out of range\n");
                     exit(1);
                 }
                 Object old = in_what.val.li->elements[index + 1];
@@ -366,7 +366,7 @@ Object func_eval_Ast(Ast *x){
 
             }
             else{
-                printf("ERROR cannot assign\n");
+                PRINT_ERR("ERROR cannot assign\n");
                 exit(1);
             }
         }
@@ -376,19 +376,19 @@ Object func_eval_Ast(Ast *x){
                 if (x->right->type == Ast_funccall_t){
                     Object func = get_Obj_mem(*a.val.module->MEM, x->right->root.fun->name);
                     if (func.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
                         exit(1);
                     }
                     if (func.type != Obj_funcid_t) {
                         if (func.type == obj_module_t) {
                             func = get_Obj_mem(*func.val.module->MEM, "__call");
                             if(func.type == Obj_not_found_t){
-                                printf("ERROR function '%s' not found\n",x->root.fun->name);
+                                PRINT_ERR("ERROR function '%s' not found\n",x->root.fun->name);
                                 exit(1);
                             }
                         }
                         else {
-                            printf("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
+                            PRINT_ERR("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
                             exit(1);
                         }
                     }
@@ -417,7 +417,7 @@ Object func_eval_Ast(Ast *x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*a.val.module->MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
@@ -427,7 +427,7 @@ Object func_eval_Ast(Ast *x){
                 if (x->right->type == Ast_funccall_t){
                     Object func = get_Obj_mem(*string_module.MEM, x->right->root.fun->name);
                     if (func.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of string\n",x->right->root.fun->name);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of string\n",x->right->root.fun->name);
                         exit(1);
                     }
                     if(func.val.funcid->is_builtin){
@@ -468,7 +468,7 @@ Object func_eval_Ast(Ast *x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*string_module.MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
@@ -479,7 +479,7 @@ Object func_eval_Ast(Ast *x){
                 if (x->right->type == Ast_funccall_t){
                     Object func = get_Obj_mem(*complex_module.MEM, x->right->root.fun->name);
                     if (func.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of complex\n",x->right->root.fun->name);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of complex\n",x->right->root.fun->name);
                         exit(1);
                     }
                     if(func.val.funcid->is_builtin){
@@ -519,7 +519,7 @@ Object func_eval_Ast(Ast *x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*complex_module.MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of complex\n",x->right->root.varcall);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of complex\n",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
@@ -530,7 +530,7 @@ Object func_eval_Ast(Ast *x){
                 if (x->right->type == Ast_funccall_t){
                     Object func = get_Obj_mem(*funccall_module.MEM, x->right->root.fun->name);
                     if (func.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of funcid\n",x->right->root.fun->name);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of funcid\n",x->right->root.fun->name);
                         exit(1);
                     }
                     if(func.val.funcid->is_builtin){
@@ -569,7 +569,7 @@ Object func_eval_Ast(Ast *x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*funccall_module.MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of function",x->right->root.varcall);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of function",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
@@ -579,7 +579,7 @@ Object func_eval_Ast(Ast *x){
                 if (x->right->type == Ast_funccall_t){
                     Object func = get_Obj_mem(*list_module.MEM, x->right->root.fun->name);
                     if (func.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of list\n",x->right->root.fun->name);
                         exit(1);
                     }
                     if(func.val.funcid->is_builtin){
@@ -619,14 +619,14 @@ Object func_eval_Ast(Ast *x){
                 else if(x->right->type == Ast_varcall_t){
                     Object var = get_Obj_mem(*list_module.MEM, x->right->root.varcall);
                     if (var.type == Obj_not_found_t){
-                        printf("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
+                        PRINT_ERR("ERROR function '%s' not exist in methods of list",x->right->root.varcall);
                         exit(1);
                     }
                     return var;
                 }
             }
             else{
-                printf("ERROR on dot operator\n");
+                PRINT_ERR("ERROR on dot operator\n");
                 exit(1);
             }
         }
@@ -639,12 +639,12 @@ Object func_eval_Ast(Ast *x){
                 Obj_free_val(old_b);
 
                 if(b.type == Obj_nil_t){
-                    printf("ERROR ':' only take ount convetible\n");
+                    PRINT_ERR("ERROR ':' only take ount convetible\n");
                     exit(1);
                 }
                 int index = b.val.i;
                 if(!(-1 <= index && index < a.val.li->elements[0].val.i)){
-                    printf("ERROR list out of range on ':'\n");
+                    PRINT_ERR("ERROR list out of range on ':'\n");
                     exit(1);
                 }
                 Object res = a.val.li->elements[1 + index];
@@ -659,13 +659,13 @@ Object func_eval_Ast(Ast *x){
                 Obj_free_val(old_b);
 
                 if(b.type == Obj_nil_t){
-                    printf("ERROR ':' only take ount convetible\n");
+                    PRINT_ERR("ERROR ':' only take ount convetible\n");
                     exit(1);
                 }
                 int index = b.val.i;
                 int len = strlen(a.val.s);
                 if(!(-1 <= index && index < len)){
-                    printf("ERROR string out of range on ':'\n");
+                    PRINT_ERR("ERROR string out of range on ':'\n");
                     exit(1);
                 }
                 Object res;
@@ -713,13 +713,13 @@ Object func_eval_Ast(Ast *x){
                 }
 
                 if (index == -1) {
-                    printf("ERROR complex wrong operand for ':'\n");
+                    PRINT_ERR("ERROR complex wrong operand for ':'\n");
                     exit(1);
                 }
                 return new_ount(a.val.c[index]);
             }
             else{
-                printf("cannot use ':'\n");
+                PRINT_ERR("cannot use ':'\n");
                 exit(1);
             }
         }
@@ -738,7 +738,7 @@ Object *func_eval_args(Ast *args, int len, int *ret_len) {
         else{
             Object x = func_eval_Ast(args[i].right);
             if (x.type != Obj_list_t) {
-                printf("ERROR cannot unpack object of type %s\n", Obj_type_as_str(x.type));
+                PRINT_ERR("ERROR cannot unpack object of type %s\n", Obj_type_as_str(x.type));
                 exit(1);
             }
             if (x.val.li->elements[0].val.i == 0){

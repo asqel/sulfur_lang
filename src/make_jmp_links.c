@@ -1,4 +1,5 @@
 #include "../include/make_jmp_links.h"
+#include "../include/utilities.h"
 
 
 
@@ -29,7 +30,7 @@ Instruction *make_jmp_links(Instruction *code, int len) {
                 }
             }
             if(n == -1){
-                printf("section %s doesnt exists\n", code[i].value.goto_sec);
+                PRINT_ERR("section %s doesnt exists\n", code[i].value.goto_sec);
                 exit(1);
             }
 			code[i].type = inst_jmp_t;
@@ -44,7 +45,7 @@ Instruction *make_jmp_links(Instruction *code, int len) {
 		}
 		if (code[i].type == inst_proceed_t) {
 			if (code[i].value.jmp_length <= 0) {
-				printf("ERROR proceed keyword only accept positive non null integers\n");
+				PRINT_ERR("ERROR proceed keyword only accept positive non null integers\n");
 				exit(1);
 			}
 			if (loop_count && code[i].value.jmp_length <= loop_count) {
@@ -66,7 +67,7 @@ Instruction *make_jmp_links(Instruction *code, int len) {
 		}
 		if (code[i].type == inst_stop_t) {
 			if (code[i].value.jmp_length <= 0) {
-				printf("ERROR stop keyword only accept positive non null integers\n");
+				PRINT_ERR("ERROR stop keyword only accept positive non null integers\n");
 				exit(1);
 			}
 			if (loop_count && code[i].value.jmp_length <= loop_count) {

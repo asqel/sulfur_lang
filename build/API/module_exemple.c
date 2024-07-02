@@ -5,12 +5,12 @@ Sulfur_ctx context;
 Object add_nums(Object* argv, int argc){
     //only take  2 arguments
     if(argc != 2){
-        printf("ERROR in add_nums\n");
+        PRINT_ERR("ERROR in add_nums\n");
         exit(1);
     }
     //only take args of type ount
     if(argv[0].type != Obj_ount_t || argv[1].type != Obj_ount_t){
-        printf("ERROR in add_nums\n");
+        PRINT_ERR("ERROR in add_nums\n");
         exit(1);
     }
     int res = argv[0].val.i + argv[1].val.i;
@@ -20,12 +20,12 @@ Object add_nums(Object* argv, int argc){
 Object sub_nums(Object *argv, int argc) {
     //only take  2 arguments
     if(argc != 2){
-        printf("ERROR in sub_nums\n");
+        PRINT_ERR("ERROR in sub_nums\n");
         exit(1);
     }
     //only take args of type ount
     if(argv[0].type != Obj_ount_t || argv[1].type != Obj_ount_t){
-        printf("ERROR in sub_nums\n");
+        PRINT_ERR("ERROR in sub_nums\n");
         exit(1);
     }
     return OP_SUB(argv[0], argv[1]); // you can also use the operations

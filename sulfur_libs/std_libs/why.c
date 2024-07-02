@@ -5,6 +5,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#define PRINT_ERR( ...) fprintf(stderr, __VA_ARGS__)
 
 #if !defined(ONE_FILE) || ONE_FILE == 0
     Sulfur_ctx context;
@@ -50,11 +51,11 @@ Object why_private_pop(Object obj, int index) {
 
 Object why_our_sort(Object *argv, int argc) {
     if (argc != 1) {
-        printf("ERROR why:our_sort only takes 1 arg");
+        PRINT_ERR("ERROR why:our_sort only takes 1 arg");
         exit(1);
     }
     if (argv[0].type != Obj_list_t) {
-        printf("ERROR why:our_sort only takes a list as arg");
+        PRINT_ERR("ERROR why:our_sort only takes a list as arg");
         exit(1);
     }
     for (int i = 1; i <= why_len(argv[0]) - 1; i++) {

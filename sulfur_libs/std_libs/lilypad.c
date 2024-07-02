@@ -6,6 +6,7 @@
 #endif
 #include <stdlib.h>
 #include <stdio.h>
+#define PRINT_ERR( ...) fprintf(stderr, __VA_ARGS__)
 
 #if !defined(ONE_FILE) || ONE_FILE == 0
     Sulfur_ctx context;
@@ -15,11 +16,11 @@
 
 Object std_malloc(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR in malloc\n");
+        PRINT_ERR("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t){
-        printf("ERRRIR in malloc\n");
+        PRINT_ERR("ERRRIR in malloc\n");
         exit(1);
     }
     #ifdef __profanOS__
@@ -32,11 +33,11 @@ Object std_malloc(Object* argv, int argc){
 
 Object std_free(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR in malloc\n");
+        PRINT_ERR("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t){
-        printf("ERRRIR in malloc\n");
+        PRINT_ERR("ERRRIR in malloc\n");
         exit(1);
     }
     #ifdef __profanOS__
@@ -51,11 +52,11 @@ Object std_free(Object* argv, int argc){
 
 Object std_get_val_byte(Object* argv, int argc){
     if(argc != 1){
-        printf("ERROR in malloc\n");
+        PRINT_ERR("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t){
-        printf("ERRRIR in malloc\n");
+        PRINT_ERR("ERRRIR in malloc\n");
         exit(1);
     }
 
@@ -69,11 +70,11 @@ Object std_get_val_byte(Object* argv, int argc){
 
 Object std_set_val_byte(Object* argv, int argc){
     if(argc != 2){
-        printf("ERROR in malloc\n");
+        PRINT_ERR("ERROR in malloc\n");
         exit(1);
     }
     if(argv[0].type != Obj_ount_t || argv[1].type != Obj_ount_t){
-        printf("ERRROR in malloc\n");
+        PRINT_ERR("ERRROR in malloc\n");
         exit(1);
     }
 

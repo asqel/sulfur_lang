@@ -173,6 +173,10 @@ void instruction_print(Instruction code){
             printf("negate");
         elif (code.value.op == inst_S_op_pow_t)
             printf("pow");
+        elif (code.value.op == inst_S_op_unpack_t)
+            printf("unpack");
+        elif (code.value.op == inst_S_op_not_t)
+            printf("not");
         else
             printf("OP INVALID (%d)", code.value.op);
     }
@@ -182,6 +186,22 @@ void instruction_print(Instruction code){
         printf("push #(%d)", code.value.var_idx);
     elif (code.type == inst_S_dot_get_t)
         printf("dot_get(%d)", code.value.var_idx);
+    elif (code.type == inst_S_global_var_set_t)
+        printf("set #(%d)", code.value.var_idx);
+    elif (code.type == inst_S_var_set_t)
+        printf("set $(%d)", code.value.var_idx);
+    elif (code.type == inst_S_dot_set_t)
+        printf("dot_set(%d)", code.value.var_idx);
+    elif (code.type == inst_S_prepare_fcall_t)
+        printf("prepare_fcall");
+    elif (code.type == inst_S_fcall_t)
+        printf("fcall");
+    elif (code.type == inst_S_fret_t)
+        printf("fret");
+    elif (code.type == inst_S_call_t)
+        printf("call %c%d", code.value.jmp_length < 0 ? ' ' : '+', code.value.jmp_length);
+    elif (code.type == inst_S_ret_t)
+        printf("ret");
     else
         printf("inst INVALID (%d)", code.type);
 }

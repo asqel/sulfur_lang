@@ -429,7 +429,7 @@ void remove_count(void* address, int type){
                     }
                 }
                 else {
-                    printf("ERROR unknow type in refs\n");
+                    PRINT_ERR("ERROR unknow type in refs\n");
                     exit(1);
                 }
                 for(int k = i; k < REFS_len - 1; k++){

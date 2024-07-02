@@ -12,13 +12,13 @@ extern int search_rpar(Token*t,int start);
 Instruction *make_while(Token* tok, int start, int end, Instruction* inst, int* n_inst, int* p, int len){
     if(tok[*p].type == keyword && *tok[*p].value.t == while_t){
         if(!(*p + 1 < len && tok[*p + 1].type == syntax && *tok[*p + 1].value.t == par_L)){
-            printf("ERROR expected '('  after while on line %d\n", tok[*p].line);
+            PRINT_ERR("ERROR expected '('  after while on line %d\n", tok[*p].line);
             exit(1);
         }
         int opening_par = *p + 1;
         int closing_par = search_rpar(tok, *p + 1);
         if (closing_par == -1){
-            printf("ERROR missing closing ')' on line %d after while\n",tok[*p + 1].line);
+            PRINT_ERR("ERROR missing closing ')' on line %d after while\n",tok[*p + 1].line);
             exit(1);
         }
         *p = closing_par + 1;
@@ -26,7 +26,7 @@ Instruction *make_while(Token* tok, int start, int end, Instruction* inst, int* 
             int opening_rbrack = *p;
             int closing_rback = search_rrbrack(tok, *p);
             if(closing_rback == -1){
-                printf("ERROR missing closing '}' on line %d after while\n",tok[*p + 1].line);
+                PRINT_ERR("ERROR missing closing '}' on line %d after while\n",tok[*p + 1].line);
                 exit(1);
 
             }

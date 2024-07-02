@@ -88,20 +88,20 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 					//include path mode else (...)
 					if (p + 3 < *len && toks[p + 3].type == keyword && *toks[p + 3].value.t == else_t) {
 						if (!(p + 4 < *len && toks[p + 4].type == syntax && *toks[p + 4].value.t == par_L)) {
-							printf("ERROR on include keyword missing '(' after else\n\ttry include '%s' %s else (...)\n", new_path, toks[p + 2].value.s);
+							PRINT_ERR("ERROR on include keyword missing '(' after else\n\ttry include '%s' %s else (...)\n", new_path, toks[p + 2].value.s);
 							exit(1);
 						}
 						else_start = p + 4;
 						else_end = search_rpar(toks, else_start);
 						if (else_end == -1) {
-							printf("ERROR on include keyword missing closing ')' after else\n\ttry include '%s' %s else (...)\n", new_path, toks[p + 2].value.s);
+							PRINT_ERR("ERROR on include keyword missing closing ')' after else\n\ttry include '%s' %s else (...)\n", new_path, toks[p + 2].value.s);
 							exit(1);
 						}
 						int include_tokens_len = 0;
 						//include tokens == NULL : ERROR, error is stored in include_tokens_len 0 if we can use the else
 						Token *include_tokens = get_include_tokens(&include_tokens_len, toks[p + 2].value.s, new_path);
 						if (include_tokens == NULL && include_tokens_len != 0) {
-							printf("ERROR on include file '%s' with mod '%s'\n", new_path, toks[p + 2].value.s);
+							PRINT_ERR("ERROR on include file '%s' with mod '%s'\n", new_path, toks[p + 2].value.s);
 							exit(1);
 						}
 						free(new_path);
@@ -197,7 +197,7 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 			//		included_files[included_files_len - 1] = strdup(path);
 			//		char *text = read_file(path);
 			//		if(!text){
-			//			printf("ERROR on include file '%s' doesn't exists\n",path);
+			//			PRINT_ERR("ERROR on include file '%s' doesn't exists\n",path);
 			//			exit(1);
 			//		}
 			//		Token *l = lexe(text);
@@ -238,7 +238,7 @@ Token *make_include(Token *toks, int *len, char *path_arg){
 			//		}
 			//		char *text = read_file(path);
 			//		if(!text){
-			//			printf("ERROR on include file '%s' doesn't exists\n",path);
+			//			PRINT_ERR("ERROR on include file '%s' doesn't exists\n",path);
 			//			exit(1);
 			//		}
 			//		Token *l = lexe(text);

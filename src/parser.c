@@ -83,7 +83,7 @@ ast_and_len tok_to_Ast(Token*tok,int start,int end){
                     int op_brac = i;
                     int cl_brac = search_rrbrack(tok, i);
                     if (cl_brac == -1){
-                        printf("ERROR missing closing '}' in expression on line %d\n",tok[i].line);
+                        PRINT_ERR("ERROR missing closing '}' in expression on line %d\n",tok[i].line);
                         exit(1);
                     }
                     Token* to_parse = malloc(sizeof(Token) * (cl_brac - op_brac -1 +1));
@@ -255,7 +255,7 @@ int count_comma(Ast*e,int len){
                 }
             }
             if(cl_par==-1){
-                printf("ERROR missing closing ')' in expression on function call\n");
+                PRINT_ERR("ERROR missing closing ')' in expression on function call\n");
                 exit(1);
             }
             i=cl_par+1;
@@ -353,7 +353,7 @@ Ast*make_ast(Ast*e,int len){
                 }
 
                 if(closing_par==-1){
-                    printf("ERROR missing closing ')' in function call\n");
+                    PRINT_ERR("ERROR missing closing ')' in function call\n");
                     exit(1);
                 }
                 if(closing_par==opening_par+1){//funccall without arg
@@ -431,7 +431,7 @@ Ast*make_ast(Ast*e,int len){
                                     }
                                 }
                                 if(cl_par==-1){
-                                    printf("ERROR missing closing ')' in expression on function call\n");
+                                    PRINT_ERR("ERROR missing closing ')' in expression on function call\n");
                                     exit(1);
                                 }
                                 int l=cl_par-op_par+2;
@@ -507,7 +507,7 @@ Ast*make_ast(Ast*e,int len){
             }
             if(cl_par==-1){
 
-                printf("ERROR missing closing ')' in expression\n");
+                PRINT_ERR("ERROR missing closing ')' in expression\n");
                 exit(1);
             }
             int to_parse_len=cl_par-op_par-1;
@@ -592,7 +592,7 @@ Ast*make_ast(Ast*e,int len){
     while(p<len){
         if(e[p].type==Ast_op_t && e[p].root.op==OP_NOT){// !
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '!' in expression\n");
+                PRINT_ERR("ERROR missing operand after '!' in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -609,7 +609,7 @@ Ast*make_ast(Ast*e,int len){
 
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_PLUS&&p-1>=0&&(e[p-1].type==Ast_op_t || (e[p-1].type == Ast_syntax_t && e[p-1].root.sy == colon))){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '+'(unary) in expression\n");
+                PRINT_ERR("ERROR missing operand after '+'(unary) in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -627,7 +627,7 @@ Ast*make_ast(Ast*e,int len){
 
         if(e[p].type==Ast_op_t && e[p].root.op==OP_UNPACK){// !
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '$' in expression\n");
+                PRINT_ERR("ERROR missing operand after '$' in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -644,7 +644,7 @@ Ast*make_ast(Ast*e,int len){
 
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS&&p-1>=0&&(e[p-1].type==Ast_op_t || (e[p-1].type == Ast_syntax_t && e[p-1].root.sy == colon))){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '-'(unary) in expression\n");
+                PRINT_ERR("ERROR missing operand after '-'(unary) in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -662,7 +662,7 @@ Ast*make_ast(Ast*e,int len){
 
         else if(e[p].type==Ast_op_t && e[p].root.op==OP_MINUS && p==0){
             if(!(p+1<len&&(e[p+1].isAst||e[p+1].type==Ast_object_t||e[p+1].type==Ast_varcall_t))){
-                printf("ERROR missing operand after '-'(unary) in expression\n");
+                PRINT_ERR("ERROR missing operand after '-'(unary) in expression\n");
                 exit(1);
             }
             e[p].isAst=1;
@@ -688,23 +688,23 @@ Ast*make_ast(Ast*e,int len){
     while(len>1){
        int n=find_highest_op(e,len);
         if(n==-1){
-            printf("ERROR in expression missing operator on line %d\n",line);
+            PRINT_ERR("ERROR in expression missing operator on line %d\n",line);
             exit(1);
         }
         if(n-1<0){
-            printf("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
+            PRINT_ERR("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(n+1>=len){
-            printf("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
+            PRINT_ERR("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(!(e[n-1].isAst || e[n-1].type==Ast_object_t || e[n-1].type==Ast_varcall_t || e[n-1].type == Ast_anonym_func_t)){
-            printf("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
+            PRINT_ERR("ERROR missing left operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         if(!(e[n+1].isAst || e[n+1].type==Ast_object_t || e[n+1].type==Ast_varcall_t || e[n+1].type == Ast_anonym_func_t)){
-            printf("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
+            PRINT_ERR("ERROR missing right operand in expression on line %d on '%s' operator\n",line, get_op_str(e[n]));
             exit(1);
         }
         Ast op_ast;
@@ -738,7 +738,7 @@ int find_semicol(Token*tok,int p){
         if(tok[i+p].type == syntax && *tok[i+p].value.t == r_brack_L){
             int cl_brack = search_rrbrack(tok,i+p);
             if (cl_brack == -1){
-                printf("missing closing '}' in expression on line %d \n",tok[i+p].line);
+                PRINT_ERR("missing closing '}' in expression on line %d \n",tok[i+p].line);
                 exit(1);
             }
             i=cl_brack-p;
@@ -804,26 +804,26 @@ int count_elseelif(Token*tok,int p){
             int opening_par=p+1;
             int closing_par=search_rpar(tok,opening_par);
             if(closing_par==-1){
-                printf("ERROR missing closing ')' on line %d after elif\n",tok[opening_par].line);
+                PRINT_ERR("ERROR missing closing ')' on line %d after elif\n",tok[opening_par].line);
             }
             p=closing_par+1;
             if(p<len&&tok[p].type==syntax&&*tok[p].value.t==r_brack_L){
                 int opening_rbrack=p;
                 int closing_rback=search_rrbrack(tok,p);
                 if(closing_rback==-1){
-                    printf("ERROR missing closing '}' on line %d after elif\n",tok[p+1].line);
+                    PRINT_ERR("ERROR missing closing '}' on line %d after elif\n",tok[p+1].line);
                     exit(1);
                 }
                 p=closing_rback+1;
                 n++;
             }
             else{
-                printf("ERROR missing opening '{' on line %d after else\n",tok[p-1].line);
+                PRINT_ERR("ERROR missing opening '{' on line %d after else\n",tok[p-1].line);
                 exit(1);
             }
         }
         else{
-            printf("ERROR missing opening '(' on line %d after elif\n",tok[p].line);
+            PRINT_ERR("ERROR missing opening '(' on line %d after elif\n",tok[p].line);
             exit(1);
         }
     }
@@ -835,14 +835,14 @@ int count_elseelif(Token*tok,int p){
                 for(int i= opening_rbrack;i<len;i++){
                     token_print(tok[i],"\n");
                 }
-                printf("ERROR missing closing '}' on line %d after else\n",tok[p+1].line);
+                PRINT_ERR("ERROR missing closing '}' on line %d after else\n",tok[p+1].line);
                 exit(1);
             }
             p=closing_rback+1;
             n++;
         }
         else{
-            printf("ERROR missing opening '{' on line %d after else\n",tok[p].line);
+            PRINT_ERR("ERROR missing opening '{' on line %d after else\n",tok[p].line);
             exit(1);
         }
     }
@@ -897,7 +897,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
         //make goto
         if(tok[*p].type == keyword && *tok[*p].value.t == goto_t){
             if(!(*p + 1 < len && tok[*p + 1].type == identifier)){
-                printf("missing identifier after goto on line %d\n",tok[*p].line);
+                PRINT_ERR("missing identifier after goto on line %d\n",tok[*p].line);
                 exit(1);
             }
             (*n_inst)++;
@@ -938,13 +938,13 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
         //else if (tok[*p].type == keyword && *tok[*p].value.t == import_t) {
         //    // check import(...)
         //    if (*p + 1 >= len || tok[*p + 1].type != syntax || par_L != *tok[*p + 1].value.t) {
-        //        printf("ERROR import expected an opening '('\n");
+        //        PRINT_ERR("ERROR import expected an opening '('\n");
         //        exit(1);
         //    }
         //    int par_l = *p + 1;
         //    int par_r = search_rpar(tok, par_l);
         //    if (par_r == -1) {
-        //        printf("ERROR import expected a closing ')'\n");
+        //        PRINT_ERR("ERROR import expected a closing ')'\n");
         //        exit(1);
         //    }
         //    // check import(lib)
@@ -968,7 +968,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             int n=find_semicol(tok,*p);
             if(n==-1){
                 token_print(tok[*p - 1],"n");
-                printf("ERROR unexpected token on line %d %d %d\n",tok[*p].line, tok[*p].type, *p);
+                PRINT_ERR("ERROR unexpected token on line %d %d %d\n",tok[*p].line, tok[*p].type, *p);
                 exit(1);
             }
             //if(*p + 1 == n){
@@ -1014,7 +1014,7 @@ Instruction *parse(Token *tok, int start, int end, Instruction *inst, int *n_ins
     while (cond_parse(start,end,len,p)) {
         //les else et les elif sont gerer par la partie make if du parser
         if(tok[p].type==keyword&&(*tok[p].value.t==elif_t||*tok[p].value.t==else_t)){
-            printf("ERROR expected if instruction above on line %d\n",tok[p].line);
+            PRINT_ERR("ERROR expected if instruction above on line %d\n",tok[p].line);
             exit(1);
         }
         inst = parse_next_inst(tok, start, end, inst, n_inst, &p, len, &result);

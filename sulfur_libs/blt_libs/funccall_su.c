@@ -1,5 +1,6 @@
 #include "funccall_su.h"
 #include "../../include/memlib.h"
+#define PRINT_ERR( ...) fprintf(stderr, __VA_ARGS__)
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,14 +15,14 @@ Object funccall_call(Object* argv, int argc){
         return (*argv[0].val.funcid->func_p)(&argv[1], argc - 1);
     }
     else{
-        printf("ERROR do not use that its not implemented yet(function expression call un sulfur)\n");
+        PRINT_ERR("ERROR do not use that its not implemented yet(function expression call un sulfur)\n");
         exit(1);
     }
 }
 
 Object funccall_help(Object *argv, int argc) {
     if (argc != 1) {
-        printf("ERROR funcid:help dont takes arg\n");
+        PRINT_ERR("ERROR funcid:help dont takes arg\n");
         exit(1);
     }
     return new_string(argv[0].val.funcid->description ? argv[0].val.funcid->description : "");

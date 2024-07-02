@@ -11,7 +11,7 @@ Token *get_include_tokens(int *len, char *mode, char *path) {
 		return include_mode_once(len, mode, path);
 	}
 	else {
-		printf("ERROR unkown mode for include path '%s' mode '%s'\n", path, mode);
+		PRINT_ERR("ERROR unkown mode for include path '%s' mode '%s'\n", path, mode);
 		exit(1);
 	}
 }

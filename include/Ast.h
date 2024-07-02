@@ -12,6 +12,7 @@ typedef struct funccall{
     char*name;
     struct Ast*args;
     int nbr_arg;
+    int name_idx;
 }funccall;
 
 typedef struct expr_funccall{

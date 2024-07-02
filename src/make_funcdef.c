@@ -20,7 +20,7 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 				int par_l = *p + 2;
 				int par_r = search_rpar(tok, *p + 2);
 				if (par_r == -1) {
-					printf("ERROR missing closing ')' on line %d after def\n",tok[*p + 1].line);
+					PRINT_ERR("ERROR missing closing ')' on line %d after def\n",tok[*p + 1].line);
 					exit(1);
 				}
 				//check param (id / , / $)
@@ -31,13 +31,13 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 						continue;
 					if (token_is(tok[i], "$"))
 						continue;
-					printf("ERROR in parameter onf function definition on line %d unexpected token\n", tok[i].line);
+					PRINT_ERR("ERROR in parameter onf function definition on line %d unexpected token\n", tok[i].line);
 				}
 				if (par_r + 1 < len && token_is(tok[par_r + 1], "{")) {
 					int br_l = par_r + 1;
 					int br_r = search_rrbrack(tok, br_l);
 					if (par_r == -1) {
-						printf("ERROR missing closing '}' on line %d after def\n",tok[*p + 1].line);
+						PRINT_ERR("ERROR missing closing '}' on line %d after def\n",tok[*p + 1].line);
 						exit(1);
 					}
 					int inst_len = 0;
@@ -73,14 +73,14 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 						if (mod == 0) mod = 'o';
 						else if (mod == 1) mod = '+';
 						else {
-							printf("ERROR packed argument only accepted as last parameter on line %d\n", tok[par_r - 2].line);
+							PRINT_ERR("ERROR packed argument only accepted as last parameter on line %d\n", tok[par_r - 2].line);
 							exit(1);
 						}
 						for (int i = par_l + 1; i < par_r; i++)
 							if (tok[i].type == identifier) n_arg++;
 						if (mod == '+') {
 							if (!token_is(tok[par_r - 2], "$")) {
-								printf("ERROR packed argument only accepted as last parameter on line %d\n", tok[par_r - 2].line);
+								PRINT_ERR("ERROR packed argument only accepted as last parameter on line %d\n", tok[par_r - 2].line);
 								exit(1);
 							}
 						}
@@ -110,17 +110,17 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 					}
 				}
 				else {
-					printf("ERROR FUNDEF#1\n");
+					PRINT_ERR("ERROR FUNDEF#1\n");
 					exit(1);
 				}
 			}
 			else {
-				printf("ERROR FUNDEF#2\n");
+				PRINT_ERR("ERROR FUNDEF#2\n");
 				exit(1);
 			}
 		}
 		else {
-			printf("ERROR FUNDEF#3\n");
+			PRINT_ERR("ERROR FUNDEF#3\n");
 			exit(1);
 		}
 	}

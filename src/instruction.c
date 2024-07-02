@@ -92,7 +92,7 @@ void instruction_free(Instruction code){
 			free(code.value.fc);
 			break;
 		default:
-			printf("Error: no way to free type %d\n"
+			PRINT_ERR("Error: no way to free type %d\n"
 					"please add it to instruction_free\n", code.type);
 			exit(1);
 	}

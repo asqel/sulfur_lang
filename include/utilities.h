@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #define DEBUG printf
+#define PRINT_ERR( ...) fprintf(stderr, __VA_ARGS__)
+
 
 //check if a char is in a string
 //*x pointer to the string  |  v char to search

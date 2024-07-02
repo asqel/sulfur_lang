@@ -8,6 +8,7 @@
 #include <limits.h>
 
 
+
 //used for abs_path
 #ifdef _WIN32
 #include <Windows.h>
@@ -77,7 +78,6 @@ int str_ar_contains_str(char*list[],char*v,int list_len){
 
 int str_ar_contains_char(char*list[],char v,int list_len){
     for(int i=0;i<list_len;i++){
-        printf(list[i]);
         if(list[i][0]==v){
             return 1;
         }
@@ -430,7 +430,7 @@ void *get_module_loader(char* filename) {
                 loader_function = GetProcAddress(handle, "__loader");
             }
             else{
-                printf("ERROR in loading library %s\n",filename);
+                PRINT_ERR("ERROR in loading library %s\n",filename);
                 exit(1);
             }
         }
@@ -450,7 +450,7 @@ void *get_module_loader(char* filename) {
                 loader_function = dlsym(handle, "__loader");
             }
             else{
-                printf("ERROR in loading library %s\n",filename);
+                PRINT_ERR("ERROR in loading library %s\n",filename);
                 exit(1);
             }
         }

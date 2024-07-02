@@ -151,7 +151,7 @@ Token *lexe(char *input) {
             }
 
             if (n > 1) {
-                printf("ya une erreur la sur les floap en fait\n");
+                PRINT_ERR("ya une erreur la sur les floap en fait\n");
                 exit(0);
             }
 
@@ -230,11 +230,11 @@ Token *lexe(char *input) {
                 id[i - start + 1] = text[i];
             int n = kw_to_enum(&(id[1]));
             if (n != -1) {
-                printf("ERROR lexer: global variable cannot be keyword\n");
+                PRINT_ERR("ERROR lexer: global variable cannot be keyword\n");
                 exit(1);
             }
             if (!strcmp(&(id[1]), "nil")) {
-                printf("ERROR lexer: global variable cannot be nil\n");
+                PRINT_ERR("ERROR lexer: global variable cannot be nil\n");
                 exit(1);
             }
             n_tok++;
