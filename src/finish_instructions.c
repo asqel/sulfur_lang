@@ -2,6 +2,7 @@
 #include "../include/make_requested_vars.h"
 #include "../include/utilities.h"
 #include "../include/sulfur.h"
+#include "../include/finish_instructions.h"
 
 int next_uid = 0;
 
@@ -25,7 +26,8 @@ f(a, b, $c, d) ->
             call_func
 
 */
-int is_in_ano_func = 0;
+// consider that the entire code is in a fake anonymous function
+int is_in_ano_func = 1;
 
 Instruction *extend_array_inst(Instruction **arr, int *len, Instruction *ext, int ext_len) {
     *arr = realloc(*arr, sizeof(Instruction) * (*len + ext_len));
@@ -56,7 +58,19 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             (*res_len)++;
         }
         elif (code[i].type == inst_return_t) {
-
+            int expr_len = 0;
+            Instruction *expr = NULL;
+            expr = ast_to_inst(code[i].value.ret, &expr_len);
+            res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
+            expr[0].line = code[i].line;
+            for (int i = 0; i < expr_len; i++)
+                res[(*res_len)++] = expr[i];
+            free(expr);
+            res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+            res[*res_len].type = (is_in_ano_func ?  inst_S_ret_t : inst_S_fret_t);
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            (*res_len)++;
         }
         elif (code[i].type == inst_while_t) {
             /*
@@ -69,32 +83,321 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             3 | jmp -len(INST) - 1 -len(a)
             4 | ...
             */
+            int endwhile_idx = -1;
+            for(int k = i; k < len; k++)
+                if (code[k].line == code[i].value.wh->endwhile) {
+                    endwhile_idx = k;
+                    break;
+                }
+            if (endwhile_idx == -1) {
+                PRINT_ERR("ERROR converting while to bytecode\n");
+                exit(1);
+            }
             int cond_len = 0;
             Instruction *cond = ast_to_inst(code[i].value.wh->condition, &cond_len);
             int body_len = 0;
-            Instruction *body = inst_to_bytecode(&code[i + 1], code[i].value.wh->endwhile - i - 1, &body_len);
+            Instruction *body = inst_to_bytecode(&code[i + 1], endwhile_idx - i - 1, &body_len);
             cond[0].line = code[i].line;
             extend_array_inst(&res, res_len, cond, cond_len);
             free(cond);
             res = realloc(res, sizeof(Instruction) * (*res_len + 1));
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
-            res[*res_len].type = inst_S_rjmpifn_uid_t;
+            res[*res_len].type = inst_S_rjmpifn_t;
             res[*res_len].value.jmp_length = 2 + body_len;
             (*res_len)++;
             extend_array_inst(&res, res_len, body, body_len);
             free(body);
             res = realloc(res, sizeof(Instruction) * (*res_len + 1));
             res[*res_len].facultative = 0;
-            res[*res_len].line = code[code[i].value.wh->endwhile].line;
-            res[*res_len].type = inst_S_rjmp_uid_t;
+            res[*res_len].line = code[endwhile_idx].line;
+            res[*res_len].type = inst_S_rjmp_t;
             res[*res_len].value.jmp_length = -body_len - 1 - cond_len;
             (*res_len)++;
-            i = code[i].value.wh->endwhile + 1;
+            i = endwhile_idx;
+        }
+        elif (code[i].type == inst_elif_t || code[i].type == inst_else_t || code[i].type == inst_endif || code[i].type == inst_endifelse) {
+            PRINT_ERR("ERROR converting to bytecode unexepected elif else endif or endifelse");
+            exit(1);
+        }
+        elif (code[i].type == inst_if_t) {
+            /*  if (X)
+                    ... (body 1)
+                    endif
+                elif (Y)
+                    ... (body 2) 
+                    endif
+                elif (Z)
+                    ... (body 3)
+                    endif
+                else
+                    ... (body 4)
+                    endif
+                endifelse
+                ---------
+                push X
+                rjmpifn len(body 1) + 2
+                    ... (body 1)
+                    rjmp END
+                push Y
+                rjmpifn len(body 2) + 2
+                    ... (body 2)
+                    rjmp END
+                push Z
+                rjmpifn len(body 3) + 2
+                    ... (body 3)
+                    rjmp  END
+                ... (body 4)
+                END:
+            */
+            int *to_link_idx = NULL;
+            int to_link_idx_len = 0;
+
+            int endif_idx = -1;
+            for(int k = i; k < len; k++)
+            if (code[k].line == code[i].value.i->endif_p) {
+                endif_idx = k;
+                break;
+            }
+            if (endif_idx == -1) {
+                PRINT_ERR("ERROR converting if to bytecode\n");
+                exit(1);
+            }
+            int body_len = 0;
+            Instruction *body = inst_to_bytecode(&(code[i + 1]), endif_idx - i - 1, &body_len);
+            int expr_len = 0;
+            Instruction *expr = NULL;
+            expr = ast_to_inst(code[i].value.i->condition, &expr_len);
+            res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
+            expr[0].line = code[i].line;
+            for (int i = 0; i < expr_len; i++)
+                res[(*res_len)++] = expr[i];
+            free(expr);
+            res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+            res[*res_len].type = inst_S_rjmpifn_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.jmp_length = body_len + 2;
+            (*res_len)++;
+
+            extend_array_inst(&res, res_len, body, body_len);
+            free(body);
+            res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+            res[*res_len].type = inst_S_rjmp_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.jmp_length = 42424242;
+            (*res_len)++;
+            if (code[endif_idx + 1].type != inst_elif_t && code[endif_idx + 1].type != inst_else_t) {
+                i = endif_idx + 1;
+                res[*res_len - 1].value.jmp_length = 1;
+                continue;;
+            }
+            to_link_idx_len++;
+            to_link_idx = realloc(to_link_idx, sizeof(int) * to_link_idx_len);
+            to_link_idx[to_link_idx_len - 1] = *res_len - 1;
+            i = endif_idx + 1;
+            while (code[i].type == inst_elif_t) {
+                int endif_idx = -1;
+                for(int k = i; k < len; k++)
+                if (code[k].line == code[i].value.el->endif_p) {
+                    endif_idx = k;
+                    break;
+                }
+                if (endif_idx == -1) {
+                    PRINT_ERR("ERROR converting elif to bytecode\n");
+                    exit(1);
+                }
+
+                int body_len = 0;
+                Instruction *body = inst_to_bytecode(&(code[i + 1]), endif_idx - i - 1, &body_len);
+
+                int expr_len = 0;
+                Instruction *expr = ast_to_inst(code[i].value.el->condition, &expr_len);
+                expr[0].line = code[i].line;
+                res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
+                for (int i = 0; i < expr_len; i++)
+                    res[(*res_len)++] = expr[i];
+                free(expr);
+
+                res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+                res[*res_len].type = inst_S_rjmpifn_t;
+                res[*res_len].line = -1;
+                res[*res_len].facultative = 0;
+                res[*res_len].value.jmp_length = body_len + 2;
+                (*res_len)++;
+                
+                extend_array_inst(&res, res_len, body, body_len);
+                free(body);
+
+                res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+                res[*res_len].type = inst_S_rjmp_t;
+                res[*res_len].line = -1;
+                res[*res_len].facultative = 0;
+                res[*res_len].value.jmp_length = 42424242;
+                (*res_len)++;
+
+                to_link_idx_len++;
+                to_link_idx = realloc(to_link_idx, sizeof(int) * to_link_idx_len);
+                to_link_idx[to_link_idx_len - 1] = *res_len - 1;
+                i = endif_idx + 1;
+            }
+            int endifelse_idx = *res_len;
+            if (code[i].type == inst_else_t) {
+                int endif_idx = -1;
+                for(int k = i; k < len; k++)
+                    if (code[k].line == code[i].value.endif) {
+                        endif_idx = k;
+                        break;
+                    }
+                if (endif_idx == -1) {
+                    PRINT_ERR("ERROR converting else to bytecode\n");
+                    exit(1);
+                }
+                int body_len = 0;
+                Instruction *body = inst_to_bytecode(&(code[i + 1]), endif_idx - i - 1, &body_len);
+                extend_array_inst(&res, res_len, body, body_len);
+                free(body);
+                endifelse_idx = *res_len;
+                i = endif_idx + 1;
+            }
+            if (code[i].type != inst_endifelse) {
+                PRINT_ERR("ERROR converting if elif else to bytecode\n");
+                exit(1);
+            }
+            for (int k = 0; k < to_link_idx_len; k++) {
+                res[to_link_idx[k]].value.jmp_length = endifelse_idx - to_link_idx[k];
+            }
+            free(to_link_idx);
+        }
+        elif (code[i].type == inst_pass_t) {
+            res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+            res[*res_len].type = inst_S_nop_t;
+            res[*res_len].line = code[i].line;
+            (*res_len)++;
+        }
+        elif (code[i].type == inst_for_t) {
+            /*
+            for(i from start to end)
+                ...(body)
+            endfor
+
+            push start
+            dup
+            set(i)
+            pop
+            push end
+            eq
+            rjmpif 4 + len(body)
+                ...(body)
+                push a
+                push b
+                for(i, -2 - len(body))
+            */
+            int endfor_idx = -1;
+            for(int k = i; k < len; k++)
+                if (code[k].line == code[i].value.fo->endfor) {
+                    endfor_idx = k;
+                    break;
+                }
+            if (endfor_idx == -1) {
+                PRINT_ERR("ERROR converting for to bytecode\n");
+                exit(1);
+            }
+            int start_len = 0;
+            Instruction *start = ast_to_inst(code[i].value.fo->start, &start_len);
+            int end_len = 0;
+            Instruction *end = ast_to_inst(code[i].value.fo->end, &end_len);
+            int body_len = 0;
+            Instruction *body = inst_to_bytecode(&(code[i + 1]), endfor_idx - i - 1, &body_len);
+            start[0].line = code[i].line;
+            extend_array_inst(&res, res_len, start, start_len);
+
+            res = realloc(res, sizeof(Instruction) * (*res_len + 3));
+            res[*res_len].type = inst_S_dup_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            (*res_len)++;
+            res[*res_len].type = inst_S_var_set_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.var_idx = code[i].value.fo->var_name;
+            (*res_len)++;
+            res[*res_len].type = inst_S_pop_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            (*res_len)++;
+            extend_array_inst(&res, res_len, end, end_len);
+            res = realloc(res, sizeof(Instruction) * (*res_len + 2));
+            res[*res_len].type = inst_S_op_eq_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            (*res_len)++;
+            res[*res_len].type = inst_S_rjmpif_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.jmp_length = 4 + body_len;
+            (*res_len)++;
+
+            extend_array_inst(&res, res_len, body, body_len);
+            extend_array_inst(&res, res_len, start, start_len);
+            extend_array_inst(&res, res_len, end, end_len);
+
+            res = realloc(res, sizeof(Instruction) * (*res_len + 2));
+            res[*res_len].type = inst_S_for_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.for_bc_info[0] = code[i].value.fo->var_name;
+            res[*res_len].value.for_bc_info[1] = -2 - body_len;
+            (*res_len)++;
+            i = endfor_idx;
+            free(body);
+            free(start);
+            free(end);
+        }
+        elif (code[i].type == inst_funcdef_t) {
+            int body_len = code[i].value.fc->code_len;
+            char old_is_in = is_in_ano_func;
+            is_in_ano_func = 0;
+            Instruction *body = finish_instrcutions(code[i].value.fc->code, &body_len);
+            is_in_ano_func = old_is_in;
+
+            res = realloc(res, sizeof(Instruction) * (*res_len + 5 + code[i].value.fc->args_len));
+            res[*res_len].type = inst_S_fstart_def_t;
+            res[*res_len].line = code[i].line;
+            res[*res_len].facultative = 0;
+            (*res_len)++;
+            res[*res_len].type = code[i].value.fc->args_mod == 'o' ? inst_S_fset_mod_fixed : inst_S_fset_mod_packed;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            (*res_len)++;
+            res[*res_len].type = inst_S_fset_param_len_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.ount = code[i].value.fc->args_len;
+            (*res_len)++;
+            for (int k = 0; k < code[i].value.fc->args_len; k++) {
+                res[*res_len].type = inst_S_fadd_param_t;
+                res[*res_len].line = -1;
+                res[*res_len].facultative = 0;
+                res[*res_len].value.ount = get_requested_var(code[i].value.fc->args[k]);
+                (*res_len)++;
+            }
+            res[*res_len].type = inst_S_fset_name_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.ount = get_requested_var(code[i].value.fc->info.name);
+            (*res_len)++;
+            res[*res_len].type = inst_S_fend_def_t;
+            res[*res_len].line = -1;
+            res[*res_len].facultative = 0;
+            res[*res_len].value.ount = 1 + body_len;
+            (*res_len)++;
+            extend_array_inst(&res, res_len, body, body_len);
+            free(body);
         }
 
     }
-    free(code);
     return res;
 }
 
@@ -105,11 +408,6 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
     // uid will be stored in .line
     for (int i = 0; i < *instruction_len; i++)
         code[i].line = get_uid();
-    for (int i = 0; i < *instruction_len; i++) {
-        if (code[i].type == inst_funcdef_t) {
-            code[i].value.fc->code = finish_instrcutions(code[i].value.fc->code, &code[i].value.fc->code_len);
-        }
-    }
     /*
     
     0	| push b
@@ -171,19 +469,6 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
     Instruction *res = NULL;
     int res_len = 0;
     res = inst_to_bytecode(code, *instruction_len, &res_len);
-    //for(int i = 0; i < res_len; i++) {
-    //	if (res[i].type == inst_S_push_ount_t) {
-    //		printf("push %d\n", res[i].value.ount);
-    //	}
-    //	if (res[i].type == inst_S_op_t) {
-    //		if (res[i].value.op == inst_S_op_add_t) {
-    //			printf("ADD\n");
-    //		}
-    //		else {
-    //			printf("UNKNOWN OP\n");
-    //		}
-    //	}
-    //}
 
     // make link a again replace .line (uid) by .line (index)
     *instruction_len = res_len;
@@ -344,10 +629,8 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res = realloc(res, sizeof(Instruction) *(*res_len));
         res[*res_len - 1].facultative = 0;
         res[*res_len - 1].line = -1;
-        res[*res_len - 1].type = inst_S_push_t;
-        res[*res_len - 1].value.obj = malloc(sizeof(Object));
-        res[*res_len - 1].value.obj->type = Obj_string_t;
-        res[*res_len - 1].value.obj->val.s = strdup(x->root.obj->val.s);
+        res[*res_len - 1].type = inst_S_push_str_t;
+        res[*res_len - 1].value.var_idx = add_string_constant(x->root.obj->val.s);
         return res;
 
     }
@@ -428,7 +711,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         for (int i = 0; i < left_len; i++)
             res[(*res_len)++] = left[i];
         free(left);
-        res[(*res_len)].type = inst_S_rjmpifn_uid_t;
+        res[(*res_len)].type = inst_S_rjmpifn_t;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -440,7 +723,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         for (int i = 0; i < right_len; i++)
             res[(*res_len)++] = right[i];
         free(right);
-        res[(*res_len)].type = inst_S_rjmpifn_uid_t;
+        res[(*res_len)].type = inst_S_rjmpifn_t;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -450,7 +733,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         (*res_len)++;
-        res[(*res_len)].type = inst_S_rjmp_uid_t;
+        res[(*res_len)].type = inst_S_rjmp_t;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -485,7 +768,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         for (int i = 0; i < left_len; i++)
             res[(*res_len)++] = left[i];
         free(left);
-        res[(*res_len)].type = inst_S_rjmpif_uid_t;
+        res[(*res_len)].type = inst_S_rjmpif_t;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -497,7 +780,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         for (int i = 0; i < right_len; i++)
             res[(*res_len)++] = right[i];
         free(right);
-        res[(*res_len)].type = inst_S_rjmpif_uid_t;
+        res[(*res_len)].type = inst_S_rjmpif_t;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -507,7 +790,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         (*res_len)++;
-        res[(*res_len)].type = inst_S_rjmp_uid_t;
+        res[(*res_len)].type = inst_S_rjmp_t;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
@@ -873,7 +1156,10 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             need_ret = 1;
         Instruction *body = NULL;
         int body_len = x->root.ano_func->code_len;
+        char old_is_ano = is_in_ano_func;
+        is_in_ano_func = 1;
         body = finish_instrcutions(x->root.ano_func->code, &body_len);
+        is_in_ano_func = old_is_ano;
 
         res = realloc(res, sizeof(Instruction) * (2 + *res_len));
         res[*res_len].type = inst_S_call_t; 
@@ -881,7 +1167,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len].facultative = 0;
         res[(*res_len)++].value.jmp_length = 2;
 
-        res[*res_len].type = inst_S_rjmp_uid_t; 
+        res[*res_len].type = inst_S_rjmp_t; 
         res[*res_len].line = -1;
         res[*res_len].facultative = 0;
         res[(*res_len)++].value.jmp_length = 1 + body_len + (need_ret ? 2 : 0);

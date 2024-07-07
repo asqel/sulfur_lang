@@ -113,14 +113,14 @@ void instruction_print(Instruction code){
     elif (code.type == inst_pass_t) {
         printf("pass");
     }
-    elif (code.type == inst_S_rjmp_uid_t) {
-        printf("rjmp %d", code.value.jmp);
+    elif (code.type == inst_S_rjmp_t) {
+        printf("rjmp %c%d", code.value.jmp < 0 ? ' ' : '+', code.value.jmp);
     }
-    elif (code.type == inst_S_rjmpif_uid_t) {
-        printf("rjmpif %d", code.value.jmp);
+    elif (code.type == inst_S_rjmpif_t) {
+        printf("rjmpif %c%d", code.value.jmp < 0 ? ' ' : '+', code.value.jmp);
     }
-    elif (code.type == inst_S_rjmpifn_uid_t) {
-        printf("rjmpifn %d", code.value.jmp);
+    elif (code.type == inst_S_rjmpifn_t) {
+        printf("rjmpifn %c%d", code.value.jmp < 0 ? ' ' : '+', code.value.jmp);
     }
     elif (code.type == inst_S_push_0b_t) {
         printf("PUSH 0b");
@@ -202,6 +202,26 @@ void instruction_print(Instruction code){
         printf("call %c%d", code.value.jmp_length < 0 ? ' ' : '+', code.value.jmp_length);
     elif (code.type == inst_S_ret_t)
         printf("ret");
+    elif (code.type == inst_S_for_t)
+        printf("for $(%d) %d", code.value.for_bc_info[0], code.value.for_bc_info[1]);
+    elif (code.type == inst_S_dup_t)
+        printf("dup");
+    elif (code.type == inst_S_nop_t)
+        printf("nop");
+    elif (code.type == inst_S_fstart_def_t)
+        printf("fstart_def");
+    elif (code.type == inst_S_fset_mod_fixed)
+        printf("fset_mod_fixed");
+    elif (code.type == inst_S_fset_mod_packed)
+        printf("fset_mod_packed");
+    elif (code.type == inst_S_fset_param_len_t)
+        printf("fset_param_len %d", code.value.ount);
+    elif (code.type == inst_S_fadd_param_t)
+        printf("fset_fad_param%d", code.value.ount);
+    elif (code.type == inst_S_fset_name_t)
+        printf("fset_name $(%d)", code.value.ount);
+    elif (code.type == inst_S_fend_def_t)
+        printf("fend_def %d", code.value.ount);
     else
         printf("inst INVALID (%d)", code.type);
 }

@@ -85,6 +85,8 @@ typedef struct Instruction{
         S_ount_t ount;
         int var_idx;
         double floap;
+        int for_bc_info[2];
+        int str_idx;
     }value;
     int line;
     char facultative; // used by expression / pass
@@ -114,7 +116,7 @@ enum instruction_type{
     inst_jmp_t, // jump to index of instruction
     // instructions of bytecode
     inst_S_op_t,
-    inst_S_push_t,
+    inst_S_push_str_t,
     inst_S_push_var_t,
     inst_S_push_global_var_t,
     inst_S_push_1b_t,
@@ -142,9 +144,9 @@ enum instruction_type{
     inst_S_op_negate_t,
     inst_S_op_not_t,
     inst_S_op_unpack_t,
-    inst_S_rjmp_uid_t,
-    inst_S_rjmpif_uid_t,
-    inst_S_rjmpifn_uid_t,
+    inst_S_rjmp_t,
+    inst_S_rjmpif_t,
+    inst_S_rjmpifn_t,
     inst_S_dot_get_t,
     inst_S_dot_set_t,
     inst_S_col_get_t,
@@ -164,6 +166,16 @@ enum instruction_type{
     inst_S_dot_dec_t,
     inst_S_col_inc_t,
     inst_S_col_dec_t,
+    inst_S_nop_t,
+    inst_S_dup_t,
+    inst_S_for_t, // 2 param (var idx & start idx of loop)
+    inst_S_fstart_def_t,
+    inst_S_fset_mod_fixed,
+    inst_S_fset_mod_packed,
+    inst_S_fset_param_len_t,
+    inst_S_fadd_param_t,
+    inst_S_fset_name_t,
+    inst_S_fend_def_t
 };
 
 enum instruction_op_stack {

@@ -220,6 +220,9 @@ typedef struct Sulfur_ctx{
     char **requested_vars; // used by the bytecode and interpreter and libs
     char **requested_vars_right; // same but for the right side of the dot operator
 
+    char **strings_constants;
+    int strings_constants_len;
+
 } Sulfur_ctx;
 
 char *Obj_type_as_str(short int type);

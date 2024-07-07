@@ -8,6 +8,21 @@
 #include <string.h>
 #include <stdio.h>
 
+
+int add_string_constant(char *str) {
+	for (int i = 0; i < CTX.strings_constants_len; i++) {
+		if (!strcmp(str, CTX.strings_constants[i])) {
+			return i;
+		}
+	}
+	CTX.strings_constants_len++;
+	CTX.strings_constants = realloc(CTX.strings_constants, sizeof(char *) * CTX.strings_constants_len);
+	CTX.strings_constants[CTX.strings_constants_len - 1] = strdup(str);
+	return CTX.strings_constants_len - 1;
+}
+
+
+
 int add_requested_var(char *var) {
 	if (var[0] == '#')
 		var = &(var[1]);
@@ -36,6 +51,15 @@ int add_requested_var_right(char *var) {
 	CTX.requested_vars_right[len] = strdup(var);
 	CTX.requested_vars_right[len + 1] = NULL;
 	return len;
+}
+
+int get_requested_var(char *var) {
+	for (int i = 0; CTX.requested_vars[i] != NULL; i++) {
+		if (!strcmp(var, CTX.requested_vars[i])) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 Instruction *make_requested_vars(Instruction *inst, int len) {
@@ -70,6 +94,13 @@ void make_req_vars_inst(Instruction inst) {
 
 		case inst_return_t:
 			make_req_vars_ast(inst.value.ret);
+			break;
+		case inst_funcdef_t:
+			for (int i = 0; i < inst.value.fc->args_len; i++) {
+				add_requested_var(inst.value.fc->args[i]);
+			}
+			make_requested_vars(inst.value.fc->code, inst.value.fc->code_len);
+			add_requested_var(inst.value.fc->info.name);
 			break;
 
 		default:
