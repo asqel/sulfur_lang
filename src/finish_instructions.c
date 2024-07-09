@@ -117,7 +117,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             i = endwhile_idx;
         }
         elif (code[i].type == inst_elif_t || code[i].type == inst_else_t || code[i].type == inst_endif || code[i].type == inst_endifelse) {
-            PRINT_ERR("ERROR converting to bytecode unexepected elif else endif or endifelse");
+            PRINT_ERR("ERROR converting to bytecode unexepected elif else endif or endifelse\n");
             exit(1);
         }
         elif (code[i].type == inst_if_t) {
@@ -329,7 +329,8 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             (*res_len)++;
             extend_array_inst(&res, res_len, end, end_len);
             res = realloc(res, sizeof(Instruction) * (*res_len + 2));
-            res[*res_len].type = inst_S_op_eq_t;
+            res[*res_len].value.op = inst_S_op_eq_t;
+            res[*res_len].type = inst_S_op_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             (*res_len)++;
@@ -469,7 +470,23 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
     Instruction *res = NULL;
     int res_len = 0;
     res = inst_to_bytecode(code, *instruction_len, &res_len);
-
+    for (int i = 0; i < res_len; i++) {
+        if (res[i].type == inst_jmp_t) {
+            int to_jump_idx = -1;
+            for (int k = 0; k < res_len; k++) {
+                if (res[k].line == res[i].value.jmp) {
+                    to_jump_idx = k;
+                    break;
+                }
+            }
+            if (to_jump_idx == -1) {
+                PRINT_ERR("ERRROR during convertion of bytecode (jmp uid)\n");
+                exit(1);
+            }
+            res[i].type = inst_S_rjmp_t;
+            res[i].value.jmp_length = to_jump_idx - i;
+        }
+    }
     // make link a again replace .line (uid) by .line (index)
     *instruction_len = res_len;
     return res;
@@ -543,6 +560,14 @@ int get_bytecode_op(int type) {
 
 Instruction *ast_to_inst(Ast *x, int *res_len) {
     Instruction *res = NULL;
+    if (x->type == ast_nil_t) {
+        (*res_len)++;
+        res = realloc(res, sizeof(Instruction) * (*res_len));
+        res[*res_len - 1].facultative = 0;
+        res[*res_len - 1].line = -1;
+        res[*res_len - 1].type = inst_S_push_nil_t;
+        return res;
+    }
     if (x->type == Ast_varcall_idx_t) {
         if (x->root.var_idx >= 0) {
             if (!strcmp(CTX.requested_vars[x->root.var_idx], "nil")) {
@@ -637,12 +662,12 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
     if (x->type == Ast_sub_t) {
         // check if unary
         if(x->left == NULL && x->right != NULL){
-            int left_len = 0;
-            Instruction *left = ast_to_inst(x->left, &left_len);
-            res = realloc(res, sizeof(Instruction) * (*res_len + left_len));
-            for (int i = 0; i < left_len; i++)
-                res[(*res_len)++] = left[i];
-            free(left);
+            int right_len = 0;
+            Instruction *right = ast_to_inst(x->right, &right_len);
+            res = realloc(res, sizeof(Instruction) * (*res_len + right_len));
+            for (int i = 0; i < right_len; i++)
+                res[(*res_len)++] = right[i];
+            free(right);
             res = realloc(res, sizeof(Instruction) * (*res_len + 1));
             res[*res_len].type = inst_S_op_t;
             res[*res_len].value.op = inst_S_op_negate_t;
@@ -850,6 +875,25 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].type = inst_S_prepare_fcall_t;
             (*res_len)++;
             for (int i = 0; i < x->right->root.fun->nbr_arg; i++) {
+                if (x->right->root.fun->args[i].type == Ast_unpack_t) {
+                    if (x->right->root.fun->args[i].right == NULL) {
+                        PRINT_ERR("ERROR converting to bytecode unpack operator\n");
+                        exit(1);
+                    }
+                    int arg_len = 0;
+                    Instruction *arg = ast_to_inst(x->right->root.fun->args[i].right, &arg_len);
+                    res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
+                    for (int i = 0; i < arg_len; i++)
+                        res[(*res_len)++] = arg[i];
+                    free(arg);
+                    res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+                    res[*res_len].facultative = 0;
+                    res[*res_len].line = -1;
+                    res[*res_len].type = inst_S_op_t;
+                    res[*res_len].value.op = inst_S_op_unpack_t;
+                    (*res_len)++;
+                    continue;
+                }
                 int arg_len = 0;
                 Instruction *arg = ast_to_inst(&(x->right->root.fun->args[i]), &arg_len);
                 res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
@@ -1185,6 +1229,71 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].facultative = 0;
             (*res_len)++;
         }
+        return res;
+    }
+    elif (x->type == Ast_funccall_t) {
+        if (x->root.fun->name_idx >= 0) {
+            if (!strcmp(CTX.requested_vars[x->root.fun->name_idx], "nil")) {
+                (*res_len)++;
+                res = realloc(res, sizeof(Instruction) * (*res_len));
+                res[*res_len - 1].facultative = 0;
+                res[*res_len - 1].line = -1;
+                res[*res_len - 1].type = inst_S_push_nil_t;
+            }
+            else {
+                (*res_len)++;
+                res = realloc(res, sizeof(Instruction) * (*res_len));
+                res[*res_len - 1].facultative = 0;
+                res[*res_len - 1].line = -1;
+                res[*res_len - 1].type = inst_S_push_var_t;
+                res[*res_len - 1].value.var_idx = x->root.fun->name_idx;
+            }
+        }
+        else {
+            (*res_len)++;
+            res = realloc(res, sizeof(Instruction) *(*res_len));
+            res[*res_len - 1].facultative = 0;
+            res[*res_len - 1].line = -1;
+            res[*res_len - 1].type = inst_S_push_global_var_t;
+            res[*res_len - 1].value.var_idx = -x->root.fun->name_idx - 1;
+        }
+        (*res_len)++;
+        res = realloc(res, sizeof(Instruction) *(*res_len));
+        res[*res_len - 1].facultative = 0;
+        res[*res_len - 1].line = -1;
+        res[*res_len - 1].type = inst_S_prepare_fcall_t;
+        for (int i = 0; i < x->root.fun->nbr_arg; i++) {
+            if (x->root.fun->args[i].type == Ast_unpack_t) {
+                if (x->root.fun->args[i].right == NULL) {
+                    PRINT_ERR("ERROR converting to bytecode unpack operator\n");
+                    exit(1);
+                }
+                int arg_len = 0;
+                Instruction *arg = ast_to_inst(x->root.fun->args[i].right, &arg_len);
+                res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
+                for (int i = 0; i < arg_len; i++)
+                    res[(*res_len)++] = arg[i];
+                free(arg);
+                res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+                res[*res_len].facultative = 0;
+                res[*res_len].line = -1;
+                res[*res_len].type = inst_S_op_t;
+                res[*res_len].value.op = inst_S_op_unpack_t;
+                (*res_len)++;
+                continue;
+            }
+            int arg_len = 0;
+            Instruction *arg = ast_to_inst(&(x->root.fun->args[i]), &arg_len);
+            res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
+            for (int i = 0; i < arg_len; i++)
+                res[(*res_len)++] = arg[i];
+            free(arg);
+        }
+        res = realloc(res, sizeof(Instruction) * (*res_len + 1));
+        res[*res_len].facultative = 0;
+        res[*res_len].line = -1;
+        res[*res_len].type = inst_S_fcall_t;
+        (*res_len)++;
         return res;
     }
     else {

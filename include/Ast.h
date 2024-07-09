@@ -100,7 +100,8 @@ enum Ast_types{
     Ast_colon_t,
     Ast_expr_funccall_t, //function called like this : (...)(a,b) NOT SUPPORTED YET
     Ast_unpack_t,
-    Ast_bit_xor_t
+    Ast_bit_xor_t,
+	ast_nil_t
 
 };
 

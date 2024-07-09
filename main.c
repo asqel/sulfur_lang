@@ -10,6 +10,7 @@
 #include "include/func_interpreter.h"
 #include "include/make_context.h"
 #include "include/make_jmp_links.h"
+#include "include/bytecode.h"
 
 #include "sulfur_libs/blt_libs/std.h"
 
@@ -80,17 +81,34 @@ int execute_file(sulfur_args_t *args) {
     for(int i = 0; CTX.requested_vars[i] != NULL; i++) {
         DEBUG("    %d : %s\n", i, CTX.requested_vars[i]);
     }
+
     if (CTX.requested_vars_right[0] != NULL) DEBUG("req vars right\n");
     for(int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
         DEBUG("    %d : %s\n", i, CTX.requested_vars_right[i]);
     }
+
     code = make_jmp_links(code, instruction_len);
+    Instruction *old_code = code;
+    int old_cold_len = instruction_len;
     code = finish_instrcutions(code, &instruction_len);
+
+    
+
+    if (CTX.strings_constants_len != 0) DEBUG("string constants\n");
+    for(int i = 0; i < CTX.strings_constants_len; i++) {
+        DEBUG("    %d : %s\n", i, CTX.strings_constants[i]);
+    }
+
+    instruction_free_array(old_code, old_cold_len);
 
     if (args->show_parse) {
         instructions_print(code, instruction_len);
     }
-
+    
+    uti_Bytes bytecode = make_bytecode_file(code, instruction_len);
+    FILE *f = fopen("./res.subc", "w+");
+    fwrite(bytecode.vals, 1, bytecode.len, f);
+    fclose(f);
     // parser copy values of tokens so
     // you can free tokens after parsing 
     
@@ -182,16 +200,21 @@ void free_paths() {
     free(LIBS_DIR);
     free(S_INCLUDE_DIR);
 }
-#include <signal.h>
+#ifdef _WIN32
+    #include <signal.h>
 
-void segvHandler(int s) {
-    PRINT_ERR("Segmentation Fault\n");
-    exit(EXIT_FAILURE);
-}
+    void segvHandler(int s) {
+        PRINT_ERR("Segmentation Fault\n");
+        exit(EXIT_FAILURE);
+    }
+#endif
+
+void instruction_print(Instruction code);
 
 int main(int argc,char **argv) {
-    signal(SIGSEGV, segvHandler);
-
+    #ifdef _WIN32
+        signal(SIGSEGV, segvHandler);
+    #endif
     init_paths(argv[0]);
 
     init_dyn_libs();

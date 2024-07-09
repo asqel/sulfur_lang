@@ -112,6 +112,15 @@ globals are negative - 1
 */
 void make_req_vars_ast(Ast *x) {
 	if (x->type == Ast_varcall_t) {
+		if (!strcmp(x->root.varcall, "nil")) {
+			x->type = ast_nil_t;
+			free(x->root.varcall);
+			return ;
+		}
+		if (!strcmp(x->root.varcall, "#nil")) {
+			PRINT_ERR("ERROR cannot use nil as global\n");
+			exit(1);
+		}
 		char is_global = (x->root.varcall[0] == '#');
 		int v = add_requested_var(x->root.varcall);
 		free(x->root.varcall);
@@ -146,9 +155,18 @@ void make_req_vars_ast(Ast *x) {
 		return ;
 	}
 	if (x->type == Ast_funccall_t) {
+		if (!strcmp(x->root.fun->name, "#nil")) {
+			PRINT_ERR("ERROR cannot use global nil as function\n");
+			exit(1);
+		}
+		if (!strcmp(x->root.fun->name, "nil")) {
+			PRINT_ERR("ERROR cannot use nil as function\n");
+			exit(1);
+		}
 		x->root.fun->name_idx = add_requested_var(x->root.fun->name);
-		for (int i = 0; i < x->root.fun->nbr_arg; i++)
+		for (int i = 0; i < x->root.fun->nbr_arg; i++) {
 			make_req_vars_ast(&(x->root.fun->args[i]));
+		}
 		return;
 	}
 	if (x->type == Ast_anonym_func_t) {

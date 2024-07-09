@@ -8,6 +8,11 @@
 #define DEBUG printf
 #define PRINT_ERR( ...) fprintf(stderr, __VA_ARGS__)
 
+typedef struct {
+    unsigned char *vals;
+    int len;
+} uti_Bytes;
+
 
 //check if a char is in a string
 //*x pointer to the string  |  v char to search

@@ -143,40 +143,40 @@ void instruction_print(Instruction code){
     elif (code.type == inst_S_op_t) {
 	    if (code.value.op == inst_S_op_add_t)
             printf("add");
-	    elif (code.value.op == inst_S_op_sub_t)
+        elif (code.value.op == inst_S_op_sub_t)
             printf("sub");
-	    elif (code.value.op == inst_S_op_mul_t)
+        elif (code.value.op == inst_S_op_mul_t)
             printf("mul");
-	    elif (code.value.op == inst_S_op_div_t)
+        elif (code.value.op == inst_S_op_div_t)
             printf("div");
-	    elif (code.value.op == inst_S_op_fldiv_t)
+        elif (code.value.op == inst_S_op_pow_t)
+            printf("pow");
+        elif (code.value.op == inst_S_op_fldiv_t)
             printf("fldiv");
-	    elif (code.value.op == inst_S_op_mod_t)
+        elif (code.value.op == inst_S_op_mod_t)
             printf("mod");
-	    elif (code.value.op == inst_S_op_eq_t)
+        elif (code.value.op == inst_S_op_eq_t)
             printf("eq");
-	    elif (code.value.op == inst_S_op_ge_t)
+        elif (code.value.op == inst_S_op_ge_t)
             printf("ge");
-	    elif (code.value.op == inst_S_op_geq_t)
+        elif (code.value.op == inst_S_op_geq_t)
             printf("geq");
-	    elif (code.value.op == inst_S_op_le_t)
+        elif (code.value.op == inst_S_op_le_t)
             printf("le");
-	    elif (code.value.op == inst_S_op_leq_t)
+        elif (code.value.op == inst_S_op_leq_t)
             printf("leq");
-	    elif (code.value.op == inst_S_op_lshift_t)
+        elif (code.value.op == inst_S_op_lshift_t)
             printf("lshift");
-	    elif (code.value.op == inst_S_op_rshift_t)
+        elif (code.value.op == inst_S_op_rshift_t)
             printf("rshift");
-	    elif (code.value.op == inst_S_op_noteq_t)
+        elif (code.value.op == inst_S_op_noteq_t)
             printf("noteq");
         elif (code.value.op == inst_S_op_negate_t)
             printf("negate");
-        elif (code.value.op == inst_S_op_pow_t)
-            printf("pow");
-        elif (code.value.op == inst_S_op_unpack_t)
-            printf("unpack");
         elif (code.value.op == inst_S_op_not_t)
             printf("not");
+        elif (code.value.op == inst_S_op_unpack_t)
+            printf("unpack");
         else
             printf("OP INVALID (%d)", code.value.op);
     }
@@ -222,6 +222,28 @@ void instruction_print(Instruction code){
         printf("fset_name $(%d)", code.value.ount);
     elif (code.type == inst_S_fend_def_t)
         printf("fend_def %d", code.value.ount);
+    elif (code.type == inst_S_push_str_t)
+        printf("push_str $(%d)", code.value.ount);
+    elif (code.type == inst_S_col_get_t)
+        printf("col_get");
+    elif (code.type == inst_S_col_set_t)
+        printf("col_set");
+    elif (code.type == inst_S_var_inc_t)
+        printf("var_inc");
+    elif (code.type == inst_S_var_dec_t)
+        printf("var_dec");
+    elif (code.type == inst_S_global_var_inc_t)
+        printf("global_var_inc");
+    elif (code.type == inst_S_global_var_dec_t)
+        printf("global_var_dec");
+    elif (code.type == inst_S_dot_inc_t)
+        printf("dot_inc");
+    elif (code.type == inst_S_dot_dec_t)
+        printf("dot_dec(%d)", code.value.ount);
+    elif (code.type == inst_S_col_inc_t)
+        printf("col_inc(%d)", code.value.ount);
+    elif (code.type == inst_S_col_dec_t)
+        printf("col_dec");
     else
         printf("inst INVALID (%d)", code.type);
 }

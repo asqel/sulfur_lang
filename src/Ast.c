@@ -97,6 +97,8 @@ char* get_op_as_str(int type){
             return "=";
         case Ast_dot_t:
             return ".";
+        case Ast_colon_t:
+            return ":";
         case Ast_lshift_t:
             return "<<";
         case Ast_rshift_t:
@@ -110,6 +112,10 @@ char* get_op_as_str(int type){
 }
 
 int print_ast(Ast x){
+    if (x.type == ast_nil_t) {
+        printf("nil ");
+        return 0;
+    }
     switch (x.type){
         case Ast_unpack_t:
             printf("Unpack[");
@@ -138,6 +144,7 @@ int print_ast(Ast x){
         case Ast_plus_assign_t:
         case Ast_minus_assign_t:
         case Ast_dot_t:
+        case Ast_colon_t:
             if(x.left!=NULL){
                 printf("{");
                 print_ast(*x.left);
