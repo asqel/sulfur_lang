@@ -9,7 +9,6 @@ the file is composed of 7 / 8 parts
 - string constants
 - extra data (optional)
 - code
-- magic ending number
 
 magic number
 
@@ -122,9 +121,3 @@ contains the actual bytecode code
 and is ended with a `push_nil` `ret` even if the code ends with its own ret \
 the code is considered to be inside an anonymous function \
 for now the return value of the code has no effect 
-
-
-## magic ending number
-it is just two number that stands on 8 bytes each \
-`0b10101010` `0b01010101` \
-they are at the very end the file

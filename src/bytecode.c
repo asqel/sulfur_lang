@@ -281,8 +281,6 @@ uti_Bytes make_bytecode_file(Instruction *code, int len) {
 	bytes_append_code(&res, code, len);
 	bytes_append_u8(&res, inst_S_push_nil_t);
 	bytes_append_u8(&res, inst_S_ret_t);
-	bytes_append_u8(&res, 0b10101010);
-	bytes_append_u8(&res, 0b01010101);
 	free(strings_addrs);
 	return res;
 }
