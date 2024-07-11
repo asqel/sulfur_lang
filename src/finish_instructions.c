@@ -10,7 +10,7 @@ int next_uid = 0;
 
 #define get_uid() (next_uid++)
 
-Instruction *ast_to_inst(Ast *x, int *res_len);
+Instruction *ast_to_inst(Ast *x, int *res_len, int line);
 
 /*
 everything will be pushed from ledt to right
@@ -41,11 +41,11 @@ int current_line = 0;
 Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
     Instruction *res = NULL;
     for (int i = 0; i < len; i++)  {
-        current_line = code[i].line;
+        current_line = code[i].real_line;
         if (code[i].type == inst_expr_t) {
             int expr_len = 0;
             Instruction *expr = NULL;
-            expr = ast_to_inst(code[i].value.expr, &expr_len);
+            expr = ast_to_inst(code[i].value.expr, &expr_len, current_line);
             res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
             expr[0].line = code[i].line;
             for (int i = 0; i < expr_len; i++)
@@ -55,12 +55,13 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].type = inst_S_pop_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
         }
         elif (code[i].type == inst_return_t) {
             int expr_len = 0;
             Instruction *expr = NULL;
-            expr = ast_to_inst(code[i].value.ret, &expr_len);
+            expr = ast_to_inst(code[i].value.ret, &expr_len, current_line);
             res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
             expr[0].line = code[i].line;
             for (int i = 0; i < expr_len; i++)
@@ -70,6 +71,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].type = (is_in_ano_func ?  inst_S_ret_t : inst_S_fret_t);
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
         }
         elif (code[i].type == inst_while_t) {
@@ -94,7 +96,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
                 exit(1);
             }
             int cond_len = 0;
-            Instruction *cond = ast_to_inst(code[i].value.wh->condition, &cond_len);
+            Instruction *cond = ast_to_inst(code[i].value.wh->condition, &cond_len, current_line);
             int body_len = 0;
             Instruction *body = inst_to_bytecode(&code[i + 1], endwhile_idx - i - 1, &body_len);
             cond[0].line = code[i].line;
@@ -105,6 +107,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_rjmpifn_t;
             res[*res_len].value.jmp_length = 2 + body_len;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             extend_array_inst(&res, res_len, body, body_len);
             free(body);
@@ -113,6 +116,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].line = code[endwhile_idx].line;
             res[*res_len].type = inst_S_rjmp_t;
             res[*res_len].value.jmp_length = -body_len - 1 - cond_len;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             i = endwhile_idx;
         }
@@ -167,7 +171,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             Instruction *body = inst_to_bytecode(&(code[i + 1]), endif_idx - i - 1, &body_len);
             int expr_len = 0;
             Instruction *expr = NULL;
-            expr = ast_to_inst(code[i].value.i->condition, &expr_len);
+            expr = ast_to_inst(code[i].value.i->condition, &expr_len, current_line);
             res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
             expr[0].line = code[i].line;
             for (int i = 0; i < expr_len; i++)
@@ -178,6 +182,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.jmp_length = body_len + 2;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
 
             extend_array_inst(&res, res_len, body, body_len);
@@ -187,6 +192,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.jmp_length = 42424242;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             if (code[endif_idx + 1].type != inst_elif_t && code[endif_idx + 1].type != inst_else_t) {
                 i = endif_idx + 1;
@@ -213,7 +219,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
                 Instruction *body = inst_to_bytecode(&(code[i + 1]), endif_idx - i - 1, &body_len);
 
                 int expr_len = 0;
-                Instruction *expr = ast_to_inst(code[i].value.el->condition, &expr_len);
+                Instruction *expr = ast_to_inst(code[i].value.el->condition, &expr_len, current_line);
                 expr[0].line = code[i].line;
                 res = realloc(res, sizeof(Instruction) * (*res_len + expr_len));
                 for (int i = 0; i < expr_len; i++)
@@ -225,6 +231,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
                 res[*res_len].line = -1;
                 res[*res_len].facultative = 0;
                 res[*res_len].value.jmp_length = body_len + 2;
+                res[*res_len].real_line = current_line;
                 (*res_len)++;
                 
                 extend_array_inst(&res, res_len, body, body_len);
@@ -235,6 +242,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
                 res[*res_len].line = -1;
                 res[*res_len].facultative = 0;
                 res[*res_len].value.jmp_length = 42424242;
+                res[*res_len].real_line = current_line;
                 (*res_len)++;
 
                 to_link_idx_len++;
@@ -274,6 +282,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res = realloc(res, sizeof(Instruction) * (*res_len + 1));
             res[*res_len].type = inst_S_nop_t;
             res[*res_len].line = code[i].line;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
         }
         elif (code[i].type == inst_for_t) {
@@ -305,9 +314,9 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
                 exit(1);
             }
             int start_len = 0;
-            Instruction *start = ast_to_inst(code[i].value.fo->start, &start_len);
+            Instruction *start = ast_to_inst(code[i].value.fo->start, &start_len, current_line);
             int end_len = 0;
-            Instruction *end = ast_to_inst(code[i].value.fo->end, &end_len);
+            Instruction *end = ast_to_inst(code[i].value.fo->end, &end_len, current_line);
             int body_len = 0;
             Instruction *body = inst_to_bytecode(&(code[i + 1]), endfor_idx - i - 1, &body_len);
             start[0].line = code[i].line;
@@ -317,15 +326,18 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].type = inst_S_dup_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             res[*res_len].type = inst_S_var_set_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.var_idx = code[i].value.fo->var_name;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             res[*res_len].type = inst_S_pop_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             extend_array_inst(&res, res_len, end, end_len);
             res = realloc(res, sizeof(Instruction) * (*res_len + 2));
@@ -333,11 +345,13 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].type = inst_S_op_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             res[*res_len].type = inst_S_rjmpif_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.jmp_length = 4 + body_len;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
 
             extend_array_inst(&res, res_len, body, body_len);
@@ -350,6 +364,7 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].facultative = 0;
             res[*res_len].value.for_bc_info[0] = code[i].value.fo->var_name;
             res[*res_len].value.for_bc_info[1] = -2 - body_len;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             i = endfor_idx;
             free(body);
@@ -367,32 +382,38 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
             res[*res_len].type = inst_S_fstart_def_t;
             res[*res_len].line = code[i].line;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             res[*res_len].type = code[i].value.fc->args_mod == 'o' ? inst_S_fset_mod_fixed : inst_S_fset_mod_packed;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             res[*res_len].type = inst_S_fset_param_len_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.ount = code[i].value.fc->args_len;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             for (int k = 0; k < code[i].value.fc->args_len; k++) {
                 res[*res_len].type = inst_S_fadd_param_t;
                 res[*res_len].line = -1;
                 res[*res_len].facultative = 0;
                 res[*res_len].value.ount = get_requested_var(code[i].value.fc->args[k]);
+                res[*res_len].real_line = current_line;
                 (*res_len)++;
             }
             res[*res_len].type = inst_S_fset_name_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.ount = get_requested_var(code[i].value.fc->info.name);
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             res[*res_len].type = inst_S_fend_def_t;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             res[*res_len].value.ount = 1 + body_len;
+            res[*res_len].real_line = current_line;
             (*res_len)++;
             extend_array_inst(&res, res_len, body, body_len);
             free(body);
@@ -402,28 +423,15 @@ Instruction *inst_to_bytecode(Instruction *code, int len, int *res_len) {
     return res;
 }
 
-
-
 Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
     // do uid
     // uid will be stored in .line
-    for (int i = 0; i < *instruction_len; i++)
+    for (int i = 0; i < *instruction_len; i++) {
+        code[i].real_line = code[i].line;
         code[i].line = get_uid();
-    /*
-    
-    0	| push b
-    1	| push a
-    2	| dup
-    3	| set "i"
-    4	| eq
-    5	| jmp A+x+1
-    6	| ...
-    7+x	| push b
-    8+x | push a
-    9+x | push "i", hash("i")
-    A+x | FOR(6)
-    
-    */
+
+    }
+
     // make links
     // jmp to uuid instead of index
     // same for endloopss if elif ...
@@ -480,14 +488,13 @@ Instruction	*finish_instrcutions(Instruction *code, int *instruction_len) {
                 }
             }
             if (to_jump_idx == -1) {
-                PRINT_ERR("ERRROR during convertion of bytecode (jmp uid)\n");
+                PRINT_ERR("ERROR during convertion of bytecode (jmp uid)\n");
                 exit(1);
             }
             res[i].type = inst_S_rjmp_t;
             res[i].value.jmp_length = to_jump_idx - i;
         }
     }
-    // make link a again replace .line (uid) by .line (index)
     *instruction_len = res_len;
     return res;
 
@@ -558,7 +565,7 @@ int get_bytecode_op(int type) {
     }
 }
 
-Instruction *ast_to_inst(Ast *x, int *res_len) {
+Instruction *ast_to_inst(Ast *x, int *res_len, int line) {
     Instruction *res = NULL;
     if (x->type == ast_nil_t) {
         (*res_len)++;
@@ -566,6 +573,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len - 1].facultative = 0;
         res[*res_len - 1].line = -1;
         res[*res_len - 1].type = inst_S_push_nil_t;
+        res[*res_len - 1].real_line = line;
         return res;
     }
     if (x->type == Ast_varcall_idx_t) {
@@ -576,6 +584,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                 res[*res_len - 1].facultative = 0;
                 res[*res_len - 1].line = -1;
                 res[*res_len - 1].type = inst_S_push_nil_t;
+                res[*res_len - 1].real_line = line;
                 return res;
             }
             else {
@@ -585,6 +594,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                 res[*res_len - 1].line = -1;
                 res[*res_len - 1].type = inst_S_push_var_t;
                 res[*res_len - 1].value.var_idx = x->root.var_idx;
+                res[*res_len - 1].real_line = line;
                 return res;
             }
         }
@@ -595,6 +605,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type = inst_S_push_global_var_t;
             res[*res_len - 1].value.var_idx = -x->root.var_idx - 1;
+            res[*res_len - 1].real_line = line;
             return res;
         }
     }
@@ -605,6 +616,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].facultative = 0;
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type =(*x->root.obj).val.b ? inst_S_push_1b_t : inst_S_push_0b_t;
+            res[*res_len - 1].real_line = line;
             return res;
         }
         if ((*x->root.obj).type == Obj_complex_t) {
@@ -613,6 +625,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].facultative = 0;
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type = inst_S_push_i_t;
+            res[*res_len - 1].real_line = line;
             return res;
         }
         if ((*x->root.obj).type == Obj_nil_t) {
@@ -621,6 +634,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].facultative = 0;
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type = inst_S_push_nil_t;
+            res[*res_len - 1].real_line = line;
             return res;
         }
         // can only  push string / floap / ount from constants
@@ -635,6 +649,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type = inst_S_push_ount_t;
             res[*res_len - 1].value.ount = x->root.obj->val.i;
+            res[*res_len - 1].real_line = line;
             return res;
         }
         elif (x->root.obj->type == Obj_floap_t) {
@@ -644,6 +659,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type = inst_S_push_floap_t;
             res[*res_len - 1].value.ount = x->root.obj->val.f;
+            res[*res_len - 1].real_line = line;
             return res;
         }
         if (x->root.obj->type != Obj_string_t) {
@@ -656,6 +672,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len - 1].line = -1;
         res[*res_len - 1].type = inst_S_push_str_t;
         res[*res_len - 1].value.var_idx = add_string_constant(x->root.obj->val.s);
+        res[*res_len - 1].real_line = line;
         return res;
 
     }
@@ -663,7 +680,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         // check if unary
         if(x->left == NULL && x->right != NULL){
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len));
             for (int i = 0; i < right_len; i++)
                 res[(*res_len)++] = right[i];
@@ -671,14 +688,15 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res = realloc(res, sizeof(Instruction) * (*res_len + 1));
             res[*res_len].type = inst_S_op_t;
             res[*res_len].value.op = inst_S_op_negate_t;
+            res[*res_len].real_line = line;
             (*res_len)++;
             return res;
         }
         else {
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             int left_len = 0;
-            Instruction *left = ast_to_inst(x->left, &left_len);
+            Instruction *left = ast_to_inst(x->left, &left_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len));
             for (int i = 0; i < left_len; i++)
                 res[(*res_len)++] = left[i];
@@ -689,6 +707,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res = realloc(res, sizeof(Instruction) * (*res_len + 1));
             res[*res_len].type = inst_S_op_t;
             res[*res_len].value.op = inst_S_op_sub_t;
+            res[*res_len].real_line = line;
             (*res_len)++;
             return res;
         }
@@ -701,9 +720,9 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         OP
         */
         int right_len = 0;
-        Instruction *right = ast_to_inst(x->right, &right_len);
+        Instruction *right = ast_to_inst(x->right, &right_len, line);
         int left_len = 0;
-        Instruction *left = ast_to_inst(x->left, &left_len);
+        Instruction *left = ast_to_inst(x->left, &left_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len + 1));
         for (int i = 0; i < left_len; i++)
             res[(*res_len)++] = left[i];
@@ -713,6 +732,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         free(right);
         res[*res_len].type = inst_S_op_t;
         res[*res_len].value.op = get_bytecode_op(x->type);
+        res[*res_len].real_line = line;
         (*res_len)++;
         return res;
     }
@@ -731,7 +751,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         int jmp2_idx;
         int jmp3_idx;
         int left_len = 0;
-        Instruction *left = ast_to_inst(x->left, &left_len);
+        Instruction *left = ast_to_inst(x->left, &left_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 1));
         for (int i = 0; i < left_len; i++)
             res[(*res_len)++] = left[i];
@@ -740,31 +760,36 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
+        res[*res_len].real_line = line;
         jmp1_idx = *res_len;
         (*res_len)++;
         int right_len = 0;
-        Instruction *right = ast_to_inst(x->right, &right_len);
+        Instruction *right = ast_to_inst(x->right, &right_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 4));
         for (int i = 0; i < right_len; i++)
             res[(*res_len)++] = right[i];
         free(right);
         res[(*res_len)].type = inst_S_rjmpifn_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
         jmp2_idx = *res_len;
         (*res_len)++;
         res[(*res_len)].type = inst_S_push_1b_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         (*res_len)++;
         res[(*res_len)].type = inst_S_rjmp_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
         jmp3_idx = *res_len;
         (*res_len)++;
         res[(*res_len)].type = inst_S_push_0b_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         (*res_len)++;
@@ -788,40 +813,45 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         int jmp2_idx;
         int jmp3_idx;
         int left_len = 0;
-        Instruction *left = ast_to_inst(x->left, &left_len);
+        Instruction *left = ast_to_inst(x->left, &left_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 1));
         for (int i = 0; i < left_len; i++)
             res[(*res_len)++] = left[i];
         free(left);
         res[(*res_len)].type = inst_S_rjmpif_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
         jmp1_idx = *res_len;
         (*res_len)++;
         int right_len = 0;
-        Instruction *right = ast_to_inst(x->right, &right_len);
+        Instruction *right = ast_to_inst(x->right, &right_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 4));
         for (int i = 0; i < right_len; i++)
             res[(*res_len)++] = right[i];
         free(right);
         res[(*res_len)].type = inst_S_rjmpif_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
         jmp2_idx = *res_len;
         (*res_len)++;
         res[(*res_len)].type = inst_S_push_0b_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         (*res_len)++;
         res[(*res_len)].type = inst_S_rjmp_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         res[(*res_len)].value.jmp = 0xFFFFFFFF;
         jmp3_idx = *res_len;
         (*res_len)++;
         res[(*res_len)].type = inst_S_push_1b_t;
+        res[*res_len].real_line = line;
         res[(*res_len)].facultative = 0;
         res[(*res_len)].line = -1;
         (*res_len)++;
@@ -848,31 +878,34 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         */
         if (x->right->type == Ast_varcall_idx_t) {
             int left_len = 0;
-            Instruction *left = ast_to_inst(x->left, &left_len);
+            Instruction *left = ast_to_inst(x->left, &left_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 1));
             for (int i = 0; i < left_len; i++)
                 res[(*res_len)++] = left[i];
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_dot_get_t;
+            res[*res_len].real_line = line;
             res[*res_len].value.var_idx = x->right->root.var_idx;
             (*res_len)++;
             return res;
         }
         else {
             int left_len = 0;
-            Instruction *left = ast_to_inst(x->left, &left_len);
+            Instruction *left = ast_to_inst(x->left, &left_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + left_len + 2));
             for (int i = 0; i < left_len; i++)
                 res[(*res_len)++] = left[i];
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_dot_get_t;
+            res[*res_len].real_line = line;
             res[*res_len].value.var_idx = x->right->root.fun->name_idx;
             (*res_len)++;
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_prepare_fcall_t;
+            res[*res_len].real_line = line;
             (*res_len)++;
             for (int i = 0; i < x->right->root.fun->nbr_arg; i++) {
                 if (x->right->root.fun->args[i].type == Ast_unpack_t) {
@@ -881,7 +914,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                         exit(1);
                     }
                     int arg_len = 0;
-                    Instruction *arg = ast_to_inst(x->right->root.fun->args[i].right, &arg_len);
+                    Instruction *arg = ast_to_inst(x->right->root.fun->args[i].right, &arg_len, line);
                     res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
                     for (int i = 0; i < arg_len; i++)
                         res[(*res_len)++] = arg[i];
@@ -890,12 +923,13 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                     res[*res_len].facultative = 0;
                     res[*res_len].line = -1;
                     res[*res_len].type = inst_S_op_t;
+                    res[*res_len].real_line = line;
                     res[*res_len].value.op = inst_S_op_unpack_t;
                     (*res_len)++;
                     continue;
                 }
                 int arg_len = 0;
-                Instruction *arg = ast_to_inst(&(x->right->root.fun->args[i]), &arg_len);
+                Instruction *arg = ast_to_inst(&(x->right->root.fun->args[i]), &arg_len, line);
                 res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
                 for (int i = 0; i < arg_len; i++)
                     res[(*res_len)++] = arg[i];
@@ -905,6 +939,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_fcall_t;
+            res[*res_len].real_line = line;
             (*res_len)++;
             return res;
         }
@@ -912,13 +947,14 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
     elif (x->type == Ast_assign_t) {
         if (x->left->type == Ast_varcall_idx_t) {
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 1));
             for (int i = 0; i < right_len; i++)
                 res[(*res_len)++] = right[i];
             free(right);
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
+            res[*res_len].real_line = line;
             if (x->left->root.var_idx >= 0) {
                 res[*res_len].type = inst_S_var_set_t;
                 res[*res_len].value.var_idx = x->left->root.var_idx;
@@ -938,9 +974,9 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             dot_set(b)
             */
             int left_len = 0;
-            Instruction *left = ast_to_inst(x->left->left, &left_len);
+            Instruction *left = ast_to_inst(x->left->left, &left_len, line);
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len + 1));
             for (int i = 0; i < left_len; i++)
                 res[(*res_len)++] = left[i];
@@ -951,6 +987,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_dot_set_t;
+            res[*res_len].real_line = line;
             res[*res_len].value.var_idx = x->left->right->root.var_idx;
             (*res_len)++;
             return res;
@@ -964,11 +1001,11 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             col_set
             */
             int ast_a_len = 0;
-            Instruction *ast_a = ast_to_inst(x->left->left, &ast_a_len);
+            Instruction *ast_a = ast_to_inst(x->left->left, &ast_a_len, line);
             int ast_b_len = 0;
-            Instruction *ast_b = ast_to_inst(x->left->right, &ast_b_len);
+            Instruction *ast_b = ast_to_inst(x->left->right, &ast_b_len, line);
             int ast_c_len = 0;
-            Instruction *ast_c = ast_to_inst(x->right, &ast_c_len);
+            Instruction *ast_c = ast_to_inst(x->right, &ast_c_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + ast_a_len + ast_b_len + ast_c_len + 1));
             for (int i = 0; i < ast_a_len; i++)
                 res[(*res_len)++] = ast_a[i];
@@ -981,6 +1018,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             free(ast_c);
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
+            res[*res_len].real_line = line;
             res[*res_len].type = inst_S_col_set_t;
             (*res_len)++;
             return res;
@@ -994,13 +1032,14 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
     elif (x->type == Ast_plus_assign_t) {
         if (x->left->type == Ast_varcall_idx_t) {
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 1));
             for (int i = 0; i < right_len; i++)
                 res[(*res_len)++] = right[i];
             free(right);
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
+            res[*res_len].real_line = line;
             if (x->left->root.var_idx >= 0) {
                 res[*res_len].type = inst_S_var_inc_t;
                 res[*res_len].value.var_idx = x->left->root.var_idx;
@@ -1020,9 +1059,9 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             dot_set(b)
             */
             int left_len = 0;
-            Instruction *left = ast_to_inst(x->left->left, &left_len);
+            Instruction *left = ast_to_inst(x->left->left, &left_len, line);
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len + 1));
             for (int i = 0; i < left_len; i++)
                 res[(*res_len)++] = left[i];
@@ -1033,6 +1072,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_dot_inc_t;
+            res[*res_len].real_line = line;
             res[*res_len].value.var_idx = x->left->right->root.var_idx;
             (*res_len)++;
             return res;
@@ -1046,11 +1086,11 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             col_set
             */
             int ast_a_len = 0;
-            Instruction *ast_a = ast_to_inst(x->left->left, &ast_a_len);
+            Instruction *ast_a = ast_to_inst(x->left->left, &ast_a_len, line);
             int ast_b_len = 0;
-            Instruction *ast_b = ast_to_inst(x->left->right, &ast_b_len);
+            Instruction *ast_b = ast_to_inst(x->left->right, &ast_b_len, line);
             int ast_c_len = 0;
-            Instruction *ast_c = ast_to_inst(x->right, &ast_c_len);
+            Instruction *ast_c = ast_to_inst(x->right, &ast_c_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + ast_a_len + ast_b_len + ast_c_len + 1));
             for (int i = 0; i < ast_a_len; i++)
                 res[(*res_len)++] = ast_a[i];
@@ -1063,6 +1103,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             free(ast_c);
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
+            res[*res_len].real_line = line;
             res[*res_len].type = inst_S_col_inc_t;
             (*res_len)++;
             return res;
@@ -1075,13 +1116,14 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
     elif (x->type == Ast_minus_assign_t) {
         if (x->left->type == Ast_varcall_idx_t) {
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 1));
             for (int i = 0; i < right_len; i++)
                 res[(*res_len)++] = right[i];
             free(right);
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
+            res[*res_len].real_line = line;
             if (x->left->root.var_idx >= 0) {
                 res[*res_len].type = inst_S_var_dec_t;
                 res[*res_len].value.var_idx = x->left->root.var_idx;
@@ -1101,9 +1143,9 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             dot_set(b)
             */
             int left_len = 0;
-            Instruction *left = ast_to_inst(x->left->left, &left_len);
+            Instruction *left = ast_to_inst(x->left->left, &left_len, line);
             int right_len = 0;
-            Instruction *right = ast_to_inst(x->right, &right_len);
+            Instruction *right = ast_to_inst(x->right, &right_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + right_len + left_len + 1));
             for (int i = 0; i < left_len; i++)
                 res[(*res_len)++] = left[i];
@@ -1114,6 +1156,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_dot_dec_t;
+            res[*res_len].real_line = line;
             res[*res_len].value.var_idx = x->left->right->root.var_idx;
             (*res_len)++;
             return res;
@@ -1127,11 +1170,11 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             col_set
             */
             int ast_a_len = 0;
-            Instruction *ast_a = ast_to_inst(x->left->left, &ast_a_len);
+            Instruction *ast_a = ast_to_inst(x->left->left, &ast_a_len, line);
             int ast_b_len = 0;
-            Instruction *ast_b = ast_to_inst(x->left->right, &ast_b_len);
+            Instruction *ast_b = ast_to_inst(x->left->right, &ast_b_len, line);
             int ast_c_len = 0;
-            Instruction *ast_c = ast_to_inst(x->right, &ast_c_len);
+            Instruction *ast_c = ast_to_inst(x->right, &ast_c_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + ast_a_len + ast_b_len + ast_c_len + 1));
             for (int i = 0; i < ast_a_len; i++)
                 res[(*res_len)++] = ast_a[i];
@@ -1145,6 +1188,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len].facultative = 0;
             res[*res_len].line = -1;
             res[*res_len].type = inst_S_col_dec_t;
+            res[*res_len].real_line = line;
             (*res_len)++;
             return res;
         }
@@ -1155,7 +1199,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
     }
     elif (x->type == Ast_not_t) {
         int right_len = 0;
-        Instruction *right = ast_to_inst(x->right, &right_len);
+        Instruction *right = ast_to_inst(x->right, &right_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 1));
         for (int i = 0; i < right_len; i++)
             res[(*res_len)++] = right[i];
@@ -1164,6 +1208,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len].line = -1;
         res[*res_len].type = inst_S_op_t;
         res[*res_len].value.op = inst_S_op_not_t;
+        res[*res_len].real_line = line;
         (*res_len)++;
         return res;
     }
@@ -1174,7 +1219,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
     }
     elif (x->type == Ast_unpack_t) {
         int right_len = 0;
-        Instruction *right = ast_to_inst(x->right, &right_len);
+        Instruction *right = ast_to_inst(x->right, &right_len, line);
         res = realloc(res, sizeof(Instruction) * (*res_len + right_len + 1));
         for (int i = 0; i < right_len; i++)
             res[(*res_len)++] = right[i];
@@ -1183,6 +1228,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len].line = -1;
         res[*res_len].type = inst_S_op_t;
         res[*res_len].value.op = inst_S_op_unpack_t;
+        res[*res_len].real_line = line;
         (*res_len)++;
         return res;
     }
@@ -1207,11 +1253,13 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
 
         res = realloc(res, sizeof(Instruction) * (2 + *res_len));
         res[*res_len].type = inst_S_call_t; 
+        res[*res_len].real_line = line;
         res[*res_len].line = -1;
         res[*res_len].facultative = 0;
         res[(*res_len)++].value.jmp_length = 2;
 
         res[*res_len].type = inst_S_rjmp_t; 
+        res[*res_len].real_line = line;
         res[*res_len].line = -1;
         res[*res_len].facultative = 0;
         res[(*res_len)++].value.jmp_length = 1 + body_len + (need_ret ? 2 : 0);
@@ -1221,10 +1269,12 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         if (need_ret) {
             res = realloc(res, sizeof(Instruction) * (2 + *res_len));
             res[*res_len].type = inst_S_push_nil_t; 
+            res[*res_len].real_line = line;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             (*res_len)++;
             res[*res_len].type = inst_S_ret_t; 
+            res[*res_len].real_line = line;
             res[*res_len].line = -1;
             res[*res_len].facultative = 0;
             (*res_len)++;
@@ -1239,6 +1289,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                 res[*res_len - 1].facultative = 0;
                 res[*res_len - 1].line = -1;
                 res[*res_len - 1].type = inst_S_push_nil_t;
+                res[*res_len - 1].real_line = line;
             }
             else {
                 (*res_len)++;
@@ -1247,6 +1298,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                 res[*res_len - 1].line = -1;
                 res[*res_len - 1].type = inst_S_push_var_t;
                 res[*res_len - 1].value.var_idx = x->root.fun->name_idx;
+                res[*res_len - 1].real_line = line;
             }
         }
         else {
@@ -1255,6 +1307,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
             res[*res_len - 1].facultative = 0;
             res[*res_len - 1].line = -1;
             res[*res_len - 1].type = inst_S_push_global_var_t;
+            res[*res_len - 1].real_line = line;
             res[*res_len - 1].value.var_idx = -x->root.fun->name_idx - 1;
         }
         (*res_len)++;
@@ -1262,6 +1315,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len - 1].facultative = 0;
         res[*res_len - 1].line = -1;
         res[*res_len - 1].type = inst_S_prepare_fcall_t;
+        res[*res_len - 1].real_line = line;
         for (int i = 0; i < x->root.fun->nbr_arg; i++) {
             if (x->root.fun->args[i].type == Ast_unpack_t) {
                 if (x->root.fun->args[i].right == NULL) {
@@ -1269,7 +1323,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                     exit(1);
                 }
                 int arg_len = 0;
-                Instruction *arg = ast_to_inst(x->root.fun->args[i].right, &arg_len);
+                Instruction *arg = ast_to_inst(x->root.fun->args[i].right, &arg_len, line);
                 res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
                 for (int i = 0; i < arg_len; i++)
                     res[(*res_len)++] = arg[i];
@@ -1279,11 +1333,12 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
                 res[*res_len].line = -1;
                 res[*res_len].type = inst_S_op_t;
                 res[*res_len].value.op = inst_S_op_unpack_t;
+                res[*res_len].real_line = line;
                 (*res_len)++;
                 continue;
             }
             int arg_len = 0;
-            Instruction *arg = ast_to_inst(&(x->root.fun->args[i]), &arg_len);
+            Instruction *arg = ast_to_inst(&(x->root.fun->args[i]), &arg_len, line);
             res = realloc(res, sizeof(Instruction) * (*res_len + arg_len));
             for (int i = 0; i < arg_len; i++)
                 res[(*res_len)++] = arg[i];
@@ -1293,6 +1348,7 @@ Instruction *ast_to_inst(Ast *x, int *res_len) {
         res[*res_len].facultative = 0;
         res[*res_len].line = -1;
         res[*res_len].type = inst_S_fcall_t;
+        res[*res_len].real_line = line;
         (*res_len)++;
         return res;
     }

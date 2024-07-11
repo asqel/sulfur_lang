@@ -59,6 +59,7 @@ Instruction *make_funcdef(Token* tok, int start, int end, Instruction* inst, int
 						inst = realloc(inst, sizeof(Instruction) * (*n_inst));
 						inst[*n_inst - 1] = func;
 						inst[*n_inst - 1].facultative = 0;
+						inst[*n_inst - 1].line = tok[*p].line;
 						*p = br_r + 1;
 						return inst;
 					}

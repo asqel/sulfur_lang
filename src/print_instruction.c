@@ -250,7 +250,7 @@ void instruction_print(Instruction code){
 
 void instructions_print(Instruction* code, int code_len){
     for(int i = 0; i < code_len; i++){
-        printf("%d ",i);
+        printf("%d ", i);
         instruction_print(code[i]);
         printf("\n");
     }

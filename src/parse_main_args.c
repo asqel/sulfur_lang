@@ -15,17 +15,7 @@
 // If file is given, sulfur will execute it and exit.
 
 sulfur_args_t *parse_main_args(int argc, char **argv) {
-    sulfur_args_t *args = malloc(sizeof(sulfur_args_t));
-    args->show_mem   = 0;
-    args->show_parse = 0;
-    args->show_lexe  = 0;
-    args->show_lexe_include  = 0;
-    args->make_bytecode = 0;
-
-    args->help       = 0;
-    args->version    = 0;
-
-    args->filepath   = NULL;
+    sulfur_args_t *args = calloc(1, sizeof(sulfur_args_t));
 
     int end = 0;
 
@@ -70,6 +60,9 @@ sulfur_args_t *parse_main_args(int argc, char **argv) {
                             break;
                         case 'v':
                             args->version = 1;
+                            break;
+                        case 'a':
+                            args->show_parse_ast = 1;
                             break;
                         default:
                             printf("Unknown option: %c\n", argv[i][j]);

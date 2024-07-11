@@ -34,6 +34,7 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                 ast_and_len val = tok_to_Ast(tok,opening_par + 1, closing_par);
                 inst[*n_inst - 1].value.i->condition = make_ast(val.value, val.len);
 				inst[*n_inst - 1].facultative = 0;
+				inst[*n_inst - 1].line = tok[*p].line;
                 int if_index = *n_inst - 1;
                 
                 inst = parse(tok, opening_rbrack + 1, closing_rback, inst, n_inst);
@@ -68,6 +69,7 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                             ast_and_len val = tok_to_Ast(tok,opening_par + 1, closing_par);
                             inst[*n_inst - 1].value.el->condition = make_ast(val.value, val.len);
 						    inst[*n_inst - 1].facultative = 0;
+				            inst[*n_inst - 1].line = tok[*p].line;
                             int elif_index = *n_inst - 1;
                             
                             inst = parse(tok, opening_rbrack + 1, closing_rback, inst, n_inst);
@@ -104,6 +106,7 @@ Instruction* make_if(Token* tok, int start, int end, Instruction* inst, int* n_i
                         inst[*n_inst - 1].type = inst_else_t;
                         int else_index = *n_inst - 1;
 						inst[*n_inst - 1].facultative = 0;
+				        inst[*n_inst - 1].line = tok[*p].line;
                         inst = parse(tok, opening_rbrack + 1, closing_rback, inst, n_inst);
                         (*n_inst)++;
                         inst = realloc(inst, sizeof(Instruction) * (*n_inst));

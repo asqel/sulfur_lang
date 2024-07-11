@@ -960,7 +960,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             if(tok[*p].type == end_token.type){
                 (*n_inst)++;
                 inst = realloc(inst, sizeof(Instruction) * (*n_inst));
-                inst[*n_inst - 1].line = line;
+                inst[*n_inst - 1].line = tok[*p].line;
                 inst[*n_inst - 1].type = inst_pass_t;
                 inst[*n_inst - 1].facultative = 1;
                 return inst;
@@ -988,6 +988,7 @@ Instruction *parse_next_inst(Token* tok, int start, int end, Instruction* inst, 
             inst[*n_inst-1].type=inst_expr_t;
             inst[*n_inst-1].value.expr=x;
             inst[*n_inst - 1].facultative = 0;
+            inst[*n_inst - 1].line = tok[*p].line;
             inst[*n_inst - 1].facultative = ((*p + 1 == n) && !why) ? 1 : 0;
             *p = n + 1;
             return inst;

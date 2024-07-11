@@ -66,6 +66,7 @@ int execute_file(sulfur_args_t *args) {
         tokens_print(l, "\n");
 
     l = make_include(l, &len, args->filepath);
+    CTX.max_line = l[len - 1].line + 1;
     
     if (args->show_lexe_include)
         tokens_print(l, "\n");
@@ -73,30 +74,35 @@ int execute_file(sulfur_args_t *args) {
     int instruction_len = 0;
     Instruction *code = parse(l, -1, -1, NULL, &instruction_len);
 
-    //if (args->show_parse) {
-    //    instructions_print(code, instruction_len);
-    //}
-
-    if (CTX.requested_vars[0] != NULL) DEBUG("req vars left\n");
-    for(int i = 0; CTX.requested_vars[i] != NULL; i++) {
-        DEBUG("    %d : %s\n", i, CTX.requested_vars[i]);
+    if (args->show_parse_ast) {
+        instructions_print(code, instruction_len);
     }
 
-    if (CTX.requested_vars_right[0] != NULL) DEBUG("req vars right\n");
-    for(int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
-        DEBUG("    %d : %s\n", i, CTX.requested_vars_right[i]);
+    if (args->show_parse) {
+        if (CTX.requested_vars[0] != NULL) DEBUG("req vars left\n");
+        for(int i = 0; CTX.requested_vars[i] != NULL; i++) {
+            DEBUG("    %d : %s\n", i, CTX.requested_vars[i]);
+        }
     }
-
+    if (args->show_parse) {
+        if (CTX.requested_vars_right[0] != NULL) DEBUG("req vars right\n");
+        for(int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
+            DEBUG("    %d : %s\n", i, CTX.requested_vars_right[i]);
+        }
+    }
     code = make_jmp_links(code, instruction_len);
     Instruction *old_code = code;
     int old_cold_len = instruction_len;
     code = finish_instrcutions(code, &instruction_len);
+    for( int i = 0; i < CTX.addr_line_len; i++)
+        DEBUG("[%d %d]\n", CTX.addr_line[i].a,  CTX.addr_line[i].b);
 
     
-
-    if (CTX.strings_constants_len != 0) DEBUG("string constants\n");
-    for(int i = 0; i < CTX.strings_constants_len; i++) {
-        DEBUG("    %d : %s\n", i, CTX.strings_constants[i]);
+    if (args->show_parse) {
+        if (CTX.strings_constants_len != 0) DEBUG("string constants\n");
+        for(int i = 0; i < CTX.strings_constants_len; i++) {
+            DEBUG("    %d : %s\n", i, CTX.strings_constants[i]);
+        }
     }
 
     instruction_free_array(old_code, old_cold_len);
@@ -109,6 +115,12 @@ int execute_file(sulfur_args_t *args) {
     FILE *f = fopen("./res.subc", "w+");
     fwrite(bytecode.vals, 1, bytecode.len, f);
     fclose(f);
+
+    for (int i = 0; i < CTX.strings_constants_len; i++) {
+        free(CTX.strings_constants[i]);
+    }
+    free(CTX.strings_constants);
+    free(CTX.addr_line);
     // parser copy values of tokens so
     // you can free tokens after parsing 
     

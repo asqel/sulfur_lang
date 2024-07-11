@@ -102,4 +102,7 @@ void make_context(){
 
 	CTX.strings_constants = NULL;
 	CTX.strings_constants_len = 0;
+
+	CTX.addr_line = NULL;
+	CTX.addr_line_len = 0;
 }

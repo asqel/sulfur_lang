@@ -206,6 +206,11 @@ void add_count(void* address, int type);
 
 void remove_count(void* address, int type);
 
+typedef struct {
+    int a;
+    int b;
+} int_pairs;
+
 
 typedef struct Sulfur_ctx{
     void *(**memlib_func)();
@@ -222,6 +227,9 @@ typedef struct Sulfur_ctx{
 
     char **strings_constants;
     int strings_constants_len;
+    int_pairs *addr_line;
+    int addr_line_len;
+    int max_line;
 
 } Sulfur_ctx;
 

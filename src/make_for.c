@@ -54,6 +54,7 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 
 						inst[*n_inst - 1].value.fo->var_name = add_requested_var(tok[id_idx].value.s);
 						inst[*n_inst - 1].facultative = 0;
+						inst[*n_inst - 1].line = tok[id_idx].line;
 
 						inst[*n_inst - 1].value.fo->start = x;
 						inst[*n_inst - 1].value.fo->end = x2;
@@ -97,6 +98,7 @@ Instruction *make_for(Token* tok, int start, int end, Instruction* inst, int* n_
 						inst[*n_inst - 1].type = inst_endfor_t;
 						inst[*n_inst - 1].value.endfor = for_idx;
 						inst[*n_inst - 1].facultative = 0;
+						inst[*n_inst - 1].line = tok[id_idx].line;
 						inst[for_idx].value.fo->endfor = *n_inst - 1;
 						return inst;
 					}

@@ -90,6 +90,7 @@ typedef struct Instruction{
     }value;
     int line;
     char facultative; // used by expression / pass
+    int real_line;
 }Instruction;
 
 enum instruction_type{

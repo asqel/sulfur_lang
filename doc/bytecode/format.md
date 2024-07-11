@@ -7,8 +7,8 @@ the file is composed of 7 / 8 parts
 - requested variable left
 - requested variable right
 - string constants
-- extra data (optional)
 - code
+- extra data (optional)
 
 magic number
 
@@ -113,11 +113,26 @@ its len stands on 8 bytes \
 the strings are null terminated they are the strings \
 that the programm use during the execution
 
-## the extra data
-for now it is empty
 
 ## code
 contains the actual bytecode code
 and is ended with a `push_nil` `ret` even if the code ends with its own ret \
 the code is considered to be inside an anonymous function \
 for now the return value of the code has no effect 
+
+## the extra data
+it contains
+- its len aka the number of keys
+- the pairs key/values
+
+its len stands on 8 bytes
+the pairs are composoed of 3 parts
+- the key a unique null terminated string
+- the length of the data in bytes (stands on 8 bytes)
+- the data
+
+it is a key value format where keys are null terminated \
+values can be anything \
+strings have to be different one another 
+see [extra data common formats](extra_data/common_format.md)
+

@@ -274,13 +274,25 @@ uti_Bytes make_bytecode_file(Instruction *code, int len) {
 			bytes_append_str(&res, CTX.strings_constants[i], 1);
 		}
 	}
-	//do nothing for extra data
-	(void)extra_data_addr_p;
+	
 	bytes_set_u64_at(&res, res.len, strlen(BYTECODE_MAGIC_NUM));
 	relink_push_str(code, len, strings_addrs);
 	bytes_append_code(&res, code, len);
 	bytes_append_u8(&res, inst_S_push_nil_t);
 	bytes_append_u8(&res, inst_S_ret_t);
+
+	bytes_set_u64_at(&res, res.len, extra_data_addr_p);
+	{
+		bytes_append_u64(&res, 1);
+		bytes_append_str(&res, "LINES", 1);
+		bytes_append_u64(&res, (CTX.addr_line_len - 1) * (8 * 2));
+		for (int i = 0; i < CTX.addr_line_len; i++) {
+			//printf("[%x %d]\n", CTX.addr_line[i].a, CTX.addr_line[i].b);
+			bytes_append_u64(&res, CTX.addr_line[i].a);
+			bytes_append_u64(&res, CTX.addr_line[i].b);
+		}
+	}
+
 	free(strings_addrs);
 	return res;
 }
@@ -294,8 +306,18 @@ void bytes_append_code(uti_Bytes *res, Instruction *code, int len) {
 			total_size += get_instruction_size(code[i].type);
 	}
 	res->vals = realloc(res->vals, sizeof(unsigned char) * (res->len + total_size));
+	int last_line = -1;
 	for (int i = 0; i < len; i++) {
 		Instruction current = code[i];
+		if (current.real_line > 0) {
+			if (current.real_line != last_line) {
+				last_line = current.real_line;
+				CTX.addr_line_len++;
+				CTX.addr_line = realloc(CTX.addr_line, sizeof(int_pairs) * CTX.addr_line_len);
+				CTX.addr_line[CTX.addr_line_len - 1].a = res->len;
+				CTX.addr_line[CTX.addr_line_len - 1].b = last_line;
+			}
+		}
 		if (current.type == inst_S_op_t) {
 			res->vals[res->len] = get_opcode(current.value.op);
 			(res->len)++;
@@ -334,4 +356,83 @@ void bytes_append_code(uti_Bytes *res, Instruction *code, int len) {
 			exit(1);
 		}
 	}
+}
+
+
+
+uti_Bytes compile_to_bytecode(char *text, char *path, sulfur_args_t *args) {
+    make_context();
+
+	Token *tokens = lexe(text);
+    int tokens_len = token_len(tokens);
+
+	if (args->show_lexe)
+        tokens_print(tokens, "\n");
+	
+	tokens = make_include(tokens, &tokens_len, args->filepath);
+    CTX.max_line = tokens[tokens_len - 1].line + 1;
+
+	if (args->show_lexe_include)
+        tokens_print(tokens, "\n");
+
+	int instruction_len = 0;
+    Instruction *code = parse(tokens, -1, -1, NULL, &instruction_len);
+
+    if (args->show_parse_ast) {
+        instructions_print(code, instruction_len);
+    }
+
+	if (args->show_parse) {
+        if (CTX.requested_vars[0] != NULL) DEBUG("req vars left\n");
+        for(int i = 0; CTX.requested_vars[i] != NULL; i++) {
+            DEBUG("    %d : %s\n", i, CTX.requested_vars[i]);
+        }
+    }
+    if (args->show_parse) {
+        if (CTX.requested_vars_right[0] != NULL) DEBUG("req vars right\n");
+        for(int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
+            DEBUG("    %d : %s\n", i, CTX.requested_vars_right[i]);
+        }
+    }
+	code = make_jmp_links(code, instruction_len);
+    Instruction *old_code = code;
+    int old_cold_len = instruction_len;
+    code = finish_instrcutions(code, &instruction_len);
+
+	if (args->show_parse) {
+        if (CTX.strings_constants_len != 0) DEBUG("string constants\n");
+        for(int i = 0; i < CTX.strings_constants_len; i++) {
+            DEBUG("    %d : %s\n", i, CTX.strings_constants[i]);
+        }
+    }
+
+	instruction_free_array(old_code, old_cold_len);
+
+    if (args->show_parse) {
+        instructions_print(code, instruction_len);
+    }
+
+    uti_Bytes bytecode = make_bytecode_file(code, instruction_len);
+
+	for (int i = 0; i < CTX.strings_constants_len; i++) {
+        free(CTX.strings_constants[i]);
+    }
+    free(CTX.strings_constants);
+    free(CTX.addr_line);
+
+	for(int i = 0; i < tokens_len; i++){
+        free_tok_val(tokens[i]);
+    }
+    instruction_free_array(code, instruction_len);
+    free(tokens);
+
+	for (int i = 0; CTX.requested_vars[i] != NULL; i++) {
+        free(CTX.requested_vars[i]);
+    }
+    free(CTX.requested_vars);
+    for (int i = 0; CTX.requested_vars_right[i] != NULL; i++) {
+        free(CTX.requested_vars_right[i]);
+    }
+    free(CTX.requested_vars_right);
+	return bytecode;
 }

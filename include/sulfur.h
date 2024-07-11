@@ -13,6 +13,7 @@ typedef struct {
     int show_lexe;
     int show_lexe_include;
     int make_bytecode;
+    int show_parse_ast;
 
     int help;
     int version;

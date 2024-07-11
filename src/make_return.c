@@ -25,6 +25,7 @@ Instruction *make_return(Token *tok, int start, int end, Instruction *inst, int 
             inst[*n_inst - 1].value.ret->left = NULL;
             inst[*n_inst - 1].value.ret->right = NULL;
 			inst[*n_inst - 1].facultative = 0;
+			inst[*n_inst - 1].line = tok[*p].line;
 
             inst[*n_inst - 1].value.ret->type = Ast_object_t;
 
@@ -41,6 +42,7 @@ Instruction *make_return(Token *tok, int start, int end, Instruction *inst, int 
             inst[*n_inst - 1].type = inst_return_t;
 			inst[*n_inst - 1].facultative = 0;
             inst[*n_inst - 1].value.ret = x;
+			inst[*n_inst - 1].line = tok[*p].line;
             
             *p = n + 1;
             return inst;
