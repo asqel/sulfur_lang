@@ -48,4 +48,33 @@ void relink_push_str(Instruction *code, int len, int *strs);
 uti_Bytes make_bytecode_file(Instruction *code, int len);
 void bytes_append_code(uti_Bytes *res, Instruction *code, int len);
 
+typedef struct {
+	unsigned char *data; // address of the data
+	int data_len; // len of the data in Bytes
+}extra_data_t;
+
+typedef struct {
+	int key_len; // number of key/values
+	char **keys; // array of the key addresses
+	extra_data_t *values;
+} bytecode_extra_data;
+
+
+
+typedef struct {
+	uti_Bytes byte_code;
+	unsigned char *strings; // adress of strings just after the length
+	unsigned char *var_left; // same
+	unsigned char *var_right; // same
+	int strings_len;
+	int var_left_len;
+	int var_right_len;
+	unsigned char *code; // addres of the code to execute
+	char file_type;
+	char *date_time; // address of the time as strs (can be FAKE_TIME)
+	bytecode_extra_data extra_data;
+
+} bytecode_info;
+
+
 #endif

@@ -2,7 +2,7 @@ n = ount(rand()*100)
 count = 0
 guess = -1
 print("guess : ")
-while(n != guess && count < 10){
+while (n != guess && count < 10) {
     guess = ount(input())
     if(guess < n){
         println("too low")

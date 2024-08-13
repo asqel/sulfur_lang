@@ -308,6 +308,10 @@ void bytes_append_code(uti_Bytes *res, Instruction *code, int len) {
 	res->vals = realloc(res->vals, sizeof(unsigned char) * (res->len + total_size));
 	int last_line = -1;
 	for (int i = 0; i < len; i++) {
+		/*
+		print inst
+		print opcode
+		*/
 		Instruction current = code[i];
 		if (current.real_line > 0) {
 			if (current.real_line != last_line) {
