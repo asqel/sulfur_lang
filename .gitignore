@@ -19,3 +19,6 @@ build/sulfur
 
 # python things
 a.py
+
+# sulfur bytecode
+*.subc
