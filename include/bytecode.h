@@ -1,9 +1,9 @@
 #ifndef BYTECODE_H
 #define BYTECODE_H
 
-#include "../include/instruction.h"
-#include "../include/utilities.h"
-#include "../include/sulfur.h"
+#include "instruction.h"
+#include "utilities.h"
+#include "sulfur.h"
 
 
 extern char instruction_sizes[61];

@@ -1,16 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "include/make_include.h"
-#include "include/sulfur.h"
-#include "include/lexer.h"
-#include "include/memlib.h"
-#include "include/parser.h"
-#include "include/interpreter.h"
-#include "include/func_interpreter.h"
-#include "include/make_context.h"
-#include "include/make_jmp_links.h"
-#include "include/bytecode.h"
+#include "make_include.h"
+#include "sulfur.h"
+#include "lexer.h"
+#include "memlib.h"
+#include "parser.h"
+#include "interpreter.h"
+#include "func_interpreter.h"
+#include "make_context.h"
+#include "make_jmp_links.h"
+#include "bytecode.h"
 
 #include "sulfur_libs/blt_libs/std.h"
 

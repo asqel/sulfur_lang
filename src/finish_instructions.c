@@ -1,8 +1,8 @@
-#include "../include/instruction.h"
-#include "../include/make_requested_vars.h"
-#include "../include/utilities.h"
-#include "../include/sulfur.h"
-#include "../include/finish_instructions.h"
+#include "instruction.h"
+#include "make_requested_vars.h"
+#include "utilities.h"
+#include "sulfur.h"
+#include "finish_instructions.h"
 
 int next_uid = 0;
 

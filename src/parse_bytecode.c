@@ -4,20 +4,23 @@
 
 uint64_t get_i64_at(unsigned char *text, int pos) {
 	uint64_t res = 0;
-	res |= text[pos + 7] << (7  * 8);
-	res |= text[pos + 6] << (6  * 8);
-	res |= text[pos + 5] << (5  * 8);
-	res |= text[pos + 4] << (4  * 8);
-	res |= text[pos + 3] << (3  * 8);
-	res |= text[pos + 2] << (2  * 8);
-	res |= text[pos + 1] << (1  * 8);
-	res |= text[pos];
+	res |= (uint64_t)text[pos + 7] << (7  * 8);
+	res |= (uint64_t)text[pos + 6] << (6  * 8);
+	res |= (uint64_t)text[pos + 5] << (5  * 8);
+	res |= (uint64_t)text[pos + 4] << (4  * 8);
+	res |= (uint64_t)text[pos + 3] << (3  * 8);
+	res |= (uint64_t)text[pos + 2] << (2  * 8);
+	res |= (uint64_t)text[pos + 1] << (1  * 8);
+	res |= (uint64_t)text[pos];
+	return res;
 }
+
+bytecode_info *parse_extra_data(bytecode_info *info, unsigned char *extra_data);
 
 void parse_bytecode_header(bytecode_info *info, uti_Bytes bytecode, char * path) {
 	unsigned char *header = &(bytecode.vals[4 + 8]);
 	info->file_type = header[0];
-	info->date_time = &(header[1]);
+	info->date_time = (char *)&(header[1]);
 
 	int time_str_end = 1;
 	while (header[time_str_end] != '\0')
@@ -38,9 +41,10 @@ bytecode_info parse_bytecode(uti_Bytes bytecode, char *path) {
 
 	parse_bytecode_header(&res, bytecode, path);
 
-	res.var_left_len = get_i64_at(bytecode.vals, res.var_left - 8);
-	res.var_right_len = get_i64_at(bytecode.vals, res.var_right - 8);
-	res.strings_len = get_i64_at(bytecode.vals, res.strings - 8);
+	res.var_left_len = get_i64_at(res.var_left - 8, 0);
+	res.var_right_len = get_i64_at(res.var_right - 8, 0);
+	res.strings_len = get_i64_at(res.strings - 8, 0);
+	return res;
 }
 
 
@@ -59,7 +63,7 @@ bytecode_info *parse_extra_data(bytecode_info *info, unsigned char *extra_data) 
 		while (extra_data[key_end] != '\0') key_end++;
 		
 		key_end++;
-		info->extra_data.keys[current_key] = p;
+		info->extra_data.keys[current_key] = (char *)&extra_data[p];
 		info->extra_data.values[current_key].data_len = get_i64_at(extra_data, key_end);
 		key_end += 8;
 		info->extra_data.values[current_key].data = &(extra_data[key_end]);

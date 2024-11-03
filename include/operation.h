@@ -2,9 +2,9 @@
 #define OPERATION_H
 #include "memlib.h"
 
-#include "../include/memlib.h"
+#include "memlib.h"
 #include <stdlib.h>
-#include "../include/utilities.h"
+#include "utilities.h"
 
 
 /*

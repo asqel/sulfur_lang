@@ -1,10 +1,10 @@
 #ifndef MAKE_REQUESTED_VARS_H
 #define MAKE_REQUESTED_VARS_H
 
-#include "../include/make_requested_vars.h"
-#include "../include/sulfur.h"
-#include "../include/instruction.h"
-#include "../include/Ast.h"
+#include "make_requested_vars.h"
+#include "sulfur.h"
+#include "instruction.h"
+#include "Ast.h"
 
 #include <stdlib.h>
 #include <string.h>

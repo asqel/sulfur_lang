@@ -1,7 +1,20 @@
-#include "../include/instruction.h"
-#include "../include/utilities.h"
-#include "../include/sulfur.h"
-#include "../include/bytecode.h"
+#include "instruction.h"
+#include "utilities.h"
+#include "sulfur.h"
+#include "make_include.h"
+#include "sulfur.h"
+#include "lexer.h"
+#include "memlib.h"
+#include "parser.h"
+#include "interpreter.h"
+#include "func_interpreter.h"
+#include "make_context.h"
+#include "make_jmp_links.h"
+#include "bytecode.h"
+#include "finish_instructions.h"
+
+void instruction_print(Instruction code);
+void instructions_print(Instruction* code, int code_len);
 
 char instruction_sizes[] = {
 	1,
@@ -270,13 +283,11 @@ uti_Bytes make_bytecode_file(Instruction *code, int len) {
 	{
 		bytes_append_u64(&res, CTX.strings_constants_len);
 		for (int i = 0; i < CTX.strings_constants_len; i++) {
-			strings_addrs[i] = res.len;
 			bytes_append_str(&res, CTX.strings_constants[i], 1);
 		}
 	}
 	
 	bytes_set_u64_at(&res, res.len, strlen(BYTECODE_MAGIC_NUM));
-	relink_push_str(code, len, strings_addrs);
 	bytes_append_code(&res, code, len);
 	bytes_append_u8(&res, inst_S_push_nil_t);
 	bytes_append_u8(&res, inst_S_ret_t);

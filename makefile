@@ -1,13 +1,13 @@
 
 OUT_DIR = "build"
-SRC = "src"
+SRC = "src" 
 BLT_LIBS = "sulfur_libs/blt_libs"
 
 
 STD_LIBS = "sulfur_libs/std_libs"
 GRAPGIC_LIB = $(STD_LIBS)/graphic
 
-COMMON-FLAG = -fno-builtin-printf -lm -Wall -Wextra -Werror -Wno-format  -Wno-cast-function-type -Wno-unused-variable -Wno-unused-parameter -Wno-dangling-pointer
+COMMON-FLAG = -Iinclude -fno-builtin-printf -lm -Wall -Wextra -Werror -Wno-format  -Wno-cast-function-type -Wno-unused-variable -Wno-unused-parameter -Wno-dangling-pointer
 COMPILER = "gcc"
 
 DEBUG_FLAG = -g #-fsanitize=address
@@ -15,19 +15,19 @@ DEBUG_FLAG = -g #-fsanitize=address
 win:
 	if not exist build mkdir build
 	if not exist "build/libs" mkdir "build/libs"
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm $(COMMON-FLAG)
+	gcc main.c src/bytecode/*.c src/bytecode/*/*.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm $(COMMON-FLAG)
 	make stdlibs_win
 
 linux:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG) $(DEBUG_FLAG)
+	gcc main.c src/bytecode/*.c src/bytecode/*/*.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG) $(DEBUG_FLAG)
 	make stdlibs_linux
 
 linux_debug:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG) -fsanitize=address -g
+	gcc main.c src/bytecode/*.c src/bytecode/*/*.c src/*.c sulfur_libs/blt_libs/*.c -o build/sulfur -lm -ldl $(COMMON-FLAG) -fsanitize=address -g
 	make stdlibs_linux
 
 
@@ -63,12 +63,12 @@ linux_all:
 linux_one_file1:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic/*.c -o build/sulfur -lm -fno-builtin-printf -lX11 -D ONE_FILE=1
+	gcc main.c src/bytecode/*.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic/*.c -o build/sulfur -lm -fno-builtin-printf -lX11 -D ONE_FILE=1
 
 linux_one_file2:
 	mkdir -p build
 	mkdir -p build/libs
-	gcc main.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic/*.c -o build/sulfur -lm -fno-builtin-printf -lX11 -D ONE_FILE=2
+	gcc main.c src/bytecode/*.c src/*.c sulfur_libs/blt_libs/*.c sulfur_libs/std_libs/*.c sulfur_libs/std_libs/graphic/*.c -o build/sulfur -lm -fno-builtin-printf -lX11 -D ONE_FILE=2
 
 
 

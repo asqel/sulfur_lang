@@ -1,8 +1,8 @@
-#include "../include/instruction.h"
-#include "../include/utilities.h"
-#include "../include/make_requested_vars.h"
-#include "../include/make_context.h"
-#include "../include/sulfur.h"
+#include "instruction.h"
+#include "utilities.h"
+#include "make_requested_vars.h"
+#include "make_context.h"
+#include "sulfur.h"
 
 int inst_to_str(Instruction*i){
 	if(i->type==inst_for_t){

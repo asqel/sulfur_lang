@@ -1,7 +1,7 @@
-#include "../include/token_class.h"
-#include "../include/get_include_tokens.h"
-#include "../include/lexer.h"
-#include "../include/utilities.h"
+#include "token_class.h"
+#include "get_include_tokens.h"
+#include "lexer.h"
+#include "utilities.h"
 
 
 Token *get_include_tokens(int *len, char *mode, char *path) {

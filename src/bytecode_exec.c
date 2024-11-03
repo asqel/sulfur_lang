@@ -1,5 +1,5 @@
 
-#include "../include/bytecode.h"
+#include "bytecode.h"
 
 
 

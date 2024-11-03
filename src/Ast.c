@@ -1,8 +1,8 @@
 
-#include "../include/Ast.h"
-#include "../sulfur_libs/blt_libs/std.h"
-#include "../include/instruction.h"
+#include "Ast.h"
+#include "instruction.h"
 
+extern Object print_prompt(Object *, int);
 
 int Ast_has_r(Ast x){
     return x.right!=NULL;
