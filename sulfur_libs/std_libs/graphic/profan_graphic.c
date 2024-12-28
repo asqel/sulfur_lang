@@ -59,7 +59,11 @@ Object set_pixel(Object *argv, int argc){
 
     uint32_t color = (argv[2].val.i << 16) | (argv[3].val.i << 8) | argv[4].val.i;
 
-    c_vesa_set_pixel(x, y, color);
+    // vesa_set_pixel has been removed
+    uint32_t *fb = syscall_vesa_fb();
+    uint32_t pitch = syscall_vesa_pitch();
+
+    fb[y * pitch + x] = color;
 
     return nil_Obj;
 }
@@ -79,9 +83,12 @@ Object fill_window(Object* argv, int argc) {
 
     uint32_t color = (argv[0].val.i << 16) | (argv[1].val.i << 8) | argv[2].val.i;
 
+    uint32_t *fb = syscall_vesa_fb();
+    uint32_t pitch = syscall_vesa_pitch();
+
     for (int i = 0; i < width; i++)
         for (int j = 0; j < height; j++)
-            c_vesa_set_pixel(i, j, color);
+            fb[j * pitch + i] = color;
 
     return nil_Obj;
 }
@@ -103,9 +110,12 @@ Object fill_rect(Object* argv, int argc){
 
     uint32_t color = (argv[4].val.i << 16) | (argv[5].val.i << 8) | argv[6].val.i;
 
+    uint32_t *fb = syscall_vesa_fb();
+    uint32_t pitch = syscall_vesa_pitch();
+
     for (int i = x; i < x + w; i++)
         for (int j = y; j < y + h; j++)
-            c_vesa_set_pixel(i, j, color);
+            fb[j * pitch + i] = color;
 
     return nil_Obj;
 }
@@ -122,4 +132,5 @@ Object graphic_get_width(Object *argv, int argc) {
 Object graphic_get_height(Object *argv, int argc) {
     return new_ount(height);
 }
+
 #endif
