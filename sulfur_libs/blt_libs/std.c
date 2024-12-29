@@ -270,7 +270,7 @@ Object current_timestamp(Object *obj,int n_arg) {
     o.type = Obj_ount_t;
 
     #ifdef __profanOS__
-        o.val.i = c_timer_get_ms();
+        o.val.i = syscall_timer_get_ms();
     #else
         struct timespec te;
         clock_gettime(CLOCK_REALTIME, &te);

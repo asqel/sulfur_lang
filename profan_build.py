@@ -10,10 +10,10 @@ if not os.path.exists(profan_path):
 CC      = "gcc"
 LD      = "ld"
 
-OUTPUT  = "build/sulfur"
+OUTPUT  = "build/sulfur.elf"
 
-CFLAGS  = "-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I ./build/profan -D ONE_FILE=1 -D __profanOS__ -nostdinc"
-LDFLAGS = f"-nostdlib -L {profan_path}/out/zlibs -T build/profan/_link.ld -z max-page-size=0x1000 -lc -lm"
+CFLAGS  = f"-ffreestanding -fno-exceptions -fno-stack-protector -m32 -I {profan_path}/include/addons -I {profan_path}/include/zlibs -D ONE_FILE=1 -D __profanOS__ -nostdinc -O3 -fno-omit-frame-pointer"
+LDFLAGS = f"-nostdlib -m elf_i386 -L {profan_path}/out/zlibs -T {profan_path}/tools/link_elf.ld -lc -lm"
 
 OBJDIR  = "build/profan_objects"
 
@@ -40,7 +40,7 @@ def compile_file(src, dir):
     return obj
 
 def link_files(entry, objs, output = OUTPUT):
-    execute_command(f"{LD} {LDFLAGS} -o {output}.elf {entry} {' '.join(objs)}")
+    execute_command(f"{LD} {LDFLAGS} -o {output} {entry} {' '.join(objs)}")
 
 def main():
     execute_command(f"mkdir -p {OBJDIR}")
@@ -54,9 +54,8 @@ def main():
         )
 
     objs.append(compile_file("main.c", "."))
-    objs.append(compile_file("_i3.c", "build/profan"))
 
-    entry = compile_file("_entry.c", "build/profan")
+    entry = compile_file("entry_elf.c", f"{profan_path}/tools")
     link_files(entry, objs)
 
     print(ENDNOTE)

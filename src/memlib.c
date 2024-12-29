@@ -541,7 +541,7 @@ typedef struct Node{
     struct Node *next;
 }Node;
 
-#define hash_map_len 10000
+#define hash_map_len 1
 
 Node hash_map[1];
 

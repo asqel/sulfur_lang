@@ -168,13 +168,13 @@ int uti_is_path_relative(char *path) {
 
 char *read_file(char *path) {
     #ifdef __profanOS__
-    sid_t file_id = fu_path_to_sid(ROOT_SID, path);
+    uint32_t file_id = fu_path_to_sid(SID_ROOT, path);
 
-    if (IS_NULL_SID(file_id) || !fu_is_file(file_id)) {
+    if (!fu_is_file(file_id)) {
         return NULL;
     }
     
-    uint32_t size = fu_get_file_size(file_id);
+    uint32_t size = fu_file_get_size(file_id);
     char *text = malloc(size + 1);
     text[size] = '\0';
 
@@ -206,13 +206,13 @@ char *read_file(char *path) {
 
 char *uti_read_bin_file(char *path, int *len) {
     #ifdef __profanOS__
-    sid_t file_id = fu_path_to_sid(ROOT_SID, path);
+    uint32_t file_id = fu_path_to_sid(SID_ROOT, path);
 
-    if (IS_NULL_SID(file_id) || !fu_is_file(file_id)) {
+    if (!fu_is_file(file_id)) {
         return NULL;
     }
-    
-    uint32_t size = fu_get_file_size(file_id);
+
+    uint32_t size = fu_file_get_size(file_id);
     char *text = malloc(size);
 
     fu_file_read(file_id, text, 0, size);
